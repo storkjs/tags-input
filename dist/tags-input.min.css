@@ -1,1 +1,1 @@
-.stork-tags{position:relative;overflow:hidden}
+.stork-tags{position:relative;overflow:hidden}.stork-tags>ul{margin:0;padding:0;list-style:none;height:100%;display:flex;justify-content:flex-start;align-items:flex-start}.stork-tags>ul>li.input-item{height:100%}.stork-tags>ul>li.input-item>input{height:100%;width:100%;border:0 none}.stork-tags>ul>li.input-item>input:focus{outline:0 none}

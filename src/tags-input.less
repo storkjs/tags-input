@@ -2,4 +2,32 @@
 .stork-tags {
 	position: relative;
 	overflow: hidden;
+
+	> ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		height: 100%;
+
+		display: flex;
+		justify-content: flex-start; /*horizontal*/
+		align-items: flex-start; /*vertical*/
+
+		> li {
+
+			&.input-item {
+				height: 100%;
+
+				> input {
+					height: 100%;
+					width: 100%;
+					border: 0 none;
+
+					&:focus {
+						outline: 0 none;
+					}
+				}
+			}
+		}
+	}
 }
