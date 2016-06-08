@@ -6,6 +6,7 @@
 	<link rel="stylesheet" type="text/css" href="../dist/tags-input.min.css">
 	<link rel="stylesheet" type="text/css" href="../dist/simple-theme.min.css">
 	<script src="../src/tags-input.js"></script>
+	<script src="suggestions.js"></script>
 
 	<style type="text/css">
 		* {
@@ -29,9 +30,36 @@
 	</style>
 
 	<script>
+		var httpRequest, i, j, regex;
+		var suggestions_handler = function suggestions_handler(text, cb) {
+			regex = new RegExp(text, 'gi');
+			var ret = [];
+			for(i=0; i < suggestionGroups.length; i++) {
+				for(j=0; j < suggestionGroups[i].items.length; j++) {
+					if(regex.test(suggestionGroups[i].items[j].displayName)) {
+						if(!ret[ret.length-1] || ret[ret.length-1].id !== suggestionGroups[i].items[j].id) {
+							ret.push({
+								displayName: suggestionGroups[i].displayName,
+								id: suggestionGroups[i].id,
+								items: []
+							});
+						}
+						ret[ret.length-1].items.push({
+							displayName: suggestionGroups[i].items[j].displayName,
+							value: suggestionGroups[i].items[j].value
+						});
+					}
+				}
+			}
+
+			cb(ret);
+		};
+
 		document.addEventListener("DOMContentLoaded", function(e) {
 			var testTags = new storkTagsInput({
-				element: document.getElementById('tagsInput')
+				element: document.getElementById('tagsInput'),
+				suggestionsType: 'ajax',
+				suggestionsHandler: suggestions_handler
 			});
 		});
 	</script>
