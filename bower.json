@@ -1,0 +1,28 @@
+{
+  "name": "stork-tags",
+  "description": "The best and most efficient tags selector in the galaxy",
+  "private": false,
+  "main": [
+    "src/tags-input.js",
+    "src/tags-input.less"
+  ],
+  "authors": [
+    "Noam Lin <noamlin@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "tags",
+    "input",
+    "select",
+    "multiple",
+    "tag filtering"
+  ],
+  "homepage": "https://github.com/storkjs/tags-input",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "storkjs-tags",
+  "version": "1.0.0",
+  "description": "The best and most efficient tags selector in the galaxy",
+  "license": "MIT",
+  "author": {
+    "name": "Noam Lin",
+    "email": "noam.lin@ebs.com"
+  },
+  "private": false,
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-less": "^1.3.0",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "jit-grunt": "^0.10.0"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "scripts": {
+    "watch": "grunt watch-files"
+  }
+}

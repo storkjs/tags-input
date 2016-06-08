@@ -1,0 +1,17 @@
+{"items": [
+  {"text": "LPs", "children": [
+    { "id": "lcla", "text": "LCLA LCLA" },
+    { "id": "lldc", "text": "LLDC LLDC" },
+    { "id": "lpca", "text": "LPCA LPCA" }
+  ]},
+  {"text": "Currencies", "children": [
+    { "id": "usd", "text": "USD" },
+    { "id": "eur", "text": "EUR" },
+    { "id": "ils", "text": "ILS" }
+  ]},
+  {"text": "Tenors", "children": [
+    { "id": "1wk", "text": "1Wk" },
+    { "id": "2mth", "text": "2Mth" },
+    { "id": "3yrs", "text": "3Yrs" }
+  ]}
+]}

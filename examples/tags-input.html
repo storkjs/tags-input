@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<link rel="stylesheet" type="text/css" href="../dist/tags-input.min.css">
+	<link rel="stylesheet" type="text/css" href="../dist/simple-theme.min.css">
+	<script src="../src/tags-input.js"></script>
+
+	<style type="text/css">
+		* {
+			box-sizing: border-box;
+		}
+		html, body {
+			height: 100%;
+		}
+		body {
+			margin: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		#tagsInput {
+			width: 500px;
+			height: 30px;
+			top: -200px;
+		}
+	</style>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function(e) {
+			var testTags = new storkTagsInput({
+				element: document.getElementById('tagsInput')
+			});
+		});
+	</script>
+</head>
+<body>
+<div id="tagsInput"></div>
+</body>
+</html>
