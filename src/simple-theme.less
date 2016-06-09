@@ -1,6 +1,6 @@
 /* main tags element */
 .stork-tags {
-	border: 1px solid #909090;
+	border: 2px solid #909090;
 	border-radius: 2px;
 
 	> ul {
@@ -13,6 +13,69 @@
 						box-shadow: 0 0 5px rgba(0,100,255,0.3) inset;
 					}
 				}
+			}
+		}
+	}
+}
+.stork-tags-dropdown-container {
+	min-height: 20px;
+
+	> div { /*group wrapper*/
+		display: flex;
+		justify-content: flex-start; /*horizontal*/
+		align-items: flex-start; /*vertical*/
+
+		background-color: #DDDDDD;
+
+		> div { /*group title*/
+			width: 150px;
+			padding: 8px 10px 0 0;
+			text-align: right;
+
+			> span {
+				font-weight: bold;
+			}
+		}
+		> ul { /*suggestions list*/
+			flex-grow: 1;
+			padding: 5px 0 0 0;
+			background-color: #EEEEEE;
+
+			display: flex;
+			justify-content: flex-start; /*horizontal*/
+			align-items: flex-start; /*vertical*/
+			flex-direction: column;
+
+			li {
+				padding: 0;
+				height: 24px;
+				width: 100%;
+
+				a {
+					padding: 0 10px;
+					height: 100%;
+					width: 100%;
+					cursor: pointer;
+
+					display: flex;
+					justify-content: flex-start; /*horizontal*/
+					align-items: center; /*vertical*/
+
+					&:hover {
+						background-color: #444444;
+						color: white;
+					}
+				}
+			}
+		}
+
+		&:last-child {
+			border-bottom-left-radius: 5px;
+			border-bottom-right-radius: 5px;
+
+			ul {
+				padding-bottom: 5px;
+				border-bottom-right-radius: 5px;
 			}
 		}
 	}

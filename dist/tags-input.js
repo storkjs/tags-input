@@ -40,7 +40,7 @@
     dropdownContainer.style.width = this.tagsInput.offsetWidth + "px";
     var xy = getPosition(this.tagsInput);
     dropdownContainer.style.left = xy.x + "px";
-    dropdownContainer.style.top = xy.y + this.tagsInput.offsetHeight + "px";
+    dropdownContainer.style.top = xy.y + this.tagsInput.offsetHeight + 1 + "px";
     this.ul = ul;
     this.input = input;
     this.dropdownContainer = dropdownContainer;
@@ -63,6 +63,28 @@
   };
   storkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsObj) {
     this.dropdownContainer.style.display = "block";
+    while (this.dropdownContainer.firstChild) {
+      this.dropdownContainer.removeChild(this.dropdownContainer.firstChild);
+    }
+    var i, j, groupDiv, groupHeader, itemsList, item, miscElm;
+    for (i = 0; i < suggestionsObj.length; i++) {
+      groupDiv = document.createElement("div");
+      groupHeader = document.createElement("div");
+      miscElm = document.createElement("span");
+      itemsList = document.createElement("ul");
+      miscElm.appendChild(document.createTextNode(suggestionsObj[i].displayName));
+      groupHeader.appendChild(miscElm);
+      for (j = 0; j < suggestionsObj[i].items.length; j++) {
+        item = document.createElement("li");
+        miscElm = document.createElement("a");
+        miscElm.appendChild(document.createTextNode(suggestionsObj[i].items[j].displayName));
+        item.appendChild(miscElm);
+        itemsList.appendChild(item);
+      }
+      groupDiv.appendChild(groupHeader);
+      groupDiv.appendChild(itemsList);
+      this.dropdownContainer.appendChild(groupDiv);
+    }
     console.log(suggestionsObj);
   };
   root.storkTagsInput = storkTagsInput;

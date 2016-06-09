@@ -29,7 +29,9 @@
   position: absolute;
   margin: 0;
   padding: 0;
-  height: 20px;
-  width: 200px;
-  background-color: blue;
+}
+.stork-tags-dropdown-container ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
