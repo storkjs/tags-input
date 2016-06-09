@@ -25,3 +25,11 @@
 .stork-tags > ul > li.search > input:focus {
   outline: 0 none;
 }
+.stork-tags-dropdown-container {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  height: 20px;
+  width: 200px;
+  background-color: blue;
+}

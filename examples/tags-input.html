@@ -15,17 +15,33 @@
 		html, body {
 			height: 100%;
 		}
-		body {
+		body, #parentOne, #parentTwo {
 			margin: 0;
 			display: flex;
-			align-items: center;
 			justify-content: center;
+			align-items: flex-start;
 		}
 
+		#parentOne {
+			height: 95%;
+			padding-top: 70px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		#parentTwo {
+			display: flex;
+			justify-content: center;
+			align-items: flex-start;
+
+			position: relative;
+			height: 95%;
+			padding-top: 50px;
+			border-top: 1px solid #d0d0d0;
+		}
 		#tagsInput {
 			width: 500px;
 			height: 30px;
-			top: -200px;
 		}
 	</style>
 
@@ -34,10 +50,11 @@
 		var suggestions_handler = function suggestions_handler(text, cb) {
 			regex = new RegExp(text, 'gi');
 			var ret = [];
+
 			for(i=0; i < suggestionGroups.length; i++) {
 				for(j=0; j < suggestionGroups[i].items.length; j++) {
 					if(regex.test(suggestionGroups[i].items[j].displayName)) {
-						if(!ret[ret.length-1] || ret[ret.length-1].id !== suggestionGroups[i].items[j].id) {
+						if(!ret[ret.length-1] || ret[ret.length-1].id !== suggestionGroups[i].id) {
 							ret.push({
 								displayName: suggestionGroups[i].displayName,
 								id: suggestionGroups[i].id,
@@ -65,6 +82,10 @@
 	</script>
 </head>
 <body>
-<div id="tagsInput"></div>
+<div id="parentOne">
+	<div id="parentTwo">
+		<div id="tagsInput"></div>
+	</div>
+</div>
 </body>
 </html>

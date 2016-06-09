@@ -260,6 +260,22 @@
 		'' /*255*/
 	];
 
+	var getPosition = function getPosition(elm) {
+		var xPos = 0;
+		var yPos = 0;
+
+		while (elm) {
+			xPos += (elm.offsetLeft);
+			yPos += (elm.offsetTop);
+
+			elm = elm.offsetParent;
+		}
+		return {
+			x: xPos,
+			y: yPos
+		};
+	};
+
 	/**
 	 * construct for the StorkJS Tags Input.
 	 * this initializes all of the variable and then starts the DOM build up process
@@ -273,26 +289,40 @@
 		}
 		this.chosenTags = [];
 
-		this.makeList();
+		this.tagsInput.classList.add('stork-tags', 'stork-tags'+this.rnd);
+
+		this.buildDom();
 
 		this.setEventListeners();
 
-		this.tagsInput.classList.add('stork-tags', 'stork-tags'+this.rnd);
+		this.updateWidths();
 	};
 
-	storkTagsInput.prototype.makeList = function makeList() {
+	storkTagsInput.prototype.buildDom = function buildDom() {
 		var ul = document.createElement('ul');
 		var li = document.createElement('li');
 		var input = document.createElement('input');
 
 		li.classList.add('search');
 
-		this.ul = ul;
-		this.input = input;
-
 		li.appendChild(input);
 		ul.appendChild(li);
 		this.tagsInput.appendChild(ul);
+
+		var dropdownContainer = document.createElement('div');
+		dropdownContainer.classList.add('stork-tags-dropdown-container', 'stork-tags-dropdown-container'+this.rnd);
+		dropdownContainer.style.display = 'none';
+		dropdownContainer.style.width = this.tagsInput.offsetWidth + 'px';
+
+		var xy = getPosition(this.tagsInput);
+		dropdownContainer.style.left = xy.x + 'px';
+		dropdownContainer.style.top = (xy.y + this.tagsInput.offsetHeight) + 'px';
+
+		this.ul = ul;
+		this.input = input;
+		this.dropdownContainer = dropdownContainer;
+
+		document.body.appendChild(dropdownContainer);
 	};
 
 	storkTagsInput.prototype.setEventListeners = function setEventListeners() {
@@ -303,11 +333,22 @@
 		}, false);
 		this.input.addEventListener('keyup', function(e) {
 			if(this.value.length) {
-				self.suggestionsHandler(this.value, function(suggestionsObj) {
-					console.log(suggestionsObj);
-				});
+				self.suggestionsHandler(this.value, self.suggestionsCallback.bind(self));
 			}
 		}, false);
+	};
+
+	storkTagsInput.prototype.updateWidths = function updateWidths() {
+		if(!this.maxWidth) {
+			this.maxWidth = this.tagsInput.clientWidth;
+		}
+
+		this.input.parentNode.style.width = this.maxWidth + 'px';
+	};
+
+	storkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsObj) {
+		this.dropdownContainer.style.display = 'block';
+		console.log(suggestionsObj);
 	};
 
 	root.storkTagsInput = storkTagsInput;
