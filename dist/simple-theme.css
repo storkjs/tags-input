@@ -16,6 +16,10 @@
   font-size: 13px;
   margin: 3px 0 0 3px;
 }
+.stork-tags > ul > li.tag.focused {
+  background-color: #70a0c0;
+  text-shadow: 1px 1px 1px white;
+}
 .stork-tags > ul > li.tag > a.remove {
   background-color: white;
   border-radius: 50%;

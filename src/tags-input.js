@@ -295,6 +295,7 @@ if(!Number.isInteger) {
 		}
 		this.rechooseRemove = options.rechooseRemove || false;
 		this.chosenTags = [];
+		this.focusedTagIndex = null;
 		this.lastSearchString = '';
 
 		this.tagsInput.classList.add('stork-tags', 'stork-tags'+this.rnd);
@@ -350,15 +351,18 @@ if(!Number.isInteger) {
 		// focusing on suggestions items
 		this.dropdownContainer.addEventListener('mousemove', this.onMouseMoveSuggestionsDropdown.bind(this), false);
 
-		// remove tag on mouse click on X button
-		this.ul.addEventListener('click', this.onClickRemoveTag.bind(this), false);
+		// handle clicking on tags (for focus or removal)
+		this.ul.addEventListener('click', this.onClickTag.bind(this), false);
 
 		// focus and blur of tagsInput
 		document.addEventListener('click', this.onClickCheckFocus.bind(this), true);
 
 		// suggestions up and down keyboard navigation
-		this.tagsInput.addEventListener('keydown', this.onSuggestionsUpDown.bind(this), false);
-		this.dropdownContainer.addEventListener('keydown', this.onSuggestionsUpDown.bind(this), false);
+		this.tagsInput.addEventListener('keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
+		this.dropdownContainer.addEventListener('keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
+
+		// navigating the tags
+		this.tagsInput.addEventListener('keydown', this.onTagsKeyboardNavigate.bind(this), false);
 	};
 
 	storkTagsInput.prototype.updateWidths = function updateWidths() {
@@ -395,13 +399,13 @@ if(!Number.isInteger) {
 
 			for(j=0; j < suggestionsArr[i].items.length; j++) {
 				item = document.createElement('li');
-				miscElm = document.createElement('a');
-				miscElm.storkTagsProps = {
+				item.storkTagsProps = {
 					value: suggestionsArr[i].items[j].value,
 					displayName: suggestionsArr[i].items[j].displayName,
 					groupId: suggestionsArr[i].id,
 					groupDisplayName: suggestionsArr[i].displayName
 				};
+				miscElm = document.createElement('a');
 				miscElm.appendChild(document.createTextNode(suggestionsArr[i].items[j].displayName));
 				item.appendChild(miscElm);
 				itemsList.appendChild(item);
@@ -416,17 +420,21 @@ if(!Number.isInteger) {
 	};
 
 	storkTagsInput.prototype.onClickSuggestionsDropdown = function onClickSuggestionsDropdown(e) {
-		var A = e.target,
+		var LI = e.target,
 			i = 0;
 
-		while(A.tagName.toUpperCase() !== 'A') {
+		while(!(LI instanceof HTMLDocument) && LI.tagName.toUpperCase() !== 'LI') {
 			if(i++ >= 2) {
 				return; // user clicked on something that is too far from our A tag
 			}
-			A = A.parentNode;
+			LI = LI.parentNode;
 		}
 
-		this.addTag(A.storkTagsProps);
+		this.addTag(LI.storkTagsProps);
+
+		this.input.value = '';
+		this.input.focus();
+		this.onChangeSearchInput();
 	};
 
 	storkTagsInput.prototype.onMouseMoveSuggestionsDropdown = function onMouseMoveSuggestionsDropdown(e) {
@@ -438,7 +446,7 @@ if(!Number.isInteger) {
 			return;
 		}
 
-		while(LI.tagName.toUpperCase() !== 'LI') {
+		while(!(LI instanceof HTMLDocument) && LI.tagName.toUpperCase() !== 'LI') {
 			if(i++ >= 2) {
 				return; // user clicked on something that is too far from our A tag
 			}
@@ -507,6 +515,13 @@ if(!Number.isInteger) {
 
 	storkTagsInput.prototype.removeTag = function removeTag(index) {
 		if(this.chosenTags[index]) {
+			// unselect a focused tag
+			if(Number.isInteger(this.focusedTagIndex)) {
+				this.chosenTags[this.focusedTagIndex].elm.classList.remove('focused');
+			}
+			this.focusedTagIndex = null;
+
+			// remove tag from tags list
 			this.chosenTags[index].elm.parentNode.removeChild(this.chosenTags[index].elm);
 			this.chosenTags.splice(index, 1);
 			return true; // success
@@ -515,24 +530,52 @@ if(!Number.isInteger) {
 		return false; // fail
 	};
 
-	storkTagsInput.prototype.onClickRemoveTag = function onClickRemoveTag(e) {
-		var A = e.target,
+	storkTagsInput.prototype.onClickTag = function onClickTag(e) {
+		var elm = e.target,
 			i = 0;
 
-		while(A.tagName.toUpperCase() !== 'A' || !A.classList.contains('remove')) {
-			if(i++ >= 2) {
-				return; // user clicked on something that is too far from our 'A.remove' tag
+		do {
+			if(elm.tagName.toUpperCase() === 'A' && elm.classList.contains('remove')) {
+				this.removeTag(elm.parentNode.storkTagsProps.index);
+				return;
 			}
-			A = A.parentNode;
+			else if(elm.tagName.toUpperCase() === 'LI' && elm.classList.contains('tag')) {
+				this.onClickFocusTag(elm);
+				return;
+			}
+
+			elm = elm.parentNode;
+			i++;
+		} while(i <= 3 && !(elm instanceof HTMLDocument));
+	};
+
+	storkTagsInput.prototype.onClickFocusTag = function onClickFocusTag(index) {
+		if(!Number.isInteger(index)) { // we have got an element object instead of its index
+			for(var i=0; i < this.ul.childNodes.length; i++) {
+				if(index === this.ul.childNodes[i]) {
+					index = this.ul.childNodes[i].storkTagsProps.index;
+					break;
+				}
+			}
+
+			if(!Number.isInteger(index)) { // haven't found an index for the element clicked on
+				console.error('Invalid element passed to tags onClick');
+				return;
+			}
 		}
 
-		this.removeTag(A.parentNode.storkTagsProps.index);
+		if(Number.isInteger(this.focusedTagIndex)) {
+			this.chosenTags[this.focusedTagIndex].elm.classList.remove('focused');
+		}
+
+		this.chosenTags[index].elm.classList.add('focused');
+		this.focusedTagIndex = index;
 	};
 
 	storkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
 		var target = e.target;
 
-		while(target !== this.tagsInput && target !== this.dropdownContainer) {
+		while(!(target instanceof HTMLDocument) && target !== this.tagsInput && target !== this.dropdownContainer) {
 			target = target.parentNode;
 
 			if(!target) { // user clicked outside of the component
@@ -554,12 +597,12 @@ if(!Number.isInteger) {
 		this.lastSearchString = this.input.value;
 	};
 
-	storkTagsInput.prototype.onSuggestionsUpDown = function onSuggestionsUpDown(e) {
+	storkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
 		var key = keyboardMap[e.keyCode];
 		var hoveredIndex;
 		var allLIs;
 
-		if(key === 'DOWN' || key === 'UP') {
+		if(key === 'DOWN' || key === 'UP' || key === 'ENTER') {
 			e.preventDefault(); // stops document scrolling
 
 			hoveredIndex = this.dropdownContainer.storkTagsProps.hoveredLIIndex;
@@ -567,7 +610,7 @@ if(!Number.isInteger) {
 
 			if(key === 'DOWN') {
 				// first time selection on this list or trying to select over the end of the list
-				if(!Number.isInteger(hoveredIndex) || hoveredIndex >= allLIs.length - 1) {
+				if(!Number.isInteger(hoveredIndex) || hoveredIndex === allLIs.length - 1) {
 					this.onMouseMoveSuggestionsDropdown({ target: allLIs[0] });
 				}
 				else {
@@ -576,11 +619,39 @@ if(!Number.isInteger) {
 			}
 			else if(key === 'UP') {
 				// first time selection on this list or trying to select over the beginning of the list
-				if(!Number.isInteger(hoveredIndex) || hoveredIndex <= 0) {
+				if(!Number.isInteger(hoveredIndex) || hoveredIndex === 0) {
 					this.onMouseMoveSuggestionsDropdown({ target: allLIs[allLIs.length - 1] });
 				}
 				else {
 					this.onMouseMoveSuggestionsDropdown({ target: allLIs[hoveredIndex - 1] });
+				}
+			}
+			else if(key === 'ENTER' && Number.isInteger(hoveredIndex)) {
+				this.onClickSuggestionsDropdown({ target: allLIs[hoveredIndex] });
+			}
+		}
+	};
+
+	storkTagsInput.prototype.onTagsKeyboardNavigate = function onTagsKeyboardNavigate(e) {
+		var key = keyboardMap[e.keyCode];
+
+		if(key === 'LEFT' || key === 'RIGHT') {
+			e.preventDefault(); // stops document scrolling
+
+			if(key === 'LEFT') {
+				if(!Number.isInteger(this.focusedTagIndex) || this.focusedTagIndex === 0) {
+					this.onClickFocusTag(this.chosenTags.length - 1);
+				}
+				else {
+					this.onClickFocusTag(this.focusedTagIndex - 1);
+				}
+			}
+			else if(key === 'RIGHT') {
+				if(!Number.isInteger(this.focusedTagIndex) || this.focusedTagIndex === this.chosenTags.length - 1) {
+					this.onClickFocusTag(0);
+				}
+				else {
+					this.onClickFocusTag(this.focusedTagIndex + 1);
 				}
 			}
 		}

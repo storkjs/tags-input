@@ -51,7 +51,8 @@
 			text = text.trim();
 
 			if(!text.length) {
-				return [];
+				cb([]);
+				return;
 			}
 
 			regex = new RegExp(text, 'gi');
