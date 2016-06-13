@@ -1,3 +1,9 @@
+if(!Number.isInteger) {
+	Number.isInteger = function isInteger(value) { // polyfill for IE
+		return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
+	};
+}
+
 (function(root) {
 	"use strict";
 
@@ -289,8 +295,10 @@
 		}
 		this.rechooseRemove = options.rechooseRemove || false;
 		this.chosenTags = [];
+		this.lastSearchString = '';
 
 		this.tagsInput.classList.add('stork-tags', 'stork-tags'+this.rnd);
+		this.tagsInput.setAttribute('tabindex', 0);
 
 		this.buildDom();
 
@@ -312,7 +320,7 @@
 
 		var dropdownContainer = document.createElement('div');
 		dropdownContainer.classList.add('stork-tags-dropdown-container', 'stork-tags-dropdown-container'+this.rnd);
-		dropdownContainer.style.display = 'none';
+		dropdownContainer.setAttribute('tabindex', 0);
 		dropdownContainer.style.width = this.tagsInput.offsetWidth + 'px';
 
 		var xy = getPosition(this.tagsInput);
@@ -322,6 +330,10 @@
 		this.ul = ul;
 		this.input = input;
 		this.dropdownContainer = dropdownContainer;
+		this.dropdownContainer.storkTagsProps = {
+			allLIs: this.dropdownContainer.getElementsByTagName('li'),/*now hold a live HTMLCollection*/
+			hoveredLIIndex: null
+		};
 
 		document.body.appendChild(dropdownContainer);
 	};
@@ -330,14 +342,23 @@
 		var self = this;
 
 		// typing in search input
-		this.input.addEventListener('keyup', function(e) {
-			if(this.value.length) {
-				self.suggestionsHandler(this.value, self.suggestionsCallback.bind(self));
-			}
-		}, false);
+		this.input.addEventListener('keyup', this.onChangeSearchInput.bind(this), false);
 
 		// choosing from suggestions dropdown list
 		this.dropdownContainer.addEventListener('click', this.onClickSuggestionsDropdown.bind(this), false);
+
+		// focusing on suggestions items
+		this.dropdownContainer.addEventListener('mousemove', this.onMouseMoveSuggestionsDropdown.bind(this), false);
+
+		// remove tag on mouse click on X button
+		this.ul.addEventListener('click', this.onClickRemoveTag.bind(this), false);
+
+		// focus and blur of tagsInput
+		document.addEventListener('click', this.onClickCheckFocus.bind(this), true);
+
+		// suggestions up and down keyboard navigation
+		this.tagsInput.addEventListener('keydown', this.onSuggestionsUpDown.bind(this), false);
+		this.dropdownContainer.addEventListener('keydown', this.onSuggestionsUpDown.bind(this), false);
 	};
 
 	storkTagsInput.prototype.updateWidths = function updateWidths() {
@@ -348,13 +369,13 @@
 		this.input.parentNode.style.width = this.maxWidth + 'px';
 	};
 
-	storkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsObj) {
-		if(suggestionsObj.length === 0) {
-			this.dropdownContainer.style.display = 'none';
+	storkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
+		if(suggestionsArr.length === 0) {
+			this.dropdownContainer.classList.remove('has-results');
 			return;
 		}
 
-		this.dropdownContainer.style.display = 'block';
+		this.dropdownContainer.classList.add('has-results');
 
 		// empty the dropdown's previous content
 		while(this.dropdownContainer.firstChild) {
@@ -363,25 +384,25 @@
 
 		var i, j, groupDiv, groupHeader, itemsList, item, miscElm;
 
-		for(i=0; i < suggestionsObj.length; i++) {
+		for(i=0; i < suggestionsArr.length; i++) {
 			groupDiv = document.createElement('div');
 			groupHeader = document.createElement('div');
 			miscElm = document.createElement('span');
 			itemsList = document.createElement('ul');
 
-			miscElm.appendChild(document.createTextNode(suggestionsObj[i].displayName));
+			miscElm.appendChild(document.createTextNode(suggestionsArr[i].displayName));
 			groupHeader.appendChild(miscElm);
 
-			for(j=0; j < suggestionsObj[i].items.length; j++) {
+			for(j=0; j < suggestionsArr[i].items.length; j++) {
 				item = document.createElement('li');
 				miscElm = document.createElement('a');
 				miscElm.storkTagsProps = {
-					value: suggestionsObj[i].items[j].value,
-					displayName: suggestionsObj[i].items[j].displayName,
-					groupId: suggestionsObj[i].id,
-					groupDisplayName: suggestionsObj[i].displayName
+					value: suggestionsArr[i].items[j].value,
+					displayName: suggestionsArr[i].items[j].displayName,
+					groupId: suggestionsArr[i].id,
+					groupDisplayName: suggestionsArr[i].displayName
 				};
-				miscElm.appendChild(document.createTextNode(suggestionsObj[i].items[j].displayName));
+				miscElm.appendChild(document.createTextNode(suggestionsArr[i].items[j].displayName));
 				item.appendChild(miscElm);
 				itemsList.appendChild(item);
 			}
@@ -390,6 +411,8 @@
 			groupDiv.appendChild(itemsList);
 			this.dropdownContainer.appendChild(groupDiv);
 		}
+
+		this.dropdownContainer.storkTagsProps.hoveredLIIndex = null; // allLIs was just re-built so let's forget the previously hovered item
 	};
 
 	storkTagsInput.prototype.onClickSuggestionsDropdown = function onClickSuggestionsDropdown(e) {
@@ -404,6 +427,42 @@
 		}
 
 		this.addTag(A.storkTagsProps);
+	};
+
+	storkTagsInput.prototype.onMouseMoveSuggestionsDropdown = function onMouseMoveSuggestionsDropdown(e) {
+		var LI = e.target,
+			i = 0;
+
+		if(!LI || !LI.tagName) {
+			console.error('event\'s target is not an HTMLElement');
+			return;
+		}
+
+		while(LI.tagName.toUpperCase() !== 'LI') {
+			if(i++ >= 2) {
+				return; // user clicked on something that is too far from our A tag
+			}
+			LI = LI.parentNode;
+		}
+
+		var index = this.dropdownContainer.storkTagsProps.hoveredLIIndex;
+
+		if(Number.isInteger(index)) {
+			var prevHoveredLI = this.dropdownContainer.storkTagsProps.allLIs[index];
+			if(prevHoveredLI === LI) {
+				return;
+			}
+
+			prevHoveredLI.classList.remove('hover');
+		}
+
+		for(i=0; i < this.dropdownContainer.storkTagsProps.allLIs.length; i++) {
+			if(LI === this.dropdownContainer.storkTagsProps.allLIs[i]) {
+				LI.classList.add('hover');
+				this.dropdownContainer.storkTagsProps.hoveredLIIndex = i;
+				break;
+			}
+		}
 	};
 
 	storkTagsInput.prototype.addTag = function addTag(tagObj) {
@@ -454,6 +513,77 @@
 		}
 
 		return false; // fail
+	};
+
+	storkTagsInput.prototype.onClickRemoveTag = function onClickRemoveTag(e) {
+		var A = e.target,
+			i = 0;
+
+		while(A.tagName.toUpperCase() !== 'A' || !A.classList.contains('remove')) {
+			if(i++ >= 2) {
+				return; // user clicked on something that is too far from our 'A.remove' tag
+			}
+			A = A.parentNode;
+		}
+
+		this.removeTag(A.parentNode.storkTagsProps.index);
+	};
+
+	storkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
+		var target = e.target;
+
+		while(target !== this.tagsInput && target !== this.dropdownContainer) {
+			target = target.parentNode;
+
+			if(!target) { // user clicked outside of the component
+				this.tagsInput.classList.remove('focused');
+				this.dropdownContainer.classList.remove('focused');
+				return;
+			}
+		}
+
+		this.tagsInput.classList.add('focused');
+		this.dropdownContainer.classList.add('focused');
+	};
+
+	storkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
+		if(this.input.value !== this.lastSearchString) {
+			this.suggestionsHandler(this.input.value, this.suggestionsCallback.bind(this));
+		}
+
+		this.lastSearchString = this.input.value;
+	};
+
+	storkTagsInput.prototype.onSuggestionsUpDown = function onSuggestionsUpDown(e) {
+		var key = keyboardMap[e.keyCode];
+		var hoveredIndex;
+		var allLIs;
+
+		if(key === 'DOWN' || key === 'UP') {
+			e.preventDefault(); // stops document scrolling
+
+			hoveredIndex = this.dropdownContainer.storkTagsProps.hoveredLIIndex;
+			allLIs = this.dropdownContainer.storkTagsProps.allLIs;
+
+			if(key === 'DOWN') {
+				// first time selection on this list or trying to select over the end of the list
+				if(!Number.isInteger(hoveredIndex) || hoveredIndex >= allLIs.length - 1) {
+					this.onMouseMoveSuggestionsDropdown({ target: allLIs[0] });
+				}
+				else {
+					this.onMouseMoveSuggestionsDropdown({ target: allLIs[hoveredIndex + 1] });
+				}
+			}
+			else if(key === 'UP') {
+				// first time selection on this list or trying to select over the beginning of the list
+				if(!Number.isInteger(hoveredIndex) || hoveredIndex <= 0) {
+					this.onMouseMoveSuggestionsDropdown({ target: allLIs[allLIs.length - 1] });
+				}
+				else {
+					this.onMouseMoveSuggestionsDropdown({ target: allLIs[hoveredIndex - 1] });
+				}
+			}
+		}
 	};
 
 	root.storkTagsInput = storkTagsInput;

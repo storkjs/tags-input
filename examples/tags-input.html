@@ -48,6 +48,12 @@
 	<script>
 		var httpRequest, i, j, regex;
 		var suggestions_handler = function suggestions_handler(text, cb) {
+			text = text.trim();
+
+			if(!text.length) {
+				return [];
+			}
+
 			regex = new RegExp(text, 'gi');
 			var ret = [];
 

@@ -78,7 +78,7 @@
   align-items: center;
   /*vertical*/
 }
-.stork-tags-dropdown-container > div > ul li a:hover {
+.stork-tags-dropdown-container > div > ul li.hover > a {
   background-color: #444444;
   color: white;
 }

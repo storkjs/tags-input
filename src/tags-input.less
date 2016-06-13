@@ -3,6 +3,10 @@
 	position: relative;
 	overflow: hidden;
 
+	&:focus {
+		outline: 0;
+	}
+
 	> ul {
 		margin: 0;
 		padding: 0;
@@ -45,6 +49,15 @@
 	position: absolute;
 	margin: 0;
 	padding: 0;
+	display: none;
+
+	&:focus {
+		outline: 0;
+	}
+
+	&.focused.has-results {
+		display: block;
+	}
 
 	ul {
 		margin: 0;
