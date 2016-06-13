@@ -14,6 +14,10 @@
   align-items: flex-start;
   /*vertical*/
 }
+.stork-tags > ul > li {
+  display: flex;
+  white-space: nowrap;
+}
 .stork-tags > ul > li.search {
   height: 100%;
 }
@@ -24,6 +28,13 @@
 }
 .stork-tags > ul > li.search > input:focus {
   outline: 0 none;
+}
+.stork-tags > ul > li.tag > a.remove {
+  display: flex;
+  justify-content: center;
+  /*horizontal*/
+  align-items: center;
+  /*vertical*/
 }
 .stork-tags-dropdown-container {
   position: absolute;

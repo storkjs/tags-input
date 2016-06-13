@@ -14,6 +14,8 @@
 		align-items: flex-start; /*vertical*/
 
 		> li {
+			display: flex;
+			white-space: nowrap;
 
 			&.search {
 				height: 100%;
@@ -26,6 +28,14 @@
 					&:focus {
 						outline: 0 none;
 					}
+				}
+			}
+
+			&.tag {
+				> a.remove {
+					display: flex;
+					justify-content: center; /*horizontal*/
+					align-items: center; /*vertical*/
 				}
 			}
 		}
