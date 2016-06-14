@@ -299,6 +299,10 @@ if(!Number.isInteger) {
 		this.chosenTags = [];
 		this.focusedTagIndex = null;
 		this.lastSearchString = '';
+		this.tagDeleteThrottle = {
+			allowed: true, // a throttle to prevent accidentally deleting tags when deleting text from the search input
+			TO: undefined // timeout
+		};
 
 		this.tagsInput.classList.add('stork-tags', 'stork-tags'+this.rnd);
 		this.tagsInput.setAttribute('tabindex', 0);
@@ -524,11 +528,7 @@ if(!Number.isInteger) {
 
 	storkTagsInput.prototype.removeTag = function removeTag(index) {
 		if(this.chosenTags[index]) {
-			// unselect a focused tag
-			if(Number.isInteger(this.focusedTagIndex)) {
-				this.chosenTags[this.focusedTagIndex].elm.classList.remove('focused');
-			}
-			this.focusedTagIndex = null;
+			this.unfocusTags(); // unselect a focused tag
 
 			// remove tag from tags list
 			this.chosenTags[index].elm.parentNode.removeChild(this.chosenTags[index].elm);
@@ -546,6 +546,7 @@ if(!Number.isInteger) {
 		do {
 			if(elm.tagName.toUpperCase() === 'A' && elm.classList.contains('remove')) {
 				this.removeTag(elm.parentNode.storkTagsProps.index);
+				this.focusSearchInput(0);
 				return;
 			}
 			else if(elm.tagName.toUpperCase() === 'LI' && elm.classList.contains('tag')) {
@@ -655,11 +656,8 @@ if(!Number.isInteger) {
 					this.onClickFocusTag(this.chosenTags.length - 1);
 				}
 			}
-			else {
-				if(this.focusedTagIndex > 0) {
-					this.onClickFocusTag(this.focusedTagIndex - 1);
-				}
-
+			else if(this.focusedTagIndex > 0) {
+				this.onClickFocusTag(this.focusedTagIndex - 1);
 				e.preventDefault(); // stops document scrolling
 			}
 		}
@@ -667,11 +665,7 @@ if(!Number.isInteger) {
 			if(this.input !== document.activeElement) {
 				if(this.focusedTagIndex === this.chosenTags.length - 1) {
 					this.unfocusTags();
-					this.input.focus();
-					var INP = this.input;
-					setTimeout(function() { // fixes a bug where inputs caret doesn't move and/or text doesn't really get selected
-						INP.setSelectionRange(0, 0);
-					}, 1);
+					this.focusSearchInput(0);
 				}
 				else if(!Number.isInteger(this.focusedTagIndex)) {
 					this.onClickFocusTag(0);
@@ -679,6 +673,28 @@ if(!Number.isInteger) {
 				else {
 					this.onClickFocusTag(this.focusedTagIndex + 1);
 				}
+
+				e.preventDefault(); // stops document scrolling
+			}
+		}
+		else if(key === 'BACKSPACE' || key === 'DELETE') {
+			if(this.input === document.activeElement) {
+				if(this.tagDeleteThrottle.allowed && this.input.value === '') {
+					this.removeTag(this.chosenTags.length - 1);
+				}
+
+				// for any delete we will throttle the option to delete a tag so user won't accidentally delete all tags when holding down DELETE key.
+				// if user quickly taps the DELETE key then don't always reset the timeout when input is empty.
+				if(this.input.value !== '' || this.tagDeleteThrottle.allowed) {
+					this.tagDeleteThrottle.allowed = false; // disallow keyboard deleting
+					clearTimeout(this.tagDeleteThrottle.TO);
+					this.tagDeleteThrottle.TO = setTimeout((function() { this.tagDeleteThrottle.allowed = true; }).bind(this), 400);
+				}
+			}
+			else if(Number.isInteger(this.focusedTagIndex)) {
+				this.removeTag(this.focusedTagIndex);
+				this.focusSearchInput(0);
+				e.preventDefault(); // stops document scrolling
 			}
 		}
 	};
@@ -711,6 +727,17 @@ if(!Number.isInteger) {
 		}
 
 		this.focusedTagIndex = null;
+	};
+
+	storkTagsInput.prototype.focusSearchInput = function focusSearchInput(caretPosition) {
+		if(!Number.isInteger(caretPosition)) {
+			caretPosition = 0;
+		}
+		this.input.focus();
+		var INP = this.input;
+		setTimeout(function() { // fixes a bug where inputs caret doesn't move and/or text doesn't really get selected
+			INP.setSelectionRange(caretPosition, caretPosition);
+		}, 1);
 	};
 
 	root.storkTagsInput = storkTagsInput;
