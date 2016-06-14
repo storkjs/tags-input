@@ -20,6 +20,13 @@ if (!Number.isInteger) {
       y: yPos
     };
   };
+  var getElementIndex = function getElementIndex(elm) {
+    for (var i = 0; i < elm.parentNode.childNodes.length; i++) {
+      if (elm === elm.parentNode.childNodes[i]) {
+        return i;
+      }
+    }
+  };
   var storkTagsInput = function storkTagsInput(options) {
     this.tagsInput = options.element;
     this.suggestionsHandler = options.suggestionsHandler;
@@ -187,9 +194,6 @@ if (!Number.isInteger) {
       groupDisplayName: tagObj.groupDisplayName,
       elm: li
     });
-    li.storkTagsProps = {
-      index: this.chosenTags.length - 1
-    };
     li.appendChild(xA);
     li.appendChild(textSpan);
     this.ul.insertBefore(li, this.input.parentNode);
@@ -197,7 +201,7 @@ if (!Number.isInteger) {
   storkTagsInput.prototype.removeTag = function removeTag(index) {
     if (this.chosenTags[index]) {
       this.unfocusTags();
-      this.chosenTags[index].elm.parentNode.removeChild(this.chosenTags[index].elm);
+      this.ul.removeChild(this.chosenTags[index].elm);
       this.chosenTags.splice(index, 1);
       return true;
     }
@@ -207,7 +211,8 @@ if (!Number.isInteger) {
     var elm = e.target, i = 0;
     do {
       if (elm.tagName.toUpperCase() === "A" && elm.classList.contains("remove")) {
-        this.removeTag(elm.parentNode.storkTagsProps.index);
+        var elmIndex = getElementIndex(elm);
+        this.removeTag(elmIndex);
         this.focusSearchInput(0);
         return;
       } else if (elm.tagName.toUpperCase() === "LI" && elm.classList.contains("tag")) {
@@ -220,16 +225,7 @@ if (!Number.isInteger) {
   };
   storkTagsInput.prototype.onClickFocusTag = function onClickFocusTag(index) {
     if (!Number.isInteger(index)) {
-      for (var i = 0; i < this.ul.childNodes.length; i++) {
-        if (index === this.ul.childNodes[i]) {
-          index = this.ul.childNodes[i].storkTagsProps.index;
-          break;
-        }
-      }
-      if (!Number.isInteger(index)) {
-        console.error("Invalid element passed to tags onClick");
-        return;
-      }
+      index = getElementIndex(index);
     }
     if (Number.isInteger(this.focusedTagIndex)) {
       this.chosenTags[this.focusedTagIndex].elm.classList.remove("focused");
@@ -369,7 +365,7 @@ if (!Number.isInteger) {
     var INP = this.input;
     setTimeout(function() {
       INP.setSelectionRange(caretPosition, caretPosition);
-    }, 1);
+    }, 0);
   };
   root.storkTagsInput = storkTagsInput;
 })(this);

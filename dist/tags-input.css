@@ -16,6 +16,7 @@
   /*horizontal*/
   align-items: flex-start;
   /*vertical*/
+  counter-reset: tags;
 }
 .stork-tags > ul > li {
   display: flex;

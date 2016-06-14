@@ -50,28 +50,25 @@
 		var suggestions_handler = function suggestions_handler(text, cb) {
 			text = text.trim();
 
-			if(!text.length) {
-				cb([]);
-				return;
-			}
-
 			regex = new RegExp(text, 'gi');
 			var ret = [];
 
-			for(i=0; i < suggestionGroups.length; i++) {
-				for(j=0; j < suggestionGroups[i].items.length; j++) {
-					if(regex.test(suggestionGroups[i].items[j].displayName)) {
-						if(!ret[ret.length-1] || ret[ret.length-1].id !== suggestionGroups[i].id) {
-							ret.push({
-								displayName: suggestionGroups[i].displayName,
-								id: suggestionGroups[i].id,
-								items: []
+			if(text.length > 0) { // perform search only on text
+				for(i=0; i < suggestionGroups.length; i++) {
+					for(j=0; j < suggestionGroups[i].items.length; j++) {
+						if(regex.test(suggestionGroups[i].items[j].displayName)) {
+							if(!ret[ret.length-1] || ret[ret.length-1].id !== suggestionGroups[i].id) {
+								ret.push({
+									displayName: suggestionGroups[i].displayName,
+									id: suggestionGroups[i].id,
+									items: []
+								});
+							}
+							ret[ret.length-1].items.push({
+								displayName: suggestionGroups[i].items[j].displayName,
+								value: suggestionGroups[i].items[j].value
 							});
 						}
-						ret[ret.length-1].items.push({
-							displayName: suggestionGroups[i].items[j].displayName,
-							value: suggestionGroups[i].items[j].value
-						});
 					}
 				}
 			}

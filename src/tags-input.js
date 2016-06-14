@@ -266,6 +266,11 @@ if(!Number.isInteger) {
 		'' /*255*/
 	];
 
+	/**
+	 * get the X and Y position of an HTMLElement
+	 * @param elm
+	 * @returns {{x: number, y: number}}
+	 */
 	var getPosition = function getPosition(elm) {
 		var xPos = 0;
 		var yPos = 0;
@@ -280,6 +285,19 @@ if(!Number.isInteger) {
 			x: xPos,
 			y: yPos
 		};
+	};
+
+	/**
+	 * get the element's position relative to its siblings
+	 * @param elm
+	 * @returns {number}
+	 */
+	var getElementIndex = function getElementIndex(elm) {
+		for(var i=0; i < elm.parentNode.childNodes.length; i++) {
+			if(elm === elm.parentNode.childNodes[i]) {
+				return i;
+			}
+		}
 	};
 
 	/**
@@ -517,10 +535,6 @@ if(!Number.isInteger) {
 			elm: li
 		});
 
-		li.storkTagsProps = {
-			index: this.chosenTags.length - 1
-		};
-
 		li.appendChild(xA);
 		li.appendChild(textSpan);
 		this.ul.insertBefore(li, this.input.parentNode);
@@ -531,7 +545,7 @@ if(!Number.isInteger) {
 			this.unfocusTags(); // unselect a focused tag
 
 			// remove tag from tags list
-			this.chosenTags[index].elm.parentNode.removeChild(this.chosenTags[index].elm);
+			this.ul.removeChild(this.chosenTags[index].elm);
 			this.chosenTags.splice(index, 1);
 			return true; // success
 		}
@@ -545,7 +559,8 @@ if(!Number.isInteger) {
 
 		do {
 			if(elm.tagName.toUpperCase() === 'A' && elm.classList.contains('remove')) {
-				this.removeTag(elm.parentNode.storkTagsProps.index);
+				var elmIndex = getElementIndex(elm);
+				this.removeTag(elmIndex);
 				this.focusSearchInput(0);
 				return;
 			}
@@ -561,17 +576,7 @@ if(!Number.isInteger) {
 
 	storkTagsInput.prototype.onClickFocusTag = function onClickFocusTag(index) {
 		if(!Number.isInteger(index)) { // we have got an element object instead of its index
-			for(var i=0; i < this.ul.childNodes.length; i++) {
-				if(index === this.ul.childNodes[i]) {
-					index = this.ul.childNodes[i].storkTagsProps.index;
-					break;
-				}
-			}
-
-			if(!Number.isInteger(index)) { // haven't found an index for the element clicked on
-				console.error('Invalid element passed to tags onClick');
-				return;
-			}
+			index = getElementIndex(index);
 		}
 
 		if(Number.isInteger(this.focusedTagIndex)) {
@@ -737,7 +742,7 @@ if(!Number.isInteger) {
 		var INP = this.input;
 		setTimeout(function() { // fixes a bug where inputs caret doesn't move and/or text doesn't really get selected
 			INP.setSelectionRange(caretPosition, caretPosition);
-		}, 1);
+		}, 0);
 	};
 
 	root.storkTagsInput = storkTagsInput;
