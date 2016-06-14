@@ -678,5 +678,20 @@ if(!Number.isInteger) {
 		this.dropdownContainer.storkTagsProps.hoveredLIIndex = null;
 	};
 
+	storkTagsInput.prototype.unfocusTags = function unfocusTags() {
+		if(Number.isInteger(this.focusedTagIndex)) {
+			this.chosenTags[this.focusedTagIndex].elm.classList.remove('focused');
+		}
+		else { // brute force
+			for(var i=0; i < this.chosenTags.length; i++) {
+				if(this.chosenTags[i].elm.classList.contains('focused')) {
+					this.chosenTags[i].elm.classList.remove('focused');
+				}
+			}
+		}
+
+		this.focusedTagIndex = null;
+	};
+
 	root.storkTagsInput = storkTagsInput;
 })(this); // main scope we run at (should be 'window')
