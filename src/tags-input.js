@@ -347,6 +347,9 @@ if(!Number.isInteger) {
 		// typing in search input
 		this.input.addEventListener('keyup', this.onChangeSearchInput.bind(this), false);
 
+		// focusing on the search input
+		this.input.addEventListener('focus', this.onFocusSearchInput.bind(this), false);
+
 		// choosing from suggestions dropdown list
 		this.dropdownContainer.addEventListener('click', this.onClickSuggestionsDropdown.bind(this), false);
 
@@ -576,6 +579,7 @@ if(!Number.isInteger) {
 
 		this.chosenTags[index].elm.classList.add('focused');
 		this.focusedTagIndex = index;
+		this.tagsInput.focus(); // blurs the search input, but keeps focus on the component
 	};
 
 	storkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
@@ -601,6 +605,10 @@ if(!Number.isInteger) {
 		}
 
 		this.lastSearchString = this.input.value;
+	};
+
+	storkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
+		this.unfocusTags();
 	};
 
 	storkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
@@ -641,19 +649,31 @@ if(!Number.isInteger) {
 	storkTagsInput.prototype.onTagsKeyboardNavigate = function onTagsKeyboardNavigate(e) {
 		var key = keyboardMap[e.keyCode];
 
-		if(key === 'LEFT' || key === 'RIGHT') {
-			e.preventDefault(); // stops document scrolling
-
-			if(key === 'LEFT') {
-				if(!Number.isInteger(this.focusedTagIndex) || this.focusedTagIndex === 0) {
+		if(key === 'LEFT') {
+			if(this.input === document.activeElement) {
+				if(!Number.isInteger(this.focusedTagIndex) && this.input.selectionStart === 0) {
 					this.onClickFocusTag(this.chosenTags.length - 1);
 				}
-				else {
+			}
+			else {
+				if(this.focusedTagIndex > 0) {
 					this.onClickFocusTag(this.focusedTagIndex - 1);
 				}
+
+				e.preventDefault(); // stops document scrolling
 			}
-			else if(key === 'RIGHT') {
-				if(!Number.isInteger(this.focusedTagIndex) || this.focusedTagIndex === this.chosenTags.length - 1) {
+		}
+		else if(key === 'RIGHT') {
+			if(this.input !== document.activeElement) {
+				if(this.focusedTagIndex === this.chosenTags.length - 1) {
+					this.unfocusTags();
+					this.input.focus();
+					var INP = this.input;
+					setTimeout(function() { // fixes a bug where inputs caret doesn't move and/or text doesn't really get selected
+						INP.setSelectionRange(0, 0);
+					}, 1);
+				}
+				else if(!Number.isInteger(this.focusedTagIndex)) {
 					this.onClickFocusTag(0);
 				}
 				else {
