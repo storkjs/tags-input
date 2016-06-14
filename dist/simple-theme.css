@@ -82,7 +82,7 @@
   align-items: center;
   /*vertical*/
 }
-.stork-tags-dropdown-container > div > ul li.hover > a {
+.stork-tags-dropdown-container > div > ul li.focused > a {
   background-color: #444444;
   color: white;
 }

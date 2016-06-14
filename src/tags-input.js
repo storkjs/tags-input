@@ -294,6 +294,8 @@ if(!Number.isInteger) {
 			this.rnd = (Math.floor(Math.random() * 9) + 1) * 1000 + Date.now() % 1000; // random identifier for this grid
 		}
 		this.rechooseRemove = options.rechooseRemove || false;
+		// how to format the display text of the chosen tags. @@@ is group's name and ### is item's name
+		this.chosenTagsFormat = options.chosenTagsFormat || '@@@ : ###';
 		this.chosenTags = [];
 		this.focusedTagIndex = null;
 		this.lastSearchString = '';
@@ -379,8 +381,6 @@ if(!Number.isInteger) {
 			return;
 		}
 
-		this.dropdownContainer.classList.add('has-results');
-
 		// empty the dropdown's previous content
 		while(this.dropdownContainer.firstChild) {
 			this.dropdownContainer.removeChild(this.dropdownContainer.firstChild);
@@ -417,6 +417,8 @@ if(!Number.isInteger) {
 		}
 
 		this.dropdownContainer.storkTagsProps.hoveredLIIndex = null; // allLIs was just re-built so let's forget the previously hovered item
+
+		this.dropdownContainer.classList.add('has-results'); // open the dropdown
 	};
 
 	storkTagsInput.prototype.onClickSuggestionsDropdown = function onClickSuggestionsDropdown(e) {
@@ -457,16 +459,16 @@ if(!Number.isInteger) {
 
 		if(Number.isInteger(index)) {
 			var prevHoveredLI = this.dropdownContainer.storkTagsProps.allLIs[index];
-			if(prevHoveredLI === LI) {
+			if(prevHoveredLI === LI) { // haven't moved the mouse from one LI to another
 				return;
 			}
 
-			prevHoveredLI.classList.remove('hover');
+			prevHoveredLI.classList.remove('focused');
 		}
 
 		for(i=0; i < this.dropdownContainer.storkTagsProps.allLIs.length; i++) {
 			if(LI === this.dropdownContainer.storkTagsProps.allLIs[i]) {
-				LI.classList.add('hover');
+				LI.classList.add('focused');
 				this.dropdownContainer.storkTagsProps.hoveredLIIndex = i;
 				break;
 			}
@@ -490,8 +492,12 @@ if(!Number.isInteger) {
 		var xA = document.createElement('a');
 		var textSpan = document.createElement('span');
 
+		var displayText = this.chosenTagsFormat;
+		displayText = displayText.replace(/@@@/g, tagObj.groupDisplayName);
+		displayText = displayText.replace(/###/g, tagObj.displayName);
+
 		xA.appendChild(document.createTextNode('×'));
-		textSpan.appendChild(document.createTextNode(tagObj.groupDisplayName + ' : ' + tagObj.displayName));
+		textSpan.appendChild(document.createTextNode(displayText));
 
 		li.classList.add('tag');
 		xA.classList.add('remove');
@@ -655,6 +661,21 @@ if(!Number.isInteger) {
 				}
 			}
 		}
+	};
+
+	storkTagsInput.prototype.unfocusSuggestions = function unfocusSuggestions() {
+		if(Number.isInteger(this.dropdownContainer.storkTagsProps.hoveredLIIndex)) {
+			this.dropdownContainer.storkTagsProps.allLIs[ this.dropdownContainer.storkTagsProps.hoveredLIIndex ].classList.remove('focused');
+		}
+		else { // brute force
+			for(var i=0; i < this.dropdownContainer.storkTagsProps.allLIs.length; i++) {
+				if(this.dropdownContainer.storkTagsProps.allLIs[i].classList.contains('focused')) {
+					this.dropdownContainer.storkTagsProps.allLIs[i].classList.remove('focused');
+				}
+			}
+		}
+
+		this.dropdownContainer.storkTagsProps.hoveredLIIndex = null;
 	};
 
 	root.storkTagsInput = storkTagsInput;

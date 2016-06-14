@@ -27,6 +27,7 @@ if (!Number.isInteger) {
       this.rnd = (Math.floor(Math.random() * 9) + 1) * 1e3 + Date.now() % 1e3;
     }
     this.rechooseRemove = options.rechooseRemove || false;
+    this.chosenTagsFormat = options.chosenTagsFormat || "@@@ : ###";
     this.chosenTags = [];
     this.focusedTagIndex = null;
     this.lastSearchString = "";
@@ -82,7 +83,6 @@ if (!Number.isInteger) {
       this.dropdownContainer.classList.remove("has-results");
       return;
     }
-    this.dropdownContainer.classList.add("has-results");
     while (this.dropdownContainer.firstChild) {
       this.dropdownContainer.removeChild(this.dropdownContainer.firstChild);
     }
@@ -112,6 +112,7 @@ if (!Number.isInteger) {
       this.dropdownContainer.appendChild(groupDiv);
     }
     this.dropdownContainer.storkTagsProps.hoveredLIIndex = null;
+    this.dropdownContainer.classList.add("has-results");
   };
   storkTagsInput.prototype.onClickSuggestionsDropdown = function onClickSuggestionsDropdown(e) {
     var LI = e.target, i = 0;
@@ -144,11 +145,11 @@ if (!Number.isInteger) {
       if (prevHoveredLI === LI) {
         return;
       }
-      prevHoveredLI.classList.remove("hover");
+      prevHoveredLI.classList.remove("focused");
     }
     for (i = 0; i < this.dropdownContainer.storkTagsProps.allLIs.length; i++) {
       if (LI === this.dropdownContainer.storkTagsProps.allLIs[i]) {
-        LI.classList.add("hover");
+        LI.classList.add("focused");
         this.dropdownContainer.storkTagsProps.hoveredLIIndex = i;
         break;
       }
@@ -167,8 +168,11 @@ if (!Number.isInteger) {
     var li = document.createElement("li");
     var xA = document.createElement("a");
     var textSpan = document.createElement("span");
+    var displayText = this.chosenTagsFormat;
+    displayText = displayText.replace(/@@@/g, tagObj.groupDisplayName);
+    displayText = displayText.replace(/###/g, tagObj.displayName);
     xA.appendChild(document.createTextNode("×"));
-    textSpan.appendChild(document.createTextNode(tagObj.groupDisplayName + " : " + tagObj.displayName));
+    textSpan.appendChild(document.createTextNode(displayText));
     li.classList.add("tag");
     xA.classList.add("remove");
     this.chosenTags.push({
@@ -302,6 +306,18 @@ if (!Number.isInteger) {
         }
       }
     }
+  };
+  storkTagsInput.prototype.unfocusSuggestions = function unfocusSuggestions() {
+    if (Number.isInteger(this.dropdownContainer.storkTagsProps.hoveredLIIndex)) {
+      this.dropdownContainer.storkTagsProps.allLIs[this.dropdownContainer.storkTagsProps.hoveredLIIndex].classList.remove("focused");
+    } else {
+      for (var i = 0; i < this.dropdownContainer.storkTagsProps.allLIs.length; i++) {
+        if (this.dropdownContainer.storkTagsProps.allLIs[i].classList.contains("focused")) {
+          this.dropdownContainer.storkTagsProps.allLIs[i].classList.remove("focused");
+        }
+      }
+    }
+    this.dropdownContainer.storkTagsProps.hoveredLIIndex = null;
   };
   root.storkTagsInput = storkTagsInput;
 })(this);
