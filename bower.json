@@ -18,11 +18,20 @@
     "tag filtering"
   ],
   "homepage": "https://github.com/storkjs/tags-input",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:storkjs/tags-input.git"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
-    "test",
-    "tests"
-  ]
+    "examples",
+    "src",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "dependencies": {
+    "stork-shims": "^1.0.0"
+  }
 }
