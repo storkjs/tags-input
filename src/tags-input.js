@@ -26,6 +26,7 @@
 		this.tagsInput.setAttribute('tabindex', 0);
 
 		this.buildDom();
+		this.updateScrollAndWidths();
 
 		this.setEventListeners();
 	};
@@ -42,15 +43,12 @@
 
 	storkTagsInput.prototype.buildDom = function buildDom() {
 		var ul = document.createElement('ul');
-		var li = document.createElement('li');
 		var input = document.createElement('input');
 
-		li.classList.add('search');
-		input.style.minWidth = this.inputMinWidth + 'px';
+		input.classList.add('search');
 
-		li.appendChild(input);
-		ul.appendChild(li);
 		this.tagsInput.appendChild(ul);
+		this.tagsInput.appendChild(input);
 
 		var dropdownContainer = document.createElement('div');
 		dropdownContainer.classList.add('stork-tags-dropdown-container', 'stork-tags-dropdown-container'+this.rnd);
@@ -223,7 +221,6 @@
 		groupSpan.appendChild(document.createTextNode(tagObj.groupDisplayName));
 		valueSpan.appendChild(document.createTextNode(tagObj.displayName));
 
-		li.classList.add('tag');
 		xA.classList.add('remove');
 		groupSpan.classList.add('group');
 		valueSpan.classList.add('value');
@@ -239,10 +236,9 @@
 		li.appendChild(xA);
 		li.appendChild(groupSpan);
 		li.appendChild(valueSpan);
-		this.ul.insertBefore(li, this.input.parentNode);
+		this.ul.appendChild(li);
 
-		this.tagsMaxScrollLeft = this.tagsInput.scrollWidth - this.tagsInput.clientWidth;
-		this.tagsInput.scrollLeft = this.tagsMaxScrollLeft; // maximum scroll so we'll see the search input on the right
+		this.updateScrollAndWidths();
 
 		var evnt = new CustomEvent('tag-added', {
 			bubbles: true,
@@ -263,8 +259,7 @@
 			this.ul.removeChild(this.chosenTags[index].elm);
 			var removed = this.chosenTags.splice(index, 1);
 
-			this.tagsMaxScrollLeft = this.tagsInput.scrollWidth - this.tagsInput.clientWidth;
-			this.tagsInput.scrollLeft = this.tagsMaxScrollLeft; // maximum scroll so we'll see the search input on the right
+			this.updateScrollAndWidths();
 
 			var evnt = new CustomEvent('tag-removed', {
 				bubbles: true,
@@ -282,6 +277,22 @@
 		return false; // fail
 	};
 
+	storkTagsInput.prototype.updateScrollAndWidths = function updateScrollAndWidths() {
+		var ulStyle = this.ul.currentStyle || window.getComputedStyle(this.ul);
+		var ulWidth = parseInt(ulStyle.width) - parseInt(ulStyle.paddingRight);
+
+		var containerWidth = this.tagsInput.clientWidth; // excluding borders
+		var remainingWidth = containerWidth - ulWidth;
+		var inputWidth = Math.max(remainingWidth, this.inputMinWidth);
+
+		this.input.style.width = inputWidth + 'px';
+		this.ul.style.paddingRight = inputWidth + 'px';
+
+		this.tagsMaxScrollLeft = ulWidth + inputWidth - containerWidth;
+		this.tagsInput.scrollLeft = this.tagsMaxScrollLeft; // maximum scroll so we'll see the search input on the right
+		this.input.style.right = -this.tagsMaxScrollLeft + 'px';
+	};
+
 	storkTagsInput.prototype.onClickTag = function onClickTag(e) {
 		var elm = e.target,
 			i = 0;
@@ -293,7 +304,7 @@
 				this.focusSearchInput(0);
 				return;
 			}
-			else if(elm.tagName.toUpperCase() === 'LI' && elm.classList.contains('tag')) {
+			else if(elm.tagName.toUpperCase() === 'LI') {
 				this.onClickFocusTag(elm);
 				return;
 			}
@@ -316,12 +327,10 @@
 		this.focusedTagIndex = index;
 		this.tagsInput.focus(); // blurs the search input, but keeps focus on the component
 
-		var elmStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
-		var marginLeft = parseInt(elmStyle.marginLeft);
-		if(!Number.isInteger(marginLeft)) {
-			marginLeft = 0;
-		}
+		var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
+		var marginLeft = parseInt(liStyle.marginLeft);
 		this.tagsInput.scrollLeft = Math.min(this.chosenTags[index].elm.offsetLeft - marginLeft, this.tagsMaxScrollLeft);
+		this.input.style.right = -this.tagsInput.scrollLeft + 'px';
 	};
 
 	storkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
@@ -330,7 +339,7 @@
 		while(!(target instanceof HTMLDocument) && target !== this.tagsInput && target !== this.dropdownContainer) {
 			target = target.parentNode;
 
-			if(!target) { // user clicked outside of the component
+			if(!target) { // our loop reached 'document' element, meaning user clicked outside of the component
 				this.tagsInput.classList.remove('focused');
 				this.dropdownContainer.classList.remove('focused');
 				return;
@@ -382,8 +391,13 @@
 					this.onMouseMoveSuggestionsDropdown({ target: allLIs[hoveredIndex - 1] });
 				}
 			}
-			else if(key === 'ENTER' && Number.isInteger(hoveredIndex)) {
-				this.onClickSuggestionsDropdown({ target: allLIs[hoveredIndex] });
+			else if(key === 'ENTER') {
+				if(Number.isInteger(hoveredIndex)) {
+					this.onClickSuggestionsDropdown({ target: allLIs[hoveredIndex] });
+				}
+				else { // as a precaution, an enter when no item is selected first selects the first item
+					this.onMouseMoveSuggestionsDropdown({ target: allLIs[0] });
+				}
 			}
 		}
 	};

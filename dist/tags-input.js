@@ -19,6 +19,7 @@
     this.tagsInput.classList.add("stork-tags", "stork-tags" + this.rnd);
     this.tagsInput.setAttribute("tabindex", 0);
     this.buildDom();
+    this.updateScrollAndWidths();
     this.setEventListeners();
   };
   storkTagsInput.prototype.addEventListener = function customAddEventListener(type, listener, options_or_useCapture) {
@@ -26,13 +27,10 @@
   };
   storkTagsInput.prototype.buildDom = function buildDom() {
     var ul = document.createElement("ul");
-    var li = document.createElement("li");
     var input = document.createElement("input");
-    li.classList.add("search");
-    input.style.minWidth = this.inputMinWidth + "px";
-    li.appendChild(input);
-    ul.appendChild(li);
+    input.classList.add("search");
     this.tagsInput.appendChild(ul);
+    this.tagsInput.appendChild(input);
     var dropdownContainer = document.createElement("div");
     dropdownContainer.classList.add("stork-tags-dropdown-container", "stork-tags-dropdown-container" + this.rnd);
     dropdownContainer.setAttribute("tabindex", 0);
@@ -155,7 +153,6 @@
     xA.appendChild(document.createTextNode("×"));
     groupSpan.appendChild(document.createTextNode(tagObj.groupDisplayName));
     valueSpan.appendChild(document.createTextNode(tagObj.displayName));
-    li.classList.add("tag");
     xA.classList.add("remove");
     groupSpan.classList.add("group");
     valueSpan.classList.add("value");
@@ -169,9 +166,8 @@
     li.appendChild(xA);
     li.appendChild(groupSpan);
     li.appendChild(valueSpan);
-    this.ul.insertBefore(li, this.input.parentNode);
-    this.tagsMaxScrollLeft = this.tagsInput.scrollWidth - this.tagsInput.clientWidth;
-    this.tagsInput.scrollLeft = this.tagsMaxScrollLeft;
+    this.ul.appendChild(li);
+    this.updateScrollAndWidths();
     var evnt = new CustomEvent("tag-added", {
       bubbles: true,
       cancelable: true,
@@ -187,8 +183,7 @@
       this.unfocusTags();
       this.ul.removeChild(this.chosenTags[index].elm);
       var removed = this.chosenTags.splice(index, 1);
-      this.tagsMaxScrollLeft = this.tagsInput.scrollWidth - this.tagsInput.clientWidth;
-      this.tagsInput.scrollLeft = this.tagsMaxScrollLeft;
+      this.updateScrollAndWidths();
       var evnt = new CustomEvent("tag-removed", {
         bubbles: true,
         cancelable: true,
@@ -202,6 +197,18 @@
     }
     return false;
   };
+  storkTagsInput.prototype.updateScrollAndWidths = function updateScrollAndWidths() {
+    var ulStyle = this.ul.currentStyle || window.getComputedStyle(this.ul);
+    var ulWidth = parseInt(ulStyle.width) - parseInt(ulStyle.paddingRight);
+    var containerWidth = this.tagsInput.clientWidth;
+    var remainingWidth = containerWidth - ulWidth;
+    var inputWidth = Math.max(remainingWidth, this.inputMinWidth);
+    this.input.style.width = inputWidth + "px";
+    this.ul.style.paddingRight = inputWidth + "px";
+    this.tagsMaxScrollLeft = ulWidth + inputWidth - containerWidth;
+    this.tagsInput.scrollLeft = this.tagsMaxScrollLeft;
+    this.input.style.right = -this.tagsMaxScrollLeft + "px";
+  };
   storkTagsInput.prototype.onClickTag = function onClickTag(e) {
     var elm = e.target, i = 0;
     do {
@@ -210,7 +217,7 @@
         this.removeTag(elmIndex);
         this.focusSearchInput(0);
         return;
-      } else if (elm.tagName.toUpperCase() === "LI" && elm.classList.contains("tag")) {
+      } else if (elm.tagName.toUpperCase() === "LI") {
         this.onClickFocusTag(elm);
         return;
       }
@@ -228,12 +235,10 @@
     this.chosenTags[index].elm.classList.add("focused");
     this.focusedTagIndex = index;
     this.tagsInput.focus();
-    var elmStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
-    var marginLeft = parseInt(elmStyle.marginLeft);
-    if (!Number.isInteger(marginLeft)) {
-      marginLeft = 0;
-    }
+    var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
+    var marginLeft = parseInt(liStyle.marginLeft);
     this.tagsInput.scrollLeft = Math.min(this.chosenTags[index].elm.offsetLeft - marginLeft, this.tagsMaxScrollLeft);
+    this.input.style.right = -this.tagsInput.scrollLeft + "px";
   };
   storkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
     var target = e.target;
@@ -285,10 +290,16 @@
             target: allLIs[hoveredIndex - 1]
           });
         }
-      } else if (key === "ENTER" && Number.isInteger(hoveredIndex)) {
-        this.onClickSuggestionsDropdown({
-          target: allLIs[hoveredIndex]
-        });
+      } else if (key === "ENTER") {
+        if (Number.isInteger(hoveredIndex)) {
+          this.onClickSuggestionsDropdown({
+            target: allLIs[hoveredIndex]
+          });
+        } else {
+          this.onMouseMoveSuggestionsDropdown({
+            target: allLIs[0]
+          });
+        }
       }
     }
   };
