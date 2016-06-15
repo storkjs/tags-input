@@ -84,11 +84,18 @@
 				suggestionsType: 'ajax',
 				suggestionsHandler: suggestions_handler,
 				rechooseRemove: true,
-				chosenTagsFormat: '@@@ : ###'
+				inputMinWidth: 70
 			});
 
 			testTags.addTag({ value: 'USD', displayName: 'US Dollar', groupId: 'currencies', groupDisplayName: 'Currencies' });
 			testTags.addTag({ value: 'EUR', displayName: 'Euro', groupId: 'currencies', groupDisplayName: 'Currencies' });
+
+			testTags.addEventListener('tag-added', function(e) {
+				console.log('added tag:', e.detail);
+			}, false);
+			testTags.addEventListener('tag-removed', function(e) {
+				console.log('removed tag:', e.detail);
+			}, false);
 		});
 	</script>
 </head>

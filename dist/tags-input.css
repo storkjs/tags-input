@@ -24,6 +24,7 @@
 }
 .stork-tags > ul > li.search {
   height: 100%;
+  flex-grow: 1;
 }
 .stork-tags > ul > li.search > input {
   height: 100%;
@@ -32,6 +33,9 @@
 }
 .stork-tags > ul > li.search > input:focus {
   outline: 0 none;
+}
+.stork-tags > ul > li.tag {
+  flex-grow: 0;
 }
 .stork-tags > ul > li.tag > a.remove {
   display: flex;

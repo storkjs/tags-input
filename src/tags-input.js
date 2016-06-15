@@ -11,9 +11,8 @@
 		if(!this.rnd) {
 			this.rnd = (Math.floor(Math.random() * 9) + 1) * 1000 + Date.now() % 1000; // random identifier for this grid
 		}
+		this.inputMinWidth = options.inputMinWidth || 60;
 		this.rechooseRemove = options.rechooseRemove || false;
-		// how to format the display text of the chosen tags. @@@ is group's name and ### is item's name
-		this.chosenTagsFormat = options.chosenTagsFormat || '@@@ : ###';
 		this.chosenTags = [];
 		this.focusedTagIndex = null;
 		this.lastSearchString = '';
@@ -21,6 +20,7 @@
 			allowed: true, // a throttle to prevent accidentally deleting tags when deleting text from the search input
 			TO: undefined // timeout
 		};
+		this.tagsMaxScrollLeft = 0;
 
 		this.tagsInput.classList.add('stork-tags', 'stork-tags'+this.rnd);
 		this.tagsInput.setAttribute('tabindex', 0);
@@ -28,8 +28,16 @@
 		this.buildDom();
 
 		this.setEventListeners();
+	};
 
-		this.updateWidths();
+	/**
+	 * a function for passing an addEventListener from the grid-instance to the grid-dom-element
+	 * @param type
+	 * @param listener
+	 * @param [options_or_useCapture]
+	 */
+	storkTagsInput.prototype.addEventListener = function customAddEventListener(type, listener, options_or_useCapture) {
+		this.tagsInput.addEventListener(type, listener, options_or_useCapture);
 	};
 
 	storkTagsInput.prototype.buildDom = function buildDom() {
@@ -38,6 +46,7 @@
 		var input = document.createElement('input');
 
 		li.classList.add('search');
+		input.style.minWidth = this.inputMinWidth + 'px';
 
 		li.appendChild(input);
 		ul.appendChild(li);
@@ -48,9 +57,9 @@
 		dropdownContainer.setAttribute('tabindex', 0);
 		dropdownContainer.style.width = this.tagsInput.offsetWidth + 'px';
 
-		var xy = this.tagsInput.getCoordinates();
-		dropdownContainer.style.left = xy.x + 'px';
-		dropdownContainer.style.top = (xy.y + this.tagsInput.offsetHeight + 1) + 'px';
+		var coordinates = this.tagsInput.getCoordinates();
+		dropdownContainer.style.left = coordinates.x + 'px';
+		dropdownContainer.style.top = (coordinates.y + this.tagsInput.offsetHeight + 1) + 'px';
 
 		this.ul = ul;
 		this.input = input;
@@ -90,14 +99,6 @@
 
 		// navigating the tags
 		this.tagsInput.addEventListener('keydown', this.onTagsKeyboardNavigate.bind(this), false);
-	};
-
-	storkTagsInput.prototype.updateWidths = function updateWidths() {
-		if(!this.maxWidth) {
-			this.maxWidth = this.tagsInput.clientWidth;
-		}
-
-		this.input.parentNode.style.width = this.maxWidth + 'px';
 	};
 
 	storkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
@@ -215,17 +216,17 @@
 
 		var li = document.createElement('li');
 		var xA = document.createElement('a');
-		var textSpan = document.createElement('span');
-
-		var displayText = this.chosenTagsFormat;
-		displayText = displayText.replace(/@@@/g, tagObj.groupDisplayName);
-		displayText = displayText.replace(/###/g, tagObj.displayName);
+		var groupSpan = document.createElement('span');
+		var valueSpan = document.createElement('span');
 
 		xA.appendChild(document.createTextNode('×'));
-		textSpan.appendChild(document.createTextNode(displayText));
+		groupSpan.appendChild(document.createTextNode(tagObj.groupDisplayName));
+		valueSpan.appendChild(document.createTextNode(tagObj.displayName));
 
 		li.classList.add('tag');
 		xA.classList.add('remove');
+		groupSpan.classList.add('group');
+		valueSpan.classList.add('value');
 
 		this.chosenTags.push({
 			value: tagObj.value,
@@ -236,13 +237,20 @@
 		});
 
 		li.appendChild(xA);
-		li.appendChild(textSpan);
+		li.appendChild(groupSpan);
+		li.appendChild(valueSpan);
 		this.ul.insertBefore(li, this.input.parentNode);
+
+		this.tagsMaxScrollLeft = this.tagsInput.scrollWidth - this.tagsInput.clientWidth;
+		this.tagsInput.scrollLeft = this.tagsMaxScrollLeft; // maximum scroll so we'll see the search input on the right
 
 		var evnt = new CustomEvent('tag-added', {
 			bubbles: true,
 			cancelable: true,
-			detail: this.chosenTags[this.chosenTags.length - 1]
+			detail: {
+				obj: this.chosenTags[this.chosenTags.length - 1],
+				index: this.chosenTags.length - 1
+			}
 		});
 		this.tagsInput.dispatchEvent(evnt);
 	};
@@ -253,7 +261,21 @@
 
 			// remove tag from tags list
 			this.ul.removeChild(this.chosenTags[index].elm);
-			this.chosenTags.splice(index, 1);
+			var removed = this.chosenTags.splice(index, 1);
+
+			this.tagsMaxScrollLeft = this.tagsInput.scrollWidth - this.tagsInput.clientWidth;
+			this.tagsInput.scrollLeft = this.tagsMaxScrollLeft; // maximum scroll so we'll see the search input on the right
+
+			var evnt = new CustomEvent('tag-removed', {
+				bubbles: true,
+				cancelable: true,
+				detail: {
+					obj: removed[0],
+					index: index
+				}
+			});
+			this.tagsInput.dispatchEvent(evnt);
+
 			return true; // success
 		}
 
@@ -266,7 +288,7 @@
 
 		do {
 			if(elm.tagName.toUpperCase() === 'A' && elm.classList.contains('remove')) {
-				var elmIndex = elm.index;
+				var elmIndex = elm.parentNode.index;
 				this.removeTag(elmIndex);
 				this.focusSearchInput(0);
 				return;
@@ -293,6 +315,13 @@
 		this.chosenTags[index].elm.classList.add('focused');
 		this.focusedTagIndex = index;
 		this.tagsInput.focus(); // blurs the search input, but keeps focus on the component
+
+		var elmStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
+		var marginLeft = parseInt(elmStyle.marginLeft);
+		if(!Number.isInteger(marginLeft)) {
+			marginLeft = 0;
+		}
+		this.tagsInput.scrollLeft = Math.min(this.chosenTags[index].elm.offsetLeft - marginLeft, this.tagsMaxScrollLeft);
 	};
 
 	storkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
