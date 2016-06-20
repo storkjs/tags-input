@@ -49,7 +49,7 @@
 
 	<script>
 		var httpRequest, i, j, regex;
-		var suggestions_handler = function suggestions_handler(text, cb) {
+		var suggestions_handler = function suggestions_handler(text, chosenTags, cb) {
 			text = text.trim();
 
 			regex = new RegExp(text, 'gi');

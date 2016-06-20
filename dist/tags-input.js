@@ -255,7 +255,7 @@
   };
   storkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
     if (this.input.value !== this.lastSearchString) {
-      this.suggestionsHandler(this.input.value, this.suggestionsCallback.bind(this));
+      this.suggestionsHandler(this.input.value, this.chosenTags, this.suggestionsCallback.bind(this));
     }
     this.lastSearchString = this.input.value;
   };
