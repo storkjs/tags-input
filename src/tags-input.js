@@ -13,6 +13,7 @@
 		}
 		this.inputMinWidth = options.inputMinWidth || 60;
 		this.rechooseRemove = options.rechooseRemove || false;
+
 		this.chosenTags = [];
 		this.focusedTagIndex = null;
 		this.lastSearchString = '';

@@ -48,8 +48,8 @@
 	</style>
 
 	<script>
-		var httpRequest, i, j, regex;
-		var suggestions_handler = function suggestions_handler(text, chosenTags, cb) {
+		var i, j, regex;
+		var suggestions_handler = function suggestions_handler(text, chosenTags, callback) {
 			text = text.trim();
 
 			regex = new RegExp(text, 'gi');
@@ -75,7 +75,7 @@
 				}
 			}
 
-			cb(ret);
+			callback(ret);
 		};
 
 		document.addEventListener("DOMContentLoaded", function(e) {
