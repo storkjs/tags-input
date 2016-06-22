@@ -1,4 +1,9 @@
 # tags-input
+
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/storkjs/tags-input/master/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/storkjs/tags-input.svg)](https://github.com/storkjs/tags-input/issues)
+[![Bower version](https://badge.fury.io/bo/stork-tags.svg)](https://badge.fury.io/bo/stork-tags)
+
 **What is it?**
 The best and most efficient tags selector in the galaxy.
 Has the most essential features without redundant bloat.
@@ -7,12 +12,12 @@ Has the most essential features without redundant bloat.
 Because all other tags-input or multi-select components are too opinionated or too restricted to `<select>` style.
 
 ### TOC
-[Usage](#usage)
-[Options](#options)
-[Methods](#methods)
-[Events](#events)
-[Code Example](#code-example)
-[Demo](#demo)
+- [Usage](#usage)
+- [Options](#options)
+- [Methods](#methods)
+- [Events](#events)
+- [Code Example](#code-example)
+- [Demo](#demo)
 
 ### Usage
 Initiate the Tags Input with `new storkTagsInput(options)`. This will return a tags object for further adjusting the tags-input later.
@@ -66,6 +71,13 @@ _tag-added_: when a new tag has been chosen and added to the list. this event ha
 ```javascript
 myTags.addEventListener("tag-added", function(e) {
   console.log('added tag:', e.detail); // logs: {obj: {value: '', displayName: '', groupId: '', groupDisplayName: '', elm: LI}, index: 0}
+}, false);
+```
+
+_tag-removed_: when a tag is removed the list. this event has a _detail_ containing the tag JS object and its previous index in the array. Example:
+```javascript
+myTags.addEventListener("tag-removed", function(e) {
+  console.log('added removed:', e.detail); // logs: {obj: {value: '', displayName: '', groupId: '', groupDisplayName: '', elm: LI}, index: 0}
 }, false);
 ```
 
