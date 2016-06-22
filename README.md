@@ -6,6 +6,14 @@ Has the most essential features without redundant bloat.
 **Why?**
 Because all other tags-input or multi-select components are too opinionated or too restricted to `<select>` style.
 
+### TOC
+[Usage](#usage)
+[Options](#options)
+[Methods](#methods)
+[Events](#events)
+[Code Example](#code-example)
+[Demo](#demo)
+
 ### Usage
 Initiate the Tags Input with `new storkTagsInput(options)`. This will return a tags object for further adjusting the tags-input later.
 
@@ -102,3 +110,6 @@ testTags.addEventListener('tag-removed', function(e) {
   console.log('removed tag:', e.detail);
 }, false);
 ```
+
+### Demo
+[View demo on plunker](https://embed.plnkr.co/OMUPjm/)
