@@ -2,7 +2,7 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/storkjs/tags-input/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/storkjs/tags-input.svg)](https://github.com/storkjs/tags-input/issues)
-[![Bower version](https://badge.fury.io/bo/stork-tags.svg)](https://badge.fury.io/bo/stork-tags)
+[![Bower version](https://badge.fury.io/bo/stork-tags.svg)](https://github.com/storkjs/tags-input/releases)
 
 **What is it?**
 The best and most efficient tags selector in the galaxy.
