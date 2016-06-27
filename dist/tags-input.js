@@ -380,4 +380,4 @@
     }, 0);
   };
   root.storkTagsInput = storkTagsInput;
-})(this);
+})(window);
