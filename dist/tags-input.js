@@ -34,10 +34,6 @@
     var dropdownContainer = document.createElement("div");
     dropdownContainer.classList.add("stork-tags-dropdown-container", "stork-tags-dropdown-container" + this.rnd);
     dropdownContainer.setAttribute("tabindex", 0);
-    dropdownContainer.style.width = this.tagsInput.offsetWidth + "px";
-    var coordinates = this.tagsInput.getCoordinates();
-    dropdownContainer.style.left = coordinates.x + "px";
-    dropdownContainer.style.top = coordinates.y + this.tagsInput.offsetHeight + 1 + "px";
     this.ul = ul;
     this.input = input;
     this.dropdownContainer = dropdownContainer;
@@ -45,10 +41,10 @@
       allLIs: this.dropdownContainer.getElementsByTagName("li"),
       hoveredLIIndex: null
     };
+    this.repositionDropdown();
     document.body.appendChild(dropdownContainer);
   };
   storkTagsInput.prototype.setEventListeners = function setEventListeners() {
-    var self = this;
     this.input.addEventListener("keyup", this.onChangeSearchInput.bind(this), false);
     this.input.addEventListener("focus", this.onFocusSearchInput.bind(this), false);
     this.dropdownContainer.addEventListener("click", this.onClickSuggestionsDropdown.bind(this), false);
@@ -58,6 +54,16 @@
     this.tagsInput.addEventListener("keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
     this.dropdownContainer.addEventListener("keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
     this.tagsInput.addEventListener("keydown", this.onTagsKeyboardNavigate.bind(this), false);
+  };
+  storkTagsInput.prototype.repositionDropdown = function repositionDropdown(width) {
+    if (!width) {
+      this.dropdownContainer.style.width = this.tagsInput.offsetWidth + "px";
+    } else {
+      this.dropdownContainer.style.width = width + "px";
+    }
+    var coordinates = this.tagsInput.getCoordinates();
+    this.dropdownContainer.style.left = coordinates.x + "px";
+    this.dropdownContainer.style.top = coordinates.y + this.tagsInput.offsetHeight + 1 + "px";
   };
   storkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
     if (suggestionsArr.length === 0) {

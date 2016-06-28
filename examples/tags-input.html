@@ -78,8 +78,9 @@
 			callback(ret);
 		};
 
+		var testTags;
 		document.addEventListener("DOMContentLoaded", function(e) {
-			var testTags = new storkTagsInput({
+			testTags = new storkTagsInput({
 				element: document.getElementById('tagsInput'),
 				suggestionsHandler: suggestions_handler,
 				rechooseRemove: true,

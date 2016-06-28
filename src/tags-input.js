@@ -54,11 +54,6 @@
 		var dropdownContainer = document.createElement('div');
 		dropdownContainer.classList.add('stork-tags-dropdown-container', 'stork-tags-dropdown-container'+this.rnd);
 		dropdownContainer.setAttribute('tabindex', 0);
-		dropdownContainer.style.width = this.tagsInput.offsetWidth + 'px';
-
-		var coordinates = this.tagsInput.getCoordinates();
-		dropdownContainer.style.left = coordinates.x + 'px';
-		dropdownContainer.style.top = (coordinates.y + this.tagsInput.offsetHeight + 1) + 'px';
 
 		this.ul = ul;
 		this.input = input;
@@ -68,12 +63,12 @@
 			hoveredLIIndex: null
 		};
 
+		this.repositionDropdown();
+
 		document.body.appendChild(dropdownContainer);
 	};
 
 	storkTagsInput.prototype.setEventListeners = function setEventListeners() {
-		var self = this;
-
 		// typing in search input
 		this.input.addEventListener('keyup', this.onChangeSearchInput.bind(this), false);
 
@@ -98,6 +93,23 @@
 
 		// navigating the tags
 		this.tagsInput.addEventListener('keydown', this.onTagsKeyboardNavigate.bind(this), false);
+	};
+
+	/**
+	 * set the position of the dropdown to be just under the tags input.
+	 * use this in case the window was resized or when tags-input changed its position
+	 * @param {number} [width]
+	 */
+	storkTagsInput.prototype.repositionDropdown = function repositionDropdown(width) {
+		if(!width) {
+			this.dropdownContainer.style.width = this.tagsInput.offsetWidth + 'px';
+		} else {
+			this.dropdownContainer.style.width = width + 'px';
+		}
+
+		var coordinates = this.tagsInput.getCoordinates();
+		this.dropdownContainer.style.left = coordinates.x + 'px';
+		this.dropdownContainer.style.top = (coordinates.y + this.tagsInput.offsetHeight + 1) + 'px';
 	};
 
 	storkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
