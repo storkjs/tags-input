@@ -29,7 +29,9 @@
     "examples",
     "src",
     "Gruntfile.js",
-    "package.json"
+    "package.json",
+    "test",
+    "karma.conf.js"
   ],
   "dependencies": {
     "stork-shims": "^1.0.0"

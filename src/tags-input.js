@@ -63,7 +63,7 @@
 			hoveredLIIndex: null
 		};
 
-		this.repositionDropdown();
+		this.positionDropdown();
 
 		document.body.appendChild(dropdownContainer);
 	};
@@ -100,7 +100,7 @@
 	 * use this in case the window was resized or when tags-input changed its position
 	 * @param {number} [width]
 	 */
-	storkTagsInput.prototype.repositionDropdown = function repositionDropdown(width) {
+	storkTagsInput.prototype.positionDropdown = function positionDropdown(width) {
 		if(!width) {
 			this.dropdownContainer.style.width = this.tagsInput.offsetWidth + 'px';
 		} else {

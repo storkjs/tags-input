@@ -41,7 +41,7 @@
       allLIs: this.dropdownContainer.getElementsByTagName("li"),
       hoveredLIIndex: null
     };
-    this.repositionDropdown();
+    this.positionDropdown();
     document.body.appendChild(dropdownContainer);
   };
   storkTagsInput.prototype.setEventListeners = function setEventListeners() {
@@ -55,7 +55,7 @@
     this.dropdownContainer.addEventListener("keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
     this.tagsInput.addEventListener("keydown", this.onTagsKeyboardNavigate.bind(this), false);
   };
-  storkTagsInput.prototype.repositionDropdown = function repositionDropdown(width) {
+  storkTagsInput.prototype.positionDropdown = function positionDropdown(width) {
     if (!width) {
       this.dropdownContainer.style.width = this.tagsInput.offsetWidth + "px";
     } else {
