@@ -13,6 +13,7 @@
 		}
 		this.inputMinWidth = options.inputMinWidth || 60;
 		this.rechooseRemove = options.rechooseRemove || false;
+		this.placeholder = options.placeholder || '';
 
 		this.chosenTags = [];
 		this.focusedTagIndex = null;
@@ -47,6 +48,7 @@
 		var input = document.createElement('input');
 
 		input.classList.add('search');
+		input.setAttribute('placeholder', this.placeholder);
 
 		this.tagsInput.appendChild(ul);
 		this.tagsInput.appendChild(input);
@@ -352,7 +354,7 @@
 		while(!(target instanceof HTMLDocument) && target !== this.tagsInput && target !== this.dropdownContainer) {
 			target = target.parentNode;
 
-			if(!target) { // our loop reached 'document' element, meaning user clicked outside of the component
+			if(target && target instanceof HTMLDocument) { // our loop reached 'document' element, meaning user clicked outside of the component
 				this.tagsInput.classList.remove('focused');
 				this.dropdownContainer.classList.remove('focused');
 				return;

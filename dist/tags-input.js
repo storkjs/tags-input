@@ -8,6 +8,7 @@
     }
     this.inputMinWidth = options.inputMinWidth || 60;
     this.rechooseRemove = options.rechooseRemove || false;
+    this.placeholder = options.placeholder || "";
     this.chosenTags = [];
     this.focusedTagIndex = null;
     this.lastSearchString = "";
@@ -29,6 +30,7 @@
     var ul = document.createElement("ul");
     var input = document.createElement("input");
     input.classList.add("search");
+    input.setAttribute("placeholder", this.placeholder);
     this.tagsInput.appendChild(ul);
     this.tagsInput.appendChild(input);
     var dropdownContainer = document.createElement("div");
@@ -250,7 +252,7 @@
     var target = e.target;
     while (!(target instanceof HTMLDocument) && target !== this.tagsInput && target !== this.dropdownContainer) {
       target = target.parentNode;
-      if (!target) {
+      if (target && target instanceof HTMLDocument) {
         this.tagsInput.classList.remove("focused");
         this.dropdownContainer.classList.remove("focused");
         return;
