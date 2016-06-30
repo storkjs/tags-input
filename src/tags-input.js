@@ -266,6 +266,11 @@
 		this.tagsInput.dispatchEvent(evnt);
 	};
 
+	/**
+	 * removes a specific tag, from the chosen tags list, in the given index
+	 * @param index
+	 * @returns {boolean}
+	 */
 	storkTagsInput.prototype.removeTag = function removeTag(index) {
 		if(this.chosenTags[index]) {
 			this.unfocusTags(); // unselect a focused tag
@@ -292,6 +297,42 @@
 		return false; // fail
 	};
 
+	/**
+	 * completely clears the chosen tags list
+	 * @returns {boolean}
+	 */
+	storkTagsInput.prototype.removeAllTags = function removeAllTags() {
+		this.unfocusTags(); // unselect a focused tag
+
+		if(!this.ul.firstChild) {
+			return false; // no need to remove a thing
+		}
+
+		// remove tags from tags list
+		while(this.ul.firstChild) {
+			this.ul.removeChild(this.ul.firstChild);
+		}
+		var removed = this.chosenTags.splice(0, this.chosenTags.length);
+
+		this.updateScrollAndWidths();
+
+		var evnt = new CustomEvent('all-tags-removed', {
+			bubbles: true,
+			cancelable: true,
+			detail: {
+				removedTags: removed
+			}
+		});
+		this.tagsInput.dispatchEvent(evnt);
+
+		return true; // success
+	};
+
+	/**
+	 * updates the search input's width and position, and update the tags list scroll position
+	 * (and right padding for filling an empty space) in order to fit all tag list items
+	 * and the search input in place
+	 */
 	storkTagsInput.prototype.updateScrollAndWidths = function updateScrollAndWidths() {
 		var ulStyle = this.ul.currentStyle || window.getComputedStyle(this.ul);
 		var ulWidth = parseInt(ulStyle.width) - parseInt(ulStyle.paddingRight);

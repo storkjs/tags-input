@@ -74,5 +74,5 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('watch-files', ['watch']);
 
-	grunt.registerTask('dist', ['less', 'uglify']);
+	grunt.registerTask('build', ['less', 'uglify']);
 };

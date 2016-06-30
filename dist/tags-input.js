@@ -205,6 +205,26 @@
     }
     return false;
   };
+  storkTagsInput.prototype.removeAllTags = function removeAllTags() {
+    this.unfocusTags();
+    if (!this.ul.firstChild) {
+      return false;
+    }
+    while (this.ul.firstChild) {
+      this.ul.removeChild(this.ul.firstChild);
+    }
+    var removed = this.chosenTags.splice(0, this.chosenTags.length);
+    this.updateScrollAndWidths();
+    var evnt = new CustomEvent("all-tags-removed", {
+      bubbles: true,
+      cancelable: true,
+      detail: {
+        removedTags: removed
+      }
+    });
+    this.tagsInput.dispatchEvent(evnt);
+    return true;
+  };
   storkTagsInput.prototype.updateScrollAndWidths = function updateScrollAndWidths() {
     var ulStyle = this.ul.currentStyle || window.getComputedStyle(this.ul);
     var ulWidth = parseInt(ulStyle.width) - parseInt(ulStyle.paddingRight);
