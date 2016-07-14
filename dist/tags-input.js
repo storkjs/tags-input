@@ -101,6 +101,7 @@
       this.dropdownContainer.appendChild(groupDiv);
     }
     this.dropdownContainer.storkTagsProps.hoveredLIIndex = null;
+    this.positionDropdown();
     this.dropdownContainer.classList.add("has-results");
   };
   storkTagsInput.prototype.onClickSuggestionsDropdown = function onClickSuggestionsDropdown(e) {

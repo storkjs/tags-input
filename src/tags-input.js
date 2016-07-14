@@ -157,6 +157,7 @@
 
 		this.dropdownContainer.storkTagsProps.hoveredLIIndex = null; // allLIs was just re-built so let's forget the previously hovered item
 
+		this.positionDropdown();
 		this.dropdownContainer.classList.add('has-results'); // open the dropdown
 	};
 
