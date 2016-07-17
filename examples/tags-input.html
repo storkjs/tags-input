@@ -58,16 +58,16 @@
 			if(text.length > 0) { // perform search only on text
 				for(i=0; i < suggestionGroups.length; i++) {
 					for(j=0; j < suggestionGroups[i].items.length; j++) {
-						if(regex.test(suggestionGroups[i].items[j].displayName)) {
-							if(!ret[ret.length-1] || ret[ret.length-1].id !== suggestionGroups[i].id) {
+						if(regex.test(suggestionGroups[i].items[j].label)) {
+							if(!ret.last || ret.last.field !== suggestionGroups[i].field) {
 								ret.push({
-									displayName: suggestionGroups[i].displayName,
-									id: suggestionGroups[i].id,
+									label: suggestionGroups[i].label,
+									field: suggestionGroups[i].field,
 									items: []
 								});
 							}
-							ret[ret.length-1].items.push({
-								displayName: suggestionGroups[i].items[j].displayName,
+							ret.last.items.push({
+								label: suggestionGroups[i].items[j].label,
 								value: suggestionGroups[i].items[j].value
 							});
 						}
@@ -88,8 +88,8 @@
 				placeholder: 'Search Something'
 			});
 
-			testTags.addTag({ value: 'USD', displayName: 'US Dollar', groupId: 'currencies', groupDisplayName: 'Currencies' });
-			testTags.addTag({ value: 'EUR', displayName: 'Euro', groupId: 'currencies', groupDisplayName: 'Currencies' });
+			testTags.addTag({ value: 'USD', label: 'US Dollar', groupField: 'currencies', groupLabel: 'Currencies' });
+			testTags.addTag({ value: 'EUR', groupField: 'currencies' });
 
 			testTags.addEventListener('tag-added', function(e) {
 				console.log('added tag:', e.detail);

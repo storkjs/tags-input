@@ -30,13 +30,13 @@ _suggestionsHandler_: a Function handling what suggestions/autocomplete results 
 var suggestions_handler = function suggestions_handler(text, chosenTags, callback) {
   if(text.indexOf('dollar') > -1) {
     callback([{
-      displayName: 'Currencies',
-      id: 'currencies',
+      label: 'Currencies',
+      field: 'currencies',
       items: [
-        { displayName: 'US Dollar', value: 'USD' },
-        { displayName: 'Australian Dollar', value: 'AUD' },
-        { displayName: 'Canadian Dollar', value: 'CAD' },
-        { displayName: 'Singapore Dollar', value: 'SGD' }
+        { label: 'US Dollar', value: 'USD' },
+        { label: 'Australian Dollar', value: 'AUD' },
+        { label: 'Canadian Dollar', value: 'CAD' },
+        { label: 'Singapore Dollar', value: 'SGD' }
       ]
     }]);
     return;
@@ -54,7 +54,7 @@ _rechooseRemove_ [optional]: whether re-choosing from the suggestions list an it
 
 #### Methods
 _addTag(tagObj)_: adds a new tag to the chosen tags list.
-arguments: _tagObj_ {object} - tagObj.value, tagObj.displayName, tagObj.groupId, tagObj.groupDisplayName.
+arguments: _tagObj_ {object} - tagObj.value, tagObj.label, tagObj.groupField, tagObj.groupLabel.
 
 _removeTag(index)_: remove a tag from the chosenTags. arguments: _index_ {integer} - the position of the tag in the `chosenTags` array.
 
@@ -70,14 +70,14 @@ myTags.addEventListener("tag-added", function(e) {
 _tag-added_: when a new tag has been chosen and added to the list. this event has a _detail_ containing the tag JS object and its index in the array. Example:
 ```javascript
 myTags.addEventListener("tag-added", function(e) {
-  console.log('added tag:', e.detail); // logs: {obj: {value: '', displayName: '', groupId: '', groupDisplayName: '', elm: LI}, index: 0}
+  console.log('added tag:', e.detail); // logs: {obj: {value: '', label: '', groupField: '', groupLabel: '', elm: LI}, index: 0}
 }, false);
 ```
 
 _tag-removed_: when a tag is removed the list. this event has a _detail_ containing the tag JS object and its previous index in the array. Example:
 ```javascript
 myTags.addEventListener("tag-removed", function(e) {
-  console.log('added removed:', e.detail); // logs: {obj: {value: '', displayName: '', groupId: '', groupDisplayName: '', elm: LI}, index: 0}
+  console.log('added removed:', e.detail); // logs: {obj: {value: '', label: '', groupField: '', groupLabel: '', elm: LI}, index: 0}
 }, false);
 ```
 
@@ -91,13 +91,13 @@ var i, j, regex;
 var suggestions_handler = function suggestions_handler(text, chosenTags, callback) {
   if(text.indexOf('dollar') > -1) {
       callback([{
-        displayName: 'Currencies',
-        id: 'currencies',
+        label: 'Currencies',
+        field: 'currencies',
         items: [
-          { displayName: 'US Dollar', value: 'USD' },
-          { displayName: 'Australian Dollar', value: 'AUD' },
-          { displayName: 'Canadian Dollar', value: 'CAD' },
-          { displayName: 'Singapore Dollar', value: 'SGD' }
+          { label: 'US Dollar', value: 'USD' },
+          { label: 'Australian Dollar', value: 'AUD' },
+          { label: 'Canadian Dollar', value: 'CAD' },
+          { label: 'Singapore Dollar', value: 'SGD' }
         ]
       }]);
       return;
@@ -113,7 +113,7 @@ var testTags = new storkTagsInput({
   inputMinWidth: 70
 });
 
-testTags.addTag({ value: 'AUD', displayName: 'Australian Dollar', groupId: 'currencies', groupDisplayName: 'Currencies' });
+testTags.addTag({ value: 'AUD', label: 'Australian Dollar', groupField: 'currencies', groupLabel: 'Currencies' });
 
 testTags.addEventListener('tag-added', function(e) {
   console.log('added tag:', e.detail);

@@ -1,29 +1,29 @@
 var suggestionGroups = [
   {
-    "displayName": "LPs",
-    "id": "lp",
+	  "field": "lp",
+    "label": "LPs",
     "items": [
-      {"value": "LPLA", "displayName": "LPLA LP"},
-      {"value": "LPRJ", "displayName": "LPRJ LP"},
-      {"value": "LPLB", "displayName": "LPLB LP"}
+      {"value": "LPLA", "label": "LPLA LP"},
+      {"value": "LPRJ", "label": "LPRJ LP"},
+      {"value": "LPLB", "label": "LPLB LP"}
     ]
   },
   {
-    "displayName": "Currencies",
-    "id": "currencies",
+	  "field": "currencies",
+    "label": "Currencies",
     "items": [
-      {"value": "USD", "displayName": "US Dollar"},
-      {"value": "EUR", "displayName": "Euro"},
-      {"value": "ILS", "displayName": "IL Shekel"}
+      {"value": "USD", "label": "US Dollar"},
+      {"value": "EUR", "label": "Euro"},
+      {"value": "ILS", "label": "IL Shekel"}
     ]
   },
   {
-    "displayName": "Tenors",
-    "id": "tenors",
+	  "field": "tenors",
+    "label": "Tenors",
     "items": [
-      {"value": "1wk", "displayName": "1 Week"},
-      {"value": "2mth", "displayName": "2 Months"},
-      {"value": "3yr", "displayName": "3 Years"}
+      {"value": "1wk", "label": "1 Week"},
+      {"value": "2mth", "label": "2 Months"},
+      {"value": "3yr", "label": "3 Years"}
     ]
   }
 ];

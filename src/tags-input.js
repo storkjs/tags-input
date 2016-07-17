@@ -1,5 +1,15 @@
 (function(root) {
 	"use strict";
+
+	/**
+	 * capitalize first letter of every word and the rest is lowercased
+	 * @param str
+	 * @returns {*}
+	 */
+	var capitalizeWords = function capitalizeWords(str) {
+		return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+	};
+
 	/**
 	 * construct for the StorkJS Tags Input.
 	 * this initializes all of the variable and then starts the DOM build up process
@@ -34,7 +44,7 @@
 	};
 
 	/**
-	 * a function for passing an addEventListener from the grid-instance to the grid-dom-element
+	 * a function for passing an addEventListener from the tags-instance to the tags-dom-element
 	 * @param type
 	 * @param listener
 	 * @param [options_or_useCapture]
@@ -133,19 +143,19 @@
 			miscElm = document.createElement('span');
 			itemsList = document.createElement('ul');
 
-			miscElm.appendChild(document.createTextNode(suggestionsArr[i].displayName));
+			miscElm.appendChild(document.createTextNode(suggestionsArr[i].label));
 			groupHeader.appendChild(miscElm);
 
 			for(j=0; j < suggestionsArr[i].items.length; j++) {
 				item = document.createElement('li');
 				item.storkTagsProps = {
 					value: suggestionsArr[i].items[j].value,
-					displayName: suggestionsArr[i].items[j].displayName,
-					groupId: suggestionsArr[i].id,
-					groupDisplayName: suggestionsArr[i].displayName
+					label: suggestionsArr[i].items[j].label,
+					groupField: suggestionsArr[i].field,
+					groupLabel: suggestionsArr[i].label
 				};
 				miscElm = document.createElement('a');
-				miscElm.appendChild(document.createTextNode(suggestionsArr[i].items[j].displayName));
+				miscElm.appendChild(document.createTextNode(suggestionsArr[i].items[j].label));
 				item.appendChild(miscElm);
 				itemsList.appendChild(item);
 			}
@@ -218,8 +228,11 @@
 	storkTagsInput.prototype.addTag = function addTag(tagObj) {
 		var i;
 
+		if(!tagObj.groupLabel) { tagObj.groupLabel = capitalizeWords(tagObj.groupField); }
+		if(!tagObj.label) { tagObj.label = capitalizeWords(tagObj.value); }
+
 		for(i=0; i < this.chosenTags.length; i++) {
-			if(tagObj.groupId === this.chosenTags[i].groupId && tagObj.value === this.chosenTags[i].value) {
+			if(tagObj.groupField === this.chosenTags[i].groupField && tagObj.value === this.chosenTags[i].value) {
 				if(this.rechooseRemove) {
 					return this.removeTag(i); // remove already chosen tag
 				}
@@ -234,8 +247,8 @@
 		var valueSpan = document.createElement('span');
 
 		xA.appendChild(document.createTextNode('×'));
-		groupSpan.appendChild(document.createTextNode(tagObj.groupDisplayName));
-		valueSpan.appendChild(document.createTextNode(tagObj.displayName));
+		groupSpan.appendChild(document.createTextNode(tagObj.groupLabel));
+		valueSpan.appendChild(document.createTextNode(tagObj.label));
 
 		xA.classList.add('remove');
 		groupSpan.classList.add('group');
@@ -243,9 +256,9 @@
 
 		this.chosenTags.push({
 			value: tagObj.value,
-			displayName: tagObj.displayName,
-			groupId: tagObj.groupId,
-			groupDisplayName: tagObj.groupDisplayName,
+			label: tagObj.label,
+			groupField: tagObj.groupField,
+			groupLabel: tagObj.groupLabel,
 			elm: li
 		});
 
