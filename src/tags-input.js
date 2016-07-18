@@ -15,7 +15,7 @@
 	 * this initializes all of the variable and then starts the DOM build up process
 	 * @param options
 	 */
-	var storkTagsInput = function storkTagsInput(options) {
+	var StorkTagsInput = function StorkTagsInput(options) {
 		this.tagsInput = options.element;
 		this.suggestionsHandler = options.suggestionsHandler;
 		if(!this.rnd) {
@@ -49,11 +49,11 @@
 	 * @param listener
 	 * @param [options_or_useCapture]
 	 */
-	storkTagsInput.prototype.addEventListener = function customAddEventListener(type, listener, options_or_useCapture) {
+	StorkTagsInput.prototype.addEventListener = function customAddEventListener(type, listener, options_or_useCapture) {
 		this.tagsInput.addEventListener(type, listener, options_or_useCapture);
 	};
 
-	storkTagsInput.prototype.buildDom = function buildDom() {
+	StorkTagsInput.prototype.buildDom = function buildDom() {
 		var ul = document.createElement('ul');
 		var input = document.createElement('input');
 
@@ -80,7 +80,7 @@
 		document.body.appendChild(dropdownContainer);
 	};
 
-	storkTagsInput.prototype.setEventListeners = function setEventListeners() {
+	StorkTagsInput.prototype.setEventListeners = function setEventListeners() {
 		// typing in search input
 		this.input.addEventListener('keyup', this.onChangeSearchInput.bind(this), false);
 
@@ -112,7 +112,7 @@
 	 * use this in case the window was resized or when tags-input changed its position
 	 * @param {number} [width]
 	 */
-	storkTagsInput.prototype.positionDropdown = function positionDropdown(width) {
+	StorkTagsInput.prototype.positionDropdown = function positionDropdown(width) {
 		if(!width) {
 			this.dropdownContainer.style.width = this.tagsInput.offsetWidth + 'px';
 		} else {
@@ -124,7 +124,7 @@
 		this.dropdownContainer.style.top = (coordinates.y + this.tagsInput.offsetHeight + 1) + 'px';
 	};
 
-	storkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
+	StorkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
 		if(suggestionsArr.length === 0) {
 			this.dropdownContainer.classList.remove('has-results');
 			return;
@@ -171,7 +171,7 @@
 		this.dropdownContainer.classList.add('has-results'); // open the dropdown
 	};
 
-	storkTagsInput.prototype.onClickSuggestionsDropdown = function onClickSuggestionsDropdown(e) {
+	StorkTagsInput.prototype.onClickSuggestionsDropdown = function onClickSuggestionsDropdown(e) {
 		var LI = e.target,
 			i = 0;
 
@@ -189,7 +189,7 @@
 		this.onChangeSearchInput();
 	};
 
-	storkTagsInput.prototype.onMouseMoveSuggestionsDropdown = function onMouseMoveSuggestionsDropdown(e) {
+	StorkTagsInput.prototype.onMouseMoveSuggestionsDropdown = function onMouseMoveSuggestionsDropdown(e) {
 		var LI = e.target,
 			i = 0;
 
@@ -225,7 +225,7 @@
 		}
 	};
 
-	storkTagsInput.prototype.addTag = function addTag(tagObj) {
+	StorkTagsInput.prototype.addTag = function addTag(tagObj) {
 		var i;
 
 		if(!tagObj.groupLabel) { tagObj.groupLabel = capitalizeWords(tagObj.groupField); }
@@ -285,7 +285,7 @@
 	 * @param index
 	 * @returns {boolean}
 	 */
-	storkTagsInput.prototype.removeTag = function removeTag(index) {
+	StorkTagsInput.prototype.removeTag = function removeTag(index) {
 		if(this.chosenTags[index]) {
 			this.unfocusTags(); // unselect a focused tag
 
@@ -315,7 +315,7 @@
 	 * completely clears the chosen tags list
 	 * @returns {boolean}
 	 */
-	storkTagsInput.prototype.removeAllTags = function removeAllTags() {
+	StorkTagsInput.prototype.removeAllTags = function removeAllTags() {
 		this.unfocusTags(); // unselect a focused tag
 
 		if(!this.ul.firstChild) {
@@ -347,7 +347,7 @@
 	 * (and right padding for filling an empty space) in order to fit all tag list items
 	 * and the search input in place
 	 */
-	storkTagsInput.prototype.updateScrollAndWidths = function updateScrollAndWidths() {
+	StorkTagsInput.prototype.updateScrollAndWidths = function updateScrollAndWidths() {
 		var ulStyle = this.ul.currentStyle || window.getComputedStyle(this.ul);
 		var ulWidth = parseInt(ulStyle.width) - parseInt(ulStyle.paddingRight);
 
@@ -363,7 +363,7 @@
 		this.input.style.right = -this.tagsMaxScrollLeft + 'px';
 	};
 
-	storkTagsInput.prototype.onClickTag = function onClickTag(e) {
+	StorkTagsInput.prototype.onClickTag = function onClickTag(e) {
 		var elm = e.target,
 			i = 0;
 
@@ -384,7 +384,7 @@
 		} while(i <= 3 && !(elm instanceof HTMLDocument));
 	};
 
-	storkTagsInput.prototype.onClickFocusTag = function onClickFocusTag(index) {
+	StorkTagsInput.prototype.onClickFocusTag = function onClickFocusTag(index) {
 		if(!Number.isInteger(index)) { // we have got an element object instead of its index
 			index = index.index;
 		}
@@ -403,7 +403,7 @@
 		this.input.style.right = -this.tagsInput.scrollLeft + 'px';
 	};
 
-	storkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
+	StorkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
 		var target = e.target;
 
 		while(!(target instanceof HTMLDocument) && target !== this.tagsInput && target !== this.dropdownContainer) {
@@ -420,7 +420,7 @@
 		this.dropdownContainer.classList.add('focused');
 	};
 
-	storkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
+	StorkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
 		if(this.input.value !== this.lastSearchString) {
 			this.suggestionsHandler(this.input.value, this.chosenTags, this.suggestionsCallback.bind(this));
 		}
@@ -428,11 +428,11 @@
 		this.lastSearchString = this.input.value;
 	};
 
-	storkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
+	StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
 		this.unfocusTags();
 	};
 
-	storkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
+	StorkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
 		var key = keyboardMap[e.keyCode];
 		var hoveredIndex;
 		var allLIs;
@@ -472,7 +472,7 @@
 		}
 	};
 
-	storkTagsInput.prototype.onTagsKeyboardNavigate = function onTagsKeyboardNavigate(e) {
+	StorkTagsInput.prototype.onTagsKeyboardNavigate = function onTagsKeyboardNavigate(e) {
 		var key = keyboardMap[e.keyCode];
 
 		if(key === 'LEFT') {
@@ -524,7 +524,7 @@
 		}
 	};
 
-	storkTagsInput.prototype.unfocusSuggestions = function unfocusSuggestions() {
+	StorkTagsInput.prototype.unfocusSuggestions = function unfocusSuggestions() {
 		if(Number.isInteger(this.dropdownContainer.storkTagsProps.hoveredLIIndex)) {
 			this.dropdownContainer.storkTagsProps.allLIs[ this.dropdownContainer.storkTagsProps.hoveredLIIndex ].classList.remove('focused');
 		}
@@ -539,7 +539,7 @@
 		this.dropdownContainer.storkTagsProps.hoveredLIIndex = null;
 	};
 
-	storkTagsInput.prototype.unfocusTags = function unfocusTags() {
+	StorkTagsInput.prototype.unfocusTags = function unfocusTags() {
 		if(Number.isInteger(this.focusedTagIndex)) {
 			this.chosenTags[this.focusedTagIndex].elm.classList.remove('focused');
 		}
@@ -554,7 +554,7 @@
 		this.focusedTagIndex = null;
 	};
 
-	storkTagsInput.prototype.focusSearchInput = function focusSearchInput(caretPosition) {
+	StorkTagsInput.prototype.focusSearchInput = function focusSearchInput(caretPosition) {
 		if(!Number.isInteger(caretPosition)) {
 			caretPosition = 0;
 		}
@@ -565,5 +565,5 @@
 		}, 0);
 	};
 
-	root.storkTagsInput = storkTagsInput;
+	root.StorkTagsInput = StorkTagsInput;
 })(window); // main scope we are running at (if 'this' is passed then we will be compatible with node 'module.reports' style)

@@ -5,7 +5,7 @@
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   };
-  var storkTagsInput = function storkTagsInput(options) {
+  var StorkTagsInput = function StorkTagsInput(options) {
     this.tagsInput = options.element;
     this.suggestionsHandler = options.suggestionsHandler;
     if (!this.rnd) {
@@ -28,10 +28,10 @@
     this.updateScrollAndWidths();
     this.setEventListeners();
   };
-  storkTagsInput.prototype.addEventListener = function customAddEventListener(type, listener, options_or_useCapture) {
+  StorkTagsInput.prototype.addEventListener = function customAddEventListener(type, listener, options_or_useCapture) {
     this.tagsInput.addEventListener(type, listener, options_or_useCapture);
   };
-  storkTagsInput.prototype.buildDom = function buildDom() {
+  StorkTagsInput.prototype.buildDom = function buildDom() {
     var ul = document.createElement("ul");
     var input = document.createElement("input");
     input.classList.add("search");
@@ -51,7 +51,7 @@
     this.positionDropdown();
     document.body.appendChild(dropdownContainer);
   };
-  storkTagsInput.prototype.setEventListeners = function setEventListeners() {
+  StorkTagsInput.prototype.setEventListeners = function setEventListeners() {
     this.input.addEventListener("keyup", this.onChangeSearchInput.bind(this), false);
     this.input.addEventListener("focus", this.onFocusSearchInput.bind(this), false);
     this.dropdownContainer.addEventListener("click", this.onClickSuggestionsDropdown.bind(this), false);
@@ -62,7 +62,7 @@
     this.dropdownContainer.addEventListener("keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
     this.tagsInput.addEventListener("keydown", this.onTagsKeyboardNavigate.bind(this), false);
   };
-  storkTagsInput.prototype.positionDropdown = function positionDropdown(width) {
+  StorkTagsInput.prototype.positionDropdown = function positionDropdown(width) {
     if (!width) {
       this.dropdownContainer.style.width = this.tagsInput.offsetWidth + "px";
     } else {
@@ -72,7 +72,7 @@
     this.dropdownContainer.style.left = coordinates.x + "px";
     this.dropdownContainer.style.top = coordinates.y + this.tagsInput.offsetHeight + 1 + "px";
   };
-  storkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
+  StorkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
     if (suggestionsArr.length === 0) {
       this.dropdownContainer.classList.remove("has-results");
       return;
@@ -109,7 +109,7 @@
     this.positionDropdown();
     this.dropdownContainer.classList.add("has-results");
   };
-  storkTagsInput.prototype.onClickSuggestionsDropdown = function onClickSuggestionsDropdown(e) {
+  StorkTagsInput.prototype.onClickSuggestionsDropdown = function onClickSuggestionsDropdown(e) {
     var LI = e.target, i = 0;
     while (!(LI instanceof HTMLDocument) && LI.tagName.toUpperCase() !== "LI") {
       if (i++ >= 2) {
@@ -122,7 +122,7 @@
     this.input.focus();
     this.onChangeSearchInput();
   };
-  storkTagsInput.prototype.onMouseMoveSuggestionsDropdown = function onMouseMoveSuggestionsDropdown(e) {
+  StorkTagsInput.prototype.onMouseMoveSuggestionsDropdown = function onMouseMoveSuggestionsDropdown(e) {
     var LI = e.target, i = 0;
     if (!LI || !LI.tagName) {
       console.error("event's target is not an HTMLElement");
@@ -150,7 +150,7 @@
       }
     }
   };
-  storkTagsInput.prototype.addTag = function addTag(tagObj) {
+  StorkTagsInput.prototype.addTag = function addTag(tagObj) {
     var i;
     if (!tagObj.groupLabel) {
       tagObj.groupLabel = capitalizeWords(tagObj.groupField);
@@ -198,7 +198,7 @@
     });
     this.tagsInput.dispatchEvent(evnt);
   };
-  storkTagsInput.prototype.removeTag = function removeTag(index) {
+  StorkTagsInput.prototype.removeTag = function removeTag(index) {
     if (this.chosenTags[index]) {
       this.unfocusTags();
       this.ul.removeChild(this.chosenTags[index].elm);
@@ -217,7 +217,7 @@
     }
     return false;
   };
-  storkTagsInput.prototype.removeAllTags = function removeAllTags() {
+  StorkTagsInput.prototype.removeAllTags = function removeAllTags() {
     this.unfocusTags();
     if (!this.ul.firstChild) {
       return false;
@@ -237,7 +237,7 @@
     this.tagsInput.dispatchEvent(evnt);
     return true;
   };
-  storkTagsInput.prototype.updateScrollAndWidths = function updateScrollAndWidths() {
+  StorkTagsInput.prototype.updateScrollAndWidths = function updateScrollAndWidths() {
     var ulStyle = this.ul.currentStyle || window.getComputedStyle(this.ul);
     var ulWidth = parseInt(ulStyle.width) - parseInt(ulStyle.paddingRight);
     var containerWidth = this.tagsInput.clientWidth;
@@ -249,7 +249,7 @@
     this.tagsInput.scrollLeft = this.tagsMaxScrollLeft;
     this.input.style.right = -this.tagsMaxScrollLeft + "px";
   };
-  storkTagsInput.prototype.onClickTag = function onClickTag(e) {
+  StorkTagsInput.prototype.onClickTag = function onClickTag(e) {
     var elm = e.target, i = 0;
     do {
       if (elm.tagName.toUpperCase() === "A" && elm.classList.contains("remove")) {
@@ -265,7 +265,7 @@
       i++;
     } while (i <= 3 && !(elm instanceof HTMLDocument));
   };
-  storkTagsInput.prototype.onClickFocusTag = function onClickFocusTag(index) {
+  StorkTagsInput.prototype.onClickFocusTag = function onClickFocusTag(index) {
     if (!Number.isInteger(index)) {
       index = index.index;
     }
@@ -280,7 +280,7 @@
     this.tagsInput.scrollLeft = Math.min(this.chosenTags[index].elm.offsetLeft - marginLeft, this.tagsMaxScrollLeft);
     this.input.style.right = -this.tagsInput.scrollLeft + "px";
   };
-  storkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
+  StorkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
     var target = e.target;
     while (!(target instanceof HTMLDocument) && target !== this.tagsInput && target !== this.dropdownContainer) {
       target = target.parentNode;
@@ -293,16 +293,16 @@
     this.tagsInput.classList.add("focused");
     this.dropdownContainer.classList.add("focused");
   };
-  storkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
+  StorkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
     if (this.input.value !== this.lastSearchString) {
       this.suggestionsHandler(this.input.value, this.chosenTags, this.suggestionsCallback.bind(this));
     }
     this.lastSearchString = this.input.value;
   };
-  storkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
+  StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
     this.unfocusTags();
   };
-  storkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
+  StorkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
     var key = keyboardMap[e.keyCode];
     var hoveredIndex;
     var allLIs;
@@ -343,7 +343,7 @@
       }
     }
   };
-  storkTagsInput.prototype.onTagsKeyboardNavigate = function onTagsKeyboardNavigate(e) {
+  StorkTagsInput.prototype.onTagsKeyboardNavigate = function onTagsKeyboardNavigate(e) {
     var key = keyboardMap[e.keyCode];
     if (key === "LEFT") {
       if (this.input === document.activeElement) {
@@ -385,7 +385,7 @@
       }
     }
   };
-  storkTagsInput.prototype.unfocusSuggestions = function unfocusSuggestions() {
+  StorkTagsInput.prototype.unfocusSuggestions = function unfocusSuggestions() {
     if (Number.isInteger(this.dropdownContainer.storkTagsProps.hoveredLIIndex)) {
       this.dropdownContainer.storkTagsProps.allLIs[this.dropdownContainer.storkTagsProps.hoveredLIIndex].classList.remove("focused");
     } else {
@@ -397,7 +397,7 @@
     }
     this.dropdownContainer.storkTagsProps.hoveredLIIndex = null;
   };
-  storkTagsInput.prototype.unfocusTags = function unfocusTags() {
+  StorkTagsInput.prototype.unfocusTags = function unfocusTags() {
     if (Number.isInteger(this.focusedTagIndex)) {
       this.chosenTags[this.focusedTagIndex].elm.classList.remove("focused");
     } else {
@@ -409,7 +409,7 @@
     }
     this.focusedTagIndex = null;
   };
-  storkTagsInput.prototype.focusSearchInput = function focusSearchInput(caretPosition) {
+  StorkTagsInput.prototype.focusSearchInput = function focusSearchInput(caretPosition) {
     if (!Number.isInteger(caretPosition)) {
       caretPosition = 0;
     }
@@ -419,5 +419,5 @@
       INP.setSelectionRange(caretPosition, caretPosition);
     }, 0);
   };
-  root.storkTagsInput = storkTagsInput;
+  root.StorkTagsInput = StorkTagsInput;
 })(window);

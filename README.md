@@ -20,7 +20,7 @@ Because all other tags-input or multi-select components are too opinionated or t
 - [Demo](#demo)
 
 ### Usage
-Initiate the Tags Input with `new storkTagsInput(options)`. This will return a tags object for further adjusting the tags-input later.
+Initiate the Tags Input with `new StorkTagsInput(options)`. This will return a tags object for further adjusting the tags-input later.
 
 #### Options
 _element_: the HTML DOM Element that will hold the tags-input. Example: `{ element: document.getElementById('my_autocomplete') }`
@@ -106,7 +106,7 @@ var suggestions_handler = function suggestions_handler(text, chosenTags, callbac
     callback([]);
 };
 
-var testTags = new storkTagsInput({
+var testTags = new StorkTagsInput({
   element: document.getElementById('tagsInput'),
   suggestionsHandler: suggestions_handler,
   rechooseRemove: true,
