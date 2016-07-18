@@ -46,7 +46,7 @@
 }
 .stork-tags-dropdown-container {
   position: absolute;
-  z-index: 1;
+  z-index: 999;
   margin: 0;
   padding: 0;
   display: none;
