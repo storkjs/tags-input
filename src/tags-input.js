@@ -32,13 +32,11 @@
 			allowed: true, // a throttle to prevent accidentally deleting tags when deleting text from the search input
 			TO: undefined // timeout
 		};
-		this.tagsMaxScrollLeft = 0;
 
 		this.tagsInput.classList.add('stork-tags', 'stork-tags'+this.rnd);
 		this.tagsInput.setAttribute('tabindex', 0);
 
 		this.buildDom();
-		this.updateScrollAndWidths();
 
 		this.setEventListeners();
 	};
@@ -188,6 +186,7 @@
 
 		this.input.value = '';
 		this.input.focus();
+		this.onFocusSearchInput();
 		this.onChangeSearchInput();
 	};
 
@@ -269,8 +268,6 @@
 		li.appendChild(valueSpan);
 		this.ul.appendChild(li);
 
-		this.updateScrollAndWidths();
-
 		var evnt = new CustomEvent('tag-added', {
 			bubbles: true,
 			cancelable: true,
@@ -294,8 +291,6 @@
 			// remove tag from tags list
 			this.ul.removeChild(this.chosenTags[index].elm);
 			var removed = this.chosenTags.splice(index, 1);
-
-			this.updateScrollAndWidths();
 
 			var evnt = new CustomEvent('tag-removed', {
 				bubbles: true,
@@ -330,8 +325,6 @@
 		}
 		var removed = this.chosenTags.splice(0, this.chosenTags.length);
 
-		this.updateScrollAndWidths();
-
 		var evnt = new CustomEvent('all-tags-removed', {
 			bubbles: true,
 			cancelable: true,
@@ -345,26 +338,9 @@
 	};
 
 	/**
-	 * updates the search input's width and position, and update the tags list scroll position
-	 * (and right padding for filling an empty space) in order to fit all tag list items
-	 * and the search input in place
+	 * when clicking a tag remove it or focus it
+	 * @param e
 	 */
-	StorkTagsInput.prototype.updateScrollAndWidths = function updateScrollAndWidths() {
-		var ulStyle = this.ul.currentStyle || window.getComputedStyle(this.ul);
-		var ulWidth = parseInt(ulStyle.width) - parseInt(ulStyle.paddingRight);
-
-		var containerWidth = this.tagsInput.clientWidth; // excluding borders
-		var remainingWidth = containerWidth - ulWidth;
-		var inputWidth = Math.max(remainingWidth, this.inputMinWidth);
-
-		this.input.style.width = inputWidth + 'px';
-		this.ul.style.paddingRight = inputWidth + 'px';
-
-		this.tagsMaxScrollLeft = ulWidth + inputWidth - containerWidth;
-		this.tagsInput.scrollLeft = this.tagsMaxScrollLeft; // maximum scroll so we'll see the search input on the right
-		this.input.style.right = -this.tagsMaxScrollLeft + 'px';
-	};
-
 	StorkTagsInput.prototype.onClickTag = function onClickTag(e) {
 		var elm = e.target,
 			i = 0;
@@ -401,7 +377,7 @@
 
 		var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
 		var marginLeft = parseInt(liStyle.marginLeft);
-		this.tagsInput.scrollLeft = Math.min(this.chosenTags[index].elm.offsetLeft - marginLeft, this.tagsMaxScrollLeft);
+		this.tagsInput.scrollLeft = Math.min(this.chosenTags[index].elm.offsetLeft - marginLeft, this.tagsInput.clientWidth);
 		this.input.style.right = -this.tagsInput.scrollLeft + 'px';
 	};
 
@@ -432,6 +408,9 @@
 
 	StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
 		this.unfocusTags();
+		console.log(this.tagsInput.clientWidth);
+		this.tagsInput.scrollLeft = this.tagsInput.clientWidth;
+		console.log(this.tagsInput.clientWidth);
 	};
 
 	StorkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
