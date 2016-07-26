@@ -73,12 +73,12 @@
     this.dropdownContainer.style.top = coordinates.y + this.tagsInput.offsetHeight + 1 + "px";
   };
   StorkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
+    while (this.dropdownContainer.firstChild) {
+      this.dropdownContainer.removeChild(this.dropdownContainer.firstChild);
+    }
     if (suggestionsArr.length === 0) {
       this.dropdownContainer.classList.remove("has-results");
       return;
-    }
-    while (this.dropdownContainer.firstChild) {
-      this.dropdownContainer.removeChild(this.dropdownContainer.firstChild);
     }
     var i, j, groupDiv, groupHeader, itemsList, item, miscElm;
     for (i = 0; i < suggestionsArr.length; i++) {
@@ -118,6 +118,7 @@
       LI = LI.parentNode;
     }
     this.addTag(LI.storkTagsProps);
+    this.unfocusSuggestions();
     this.input.value = "";
     this.input.focus();
     this.onChangeSearchInput();
@@ -306,6 +307,9 @@
     var key = keyboardMap[e.keyCode];
     var hoveredIndex;
     var allLIs;
+    if (this.dropdownContainer.storkTagsProps.allLIs.length === 0 || !this.dropdownContainer.classList.contains("focused")) {
+      return;
+    }
     if (key === "DOWN" || key === "UP" || key === "ENTER") {
       e.preventDefault();
       hoveredIndex = this.dropdownContainer.storkTagsProps.hoveredLIIndex;

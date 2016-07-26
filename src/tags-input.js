@@ -125,16 +125,17 @@
 	};
 
 	StorkTagsInput.prototype.suggestionsCallback = function suggestionsCallback(suggestionsArr) {
-		if(suggestionsArr.length === 0) {
-			this.dropdownContainer.classList.remove('has-results');
-			return;
-		}
-
 		// empty the dropdown's previous content
 		while(this.dropdownContainer.firstChild) {
 			this.dropdownContainer.removeChild(this.dropdownContainer.firstChild);
 		}
 
+		if(suggestionsArr.length === 0) {
+			this.dropdownContainer.classList.remove('has-results');
+			return;
+		}
+
+		// build new suggestions dom
 		var i, j, groupDiv, groupHeader, itemsList, item, miscElm;
 
 		for(i=0; i < suggestionsArr.length; i++) {
@@ -183,6 +184,7 @@
 		}
 
 		this.addTag(LI.storkTagsProps);
+		this.unfocusSuggestions();
 
 		this.input.value = '';
 		this.input.focus();
@@ -436,6 +438,10 @@
 		var key = keyboardMap[e.keyCode];
 		var hoveredIndex;
 		var allLIs;
+
+		if(this.dropdownContainer.storkTagsProps.allLIs.length === 0 || !this.dropdownContainer.classList.contains('focused')) {
+			return;
+		}
 
 		if(key === 'DOWN' || key === 'UP' || key === 'ENTER') {
 			e.preventDefault(); // stops document scrolling
