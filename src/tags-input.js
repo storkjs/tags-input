@@ -375,10 +375,14 @@
 		this.focusedTagIndex = index;
 		this.tagsInput.focus(); // blurs the search input, but keeps focus on the component
 
-		var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
-		var marginLeft = parseInt(liStyle.marginLeft);
-		this.tagsInput.scrollLeft = Math.min(this.chosenTags[index].elm.offsetLeft - marginLeft, this.tagsInput.clientWidth);
-		this.input.style.right = -this.tagsInput.scrollLeft + 'px';
+		if(!this._tagLIMarginLeft) { //calculate the margin-left of LIs once
+			var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
+			this._tagLIMarginLeft = parseInt(liStyle.marginLeft);
+		}
+
+		var leftPos = this.chosenTags[index].elm.offsetLeft;
+		var extra = 20; //show extra from the next tag (the one to the left of the current tag)
+		this.tagsInput.scrollLeft = leftPos - this._tagLIMarginLeft - extra;
 	};
 
 	StorkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {

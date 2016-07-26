@@ -260,10 +260,13 @@
     this.chosenTags[index].elm.classList.add("focused");
     this.focusedTagIndex = index;
     this.tagsInput.focus();
-    var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
-    var marginLeft = parseInt(liStyle.marginLeft);
-    this.tagsInput.scrollLeft = Math.min(this.chosenTags[index].elm.offsetLeft - marginLeft, this.tagsInput.clientWidth);
-    this.input.style.right = -this.tagsInput.scrollLeft + "px";
+    if (!this._tagLIMarginLeft) {
+      var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
+      this._tagLIMarginLeft = parseInt(liStyle.marginLeft);
+    }
+    var leftPos = this.chosenTags[index].elm.offsetLeft;
+    var extra = 20;
+    this.tagsInput.scrollLeft = leftPos - this._tagLIMarginLeft - extra;
   };
   StorkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
     var target = e.target;
