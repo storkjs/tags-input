@@ -412,7 +412,7 @@
 
 	StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
 		this.unfocusTags();
-		this.tagsInput.scrollLeft = this.tagsInput.clientWidth;
+		this.tagsInput.scrollLeft = this.tagsInput.scrollWidth;
 	};
 
 	StorkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
