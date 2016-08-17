@@ -190,6 +190,7 @@
     li.appendChild(groupSpan);
     li.appendChild(valueSpan);
     this.ul.appendChild(li);
+    this.input.setAttribute("placeholder", "");
     var evnt = new CustomEvent("tag-added", {
       bubbles: true,
       cancelable: true,
@@ -205,6 +206,9 @@
       this.unfocusTags();
       this.ul.removeChild(this.chosenTags[index].elm);
       var removed = this.chosenTags.splice(index, 1);
+      if (this.chosenTags.length === 0) {
+        this.input.setAttribute("placeholder", this.placeholder);
+      }
       var evnt = new CustomEvent("tag-removed", {
         bubbles: true,
         cancelable: true,
@@ -227,6 +231,9 @@
       this.ul.removeChild(this.ul.firstChild);
     }
     var removed = this.chosenTags.splice(0, this.chosenTags.length);
+    if (this.chosenTags.length === 0) {
+      this.input.setAttribute("placeholder", this.placeholder);
+    }
     var evnt = new CustomEvent("all-tags-removed", {
       bubbles: true,
       cancelable: true,

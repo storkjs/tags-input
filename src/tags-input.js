@@ -269,6 +269,8 @@
 		li.appendChild(valueSpan);
 		this.ul.appendChild(li);
 
+		this.input.setAttribute('placeholder', ''); //having chosen tags is like having text in the input, so no placeholder should be shown
+
 		var evnt = new CustomEvent('tag-added', {
 			bubbles: true,
 			cancelable: true,
@@ -292,6 +294,10 @@
 			// remove tag from tags list
 			this.ul.removeChild(this.chosenTags[index].elm);
 			var removed = this.chosenTags.splice(index, 1);
+
+			if(this.chosenTags.length === 0) {
+				this.input.setAttribute('placeholder', this.placeholder); //no chosen tags so we should show the placeholder
+			}
 
 			var evnt = new CustomEvent('tag-removed', {
 				bubbles: true,
@@ -325,6 +331,10 @@
 			this.ul.removeChild(this.ul.firstChild);
 		}
 		var removed = this.chosenTags.splice(0, this.chosenTags.length);
+
+		if(this.chosenTags.length === 0) {
+			this.input.setAttribute('placeholder', this.placeholder); //no chosen tags so we should show the placeholder
+		}
 
 		var evnt = new CustomEvent('all-tags-removed', {
 			bubbles: true,
