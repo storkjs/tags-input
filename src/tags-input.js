@@ -164,7 +164,8 @@
 			this.dropdownContainer.appendChild(groupDiv);
 		}
 
-		this.dropdownContainer.storkTagsProps.hoveredLIIndex = null; // allLIs was just re-built so let's forget the previously hovered item
+		this.dropdownContainer.storkTagsProps.hoveredLIIndex = null; // allLIs was just re-built so let's forget the previously hovered item (and re-select on the next line)
+		this.onMouseMoveSuggestionsDropdown({ target: this.dropdownContainer.storkTagsProps.allLIs[0] }); // choose the first items
 
 		this.positionDropdown();
 		this.dropdownContainer.classList.add('has-results'); // open the dropdown

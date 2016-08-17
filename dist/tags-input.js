@@ -104,6 +104,9 @@
       this.dropdownContainer.appendChild(groupDiv);
     }
     this.dropdownContainer.storkTagsProps.hoveredLIIndex = null;
+    this.onMouseMoveSuggestionsDropdown({
+      target: this.dropdownContainer.storkTagsProps.allLIs[0]
+    });
     this.positionDropdown();
     this.dropdownContainer.classList.add("has-results");
   };
