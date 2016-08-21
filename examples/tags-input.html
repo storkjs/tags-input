@@ -61,7 +61,7 @@
 			if(text.length > 0) { // perform search only on text
 				for(i=0; i < suggestionGroups.length; i++) {
 					for(j=0; j < suggestionGroups[i].items.length; j++) {
-						if(regex.test(suggestionGroups[i].items[j].label)) {
+						if(suggestionGroups[i].items[j].label.match(regex)) {
 							if(!ret.last || ret.last.field !== suggestionGroups[i].field) {
 								ret.push({
 									label: suggestionGroups[i].label,

@@ -125,8 +125,23 @@
     this.onFocusSearchInput();
     this.onChangeSearchInput();
   };
+  StorkTagsInput.prototype._scrollSuggestionsDropdownByItem = function _scrollSuggestionsDropdownByItem(LI) {
+    var yPos = 0, yPos_bottomPart, elm = LI;
+    while (elm && elm !== this.dropdownContainer && this.dropdownContainer.contains(elm)) {
+      yPos += elm.offsetTop;
+      elm = elm.offsetParent;
+    }
+    if (yPos < this.dropdownContainer.scrollTop) {
+      this.dropdownContainer.scrollTop = yPos;
+    } else {
+      yPos_bottomPart = yPos + LI.clientHeight;
+      if (this.dropdownContainer.scrollTop + this.dropdownContainer.clientHeight < yPos_bottomPart) {
+        this.dropdownContainer.scrollTop = yPos_bottomPart - this.dropdownContainer.clientHeight;
+      }
+    }
+  };
   StorkTagsInput.prototype.onMouseMoveSuggestionsDropdown = function onMouseMoveSuggestionsDropdown(e) {
-    var LI = e.target, i = 0;
+    var LI = e.target, i = 0, self = this;
     if (!LI || !LI.tagName) {
       console.error("event's target is not an HTMLElement");
       return;
@@ -149,6 +164,9 @@
       if (LI === this.dropdownContainer.storkTagsProps.allLIs[i]) {
         LI.classList.add("focused");
         this.dropdownContainer.storkTagsProps.hoveredLIIndex = i;
+        window.requestAnimationFrame(function() {
+          self._scrollSuggestionsDropdownByItem(LI);
+        });
         break;
       }
     }
@@ -279,17 +297,27 @@
     this.tagsInput.scrollLeft = leftPos - this._tagLIMarginLeft - extra;
   };
   StorkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
-    var target = e.target;
+    var target = e.target, evnt;
     while (!(target instanceof HTMLDocument) && target !== this.tagsInput && target !== this.dropdownContainer) {
       target = target.parentNode;
       if (target && target instanceof HTMLDocument) {
         this.tagsInput.classList.remove("focused");
         this.dropdownContainer.classList.remove("focused");
+        evnt = new CustomEvent("tags-input-blur", {
+          bubbles: true,
+          cancelable: true
+        });
+        this.tagsInput.dispatchEvent(evnt);
         return;
       }
     }
     this.tagsInput.classList.add("focused");
     this.dropdownContainer.classList.add("focused");
+    evnt = new CustomEvent("tags-input-focus", {
+      bubbles: true,
+      cancelable: true
+    });
+    this.tagsInput.dispatchEvent(evnt);
   };
   StorkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
     if (this.input.value !== this.lastSearchString) {
