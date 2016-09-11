@@ -684,6 +684,10 @@
 		while(this.tagsInput.firstChild) {
 			this.tagsInput.removeChild(this.tagsInput.firstChild);
 		}
+		while(this.dropdownContainer.firstChild) {
+			this.dropdownContainer.removeChild(this.dropdownContainer.firstChild);
+		}
+		this.dropdownContainer.parentNode.removeChild(this.dropdownContainer);
 
 		// remove properties
 		this.tagsInput.classList.remove('stork-tags', 'stork-tags'+this.rnd);
