@@ -19,7 +19,7 @@
 		this.tagsInput = options.element;
 		this.suggestionsHandler = options.suggestionsHandler;
 		if(!this.rnd) {
-			this.rnd = (Math.floor(Math.random() * 9) + 1) * 1000 + Date.now() % 1000; // random identifier for this grid
+			this.rnd = (Math.floor(Math.random() * 9) + 1) * 1000 + Date.now() % 1000; // random identifier for this tags instance
 		}
 		this.inputMinWidth = options.inputMinWidth || 60;
 		this.rechooseRemove = options.rechooseRemove || false;
@@ -32,6 +32,7 @@
 			allowed: true, // a throttle to prevent accidentally deleting tags when deleting text from the search input
 			TO: undefined // timeout
 		};
+		this.eventListeners = [];
 
 		this.tagsInput.classList.add('stork-tags', 'stork-tags'+this.rnd);
 		this.tagsInput.setAttribute('tabindex', 0);
@@ -42,13 +43,77 @@
 	};
 
 	/**
+	 * CUSTOM addEventListener method. this method keeps track of listeners so we can later do removeEventListener
+	 * (for example on destroy()) and prevent memory leaks.
+	 * @param element
+	 * @param type
+	 * @param listener
+	 * @param options_or_useCapture
+	 * @private
+	 */
+	StorkTagsInput.prototype._addEventListener = function customAddEventListener(element, type, listener, options_or_useCapture) {
+		element.addEventListener(type, listener, options_or_useCapture); // add event listener
+
+		this.eventListeners.push({element: element, type: type, listener: listener, options: options_or_useCapture}); // save listeners parameters
+
+		return this.eventListeners.length - 1; // return index for removing this specific listener later
+	};
+
+	/**
+	 * remove a specific event listener by its index
+	 * @param index
+	 * @private
+	 */
+	StorkTagsInput.prototype._removeEventListener = function customRemoveEventListener(index) {
+		var currEL = this.eventListeners[index];
+		if(currEL) { // if this event wasn't removed before
+			currEL.element.removeEventListener(currEL.type, currEL.listener, currEL.options);
+		}
+		this.eventListeners[index] = null; // change value instead of popping it out because we don't want to change the indexes of others in this list
+	};
+
+	/**
+	 * remove all event listeners from all of the tags's dom elements and empty the listeners array
+	 * @private
+	 */
+	StorkTagsInput.prototype._emptyEventListeners = function emptyEventListeners() {
+		var currEL;
+
+		for(var i=0; i < this.eventListeners.length; i++) {
+			currEL = this.eventListeners[i];
+
+			if(currEL) {
+				this._removeEventListener(i);
+			}
+		}
+	};
+
+	/**
 	 * a function for passing an addEventListener from the tags-instance to the tags-dom-element
 	 * @param type
 	 * @param listener
 	 * @param [options_or_useCapture]
 	 */
 	StorkTagsInput.prototype.addEventListener = function customAddEventListener(type, listener, options_or_useCapture) {
-		this.tagsInput.addEventListener(type, listener, options_or_useCapture);
+		this._addEventListener(this.tagsInput, type, listener, options_or_useCapture, true);
+	};
+
+	/**
+	 * a function for passing a removeEventListener from the tags-instance to the tags-dom-element
+	 * @param type
+	 * @param listener
+	 * @param [options_or_useCapture]
+	 */
+	StorkTagsInput.prototype.removeEventListener = function customRemoveEventListener(type, listener, options_or_useCapture) {
+		this.tagsInput.removeEventListener(type, listener, options_or_useCapture);
+
+		for(var i=0; i < this.eventListeners.length; i++) {
+			if(this.eventListeners[i].element === this.tagsInput
+				&& this.eventListeners[i].type === type
+				&& this.eventListeners[i].listener === listener) {
+				this.eventListeners[i] = null;
+			}
+		}
 	};
 
 	StorkTagsInput.prototype.buildDom = function buildDom() {
@@ -80,29 +145,29 @@
 
 	StorkTagsInput.prototype.setEventListeners = function setEventListeners() {
 		// typing in search input
-		this.input.addEventListener('keyup', this.onChangeSearchInput.bind(this), false);
+		this._addEventListener(this.input, 'keyup', this.onChangeSearchInput.bind(this), false);
 
 		// focusing on the search input
-		this.input.addEventListener('focus', this.onFocusSearchInput.bind(this), false);
+		this._addEventListener(this.input, 'focus', this.onFocusSearchInput.bind(this), false);
 
 		// choosing from suggestions dropdown list
-		this.dropdownContainer.addEventListener('click', this.onClickSuggestionsDropdown.bind(this), false);
+		this._addEventListener(this.dropdownContainer, 'click', this.onClickSuggestionsDropdown.bind(this), false);
 
 		// focusing on suggestions items
-		this.dropdownContainer.addEventListener('mousemove', this.onMouseMoveSuggestionsDropdown.bind(this), false);
+		this._addEventListener(this.dropdownContainer, 'mousemove', this.onMouseMoveSuggestionsDropdown.bind(this), false);
 
 		// handle clicking on tags (for focus or removal)
-		this.ul.addEventListener('click', this.onClickTag.bind(this), false);
+		this._addEventListener(this.ul, 'click', this.onClickTag.bind(this), false);
 
 		// focus and blur of tagsInput
-		document.addEventListener('click', this.onClickCheckFocus.bind(this), true);
+		this._addEventListener(document, 'click', this.onClickCheckFocus.bind(this), true);
 
 		// suggestions up and down keyboard navigation
-		this.tagsInput.addEventListener('keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
-		this.dropdownContainer.addEventListener('keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
+		this._addEventListener(this.tagsInput, 'keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
+		this._addEventListener(this.dropdownContainer, 'keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
 
 		// navigating the tags
-		this.tagsInput.addEventListener('keydown', this.onTagsKeyboardNavigate.bind(this), false);
+		this._addEventListener(this.tagsInput, 'keydown', this.onTagsKeyboardNavigate.bind(this), false);
 	};
 
 	/**
@@ -606,6 +671,31 @@
 		setTimeout(function() { // fixes a bug where inputs caret doesn't move and/or text doesn't really get selected
 			INP.setSelectionRange(caretPosition, caretPosition);
 		}, 0);
+	};
+
+	/**
+	 * completely destroy the tags - its DOM elements, methods and data
+	 */
+	StorkTagsInput.prototype.destroy = function destroy() {
+		// remove event listeners
+		this._emptyEventListeners();
+
+		// remove dom elements
+		while(this.tagsInput.firstChild) {
+			this.tagsInput.removeChild(this.tagsInput.firstChild);
+		}
+
+		// remove properties
+		this.tagsInput.classList.remove('stork-tags', 'stork-tags'+this.rnd);
+		delete this.tagsInput;
+		delete this.inputMinWidth;
+		delete this.rechooseRemove;
+		delete this.placeholder;
+		delete this.chosenTags;
+		delete this.focusedTagIndex;
+		delete this.lastSearchString;
+		delete this.tagDeleteThrottle;
+		delete this.eventListeners;
 	};
 
 	root.StorkTagsInput = StorkTagsInput;

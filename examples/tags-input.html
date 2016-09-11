@@ -44,6 +44,11 @@
 			padding-top: 50px;
 			border-top: 1px solid #d0d0d0;
 		}
+		#destroyBtn {
+			position: absolute;
+			top: -30px;
+			left: 0;
+		}
 		#tagsInput {
 			width: 100%;
 			height: 32px;
@@ -100,12 +105,15 @@
 			testTags.addEventListener('tag-removed', function(e) {
 				console.log('removed tag:', e.detail);
 			}, false);
+
+			document.getElementById('destroyBtn').addEventListener('click', testTags.destroy.bind(testTags), false);
 		});
 	</script>
 </head>
 <body>
 <div id="parentOne">
 	<div id="parentTwo">
+		<button id="destroyBtn" type="button">Destroy</button>
 		<div id="tagsInput"></div>
 	</div>
 </div>

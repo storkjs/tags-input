@@ -21,13 +21,48 @@
       allowed: true,
       TO: undefined
     };
+    this.eventListeners = [];
     this.tagsInput.classList.add("stork-tags", "stork-tags" + this.rnd);
     this.tagsInput.setAttribute("tabindex", 0);
     this.buildDom();
     this.setEventListeners();
   };
+  StorkTagsInput.prototype._addEventListener = function customAddEventListener(element, type, listener, options_or_useCapture) {
+    element.addEventListener(type, listener, options_or_useCapture);
+    this.eventListeners.push({
+      element: element,
+      type: type,
+      listener: listener,
+      options: options_or_useCapture
+    });
+    return this.eventListeners.length - 1;
+  };
+  StorkTagsInput.prototype._removeEventListener = function customRemoveEventListener(index) {
+    var currEL = this.eventListeners[index];
+    if (currEL) {
+      currEL.element.removeEventListener(currEL.type, currEL.listener, currEL.options);
+    }
+    this.eventListeners[index] = null;
+  };
+  StorkTagsInput.prototype._emptyEventListeners = function emptyEventListeners() {
+    var currEL;
+    for (var i = 0; i < this.eventListeners.length; i++) {
+      currEL = this.eventListeners[i];
+      if (currEL) {
+        this._removeEventListener(i);
+      }
+    }
+  };
   StorkTagsInput.prototype.addEventListener = function customAddEventListener(type, listener, options_or_useCapture) {
-    this.tagsInput.addEventListener(type, listener, options_or_useCapture);
+    this._addEventListener(this.tagsInput, type, listener, options_or_useCapture, true);
+  };
+  StorkTagsInput.prototype.removeEventListener = function customRemoveEventListener(type, listener, options_or_useCapture) {
+    this.tagsInput.removeEventListener(type, listener, options_or_useCapture);
+    for (var i = 0; i < this.eventListeners.length; i++) {
+      if (this.eventListeners[i].element === this.tagsInput && this.eventListeners[i].type === type && this.eventListeners[i].listener === listener) {
+        this.eventListeners[i] = null;
+      }
+    }
   };
   StorkTagsInput.prototype.buildDom = function buildDom() {
     var ul = document.createElement("ul");
@@ -50,15 +85,15 @@
     document.body.appendChild(dropdownContainer);
   };
   StorkTagsInput.prototype.setEventListeners = function setEventListeners() {
-    this.input.addEventListener("keyup", this.onChangeSearchInput.bind(this), false);
-    this.input.addEventListener("focus", this.onFocusSearchInput.bind(this), false);
-    this.dropdownContainer.addEventListener("click", this.onClickSuggestionsDropdown.bind(this), false);
-    this.dropdownContainer.addEventListener("mousemove", this.onMouseMoveSuggestionsDropdown.bind(this), false);
-    this.ul.addEventListener("click", this.onClickTag.bind(this), false);
-    document.addEventListener("click", this.onClickCheckFocus.bind(this), true);
-    this.tagsInput.addEventListener("keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
-    this.dropdownContainer.addEventListener("keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
-    this.tagsInput.addEventListener("keydown", this.onTagsKeyboardNavigate.bind(this), false);
+    this._addEventListener(this.input, "keyup", this.onChangeSearchInput.bind(this), false);
+    this._addEventListener(this.input, "focus", this.onFocusSearchInput.bind(this), false);
+    this._addEventListener(this.dropdownContainer, "click", this.onClickSuggestionsDropdown.bind(this), false);
+    this._addEventListener(this.dropdownContainer, "mousemove", this.onMouseMoveSuggestionsDropdown.bind(this), false);
+    this._addEventListener(this.ul, "click", this.onClickTag.bind(this), false);
+    this._addEventListener(document, "click", this.onClickCheckFocus.bind(this), true);
+    this._addEventListener(this.tagsInput, "keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
+    this._addEventListener(this.dropdownContainer, "keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
+    this._addEventListener(this.tagsInput, "keydown", this.onTagsKeyboardNavigate.bind(this), false);
   };
   StorkTagsInput.prototype.positionDropdown = function positionDropdown(width) {
     if (!width) {
@@ -448,6 +483,22 @@
     setTimeout(function() {
       INP.setSelectionRange(caretPosition, caretPosition);
     }, 0);
+  };
+  StorkTagsInput.prototype.destroy = function destroy() {
+    this._emptyEventListeners();
+    while (this.tagsInput.firstChild) {
+      this.tagsInput.removeChild(this.tagsInput.firstChild);
+    }
+    this.tagsInput.classList.remove("stork-tags", "stork-tags" + this.rnd);
+    delete this.tagsInput;
+    delete this.inputMinWidth;
+    delete this.rechooseRemove;
+    delete this.placeholder;
+    delete this.chosenTags;
+    delete this.focusedTagIndex;
+    delete this.lastSearchString;
+    delete this.tagDeleteThrottle;
+    delete this.eventListeners;
   };
   root.StorkTagsInput = StorkTagsInput;
 })(window);
