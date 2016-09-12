@@ -1,6 +1,6 @@
 /* main tags element */
 .stork-tags {
-	display: flex;
+	display: block;
 	position: relative;
 	overflow: hidden;
 
@@ -13,24 +13,35 @@
 		padding: 0;
 		list-style: none;
 		height: 100%;
-		flex-grow: 0;
+		flex-grow: 1;
+		cursor: text;
 
 		display: flex;
 		justify-content: flex-start; /*horizontal*/
 		align-items: center; /*vertical*/
 
-		counter-reset: tags;
-
 		> li {
 			display: flex;
 			white-space: nowrap;
 			flex-grow: 0;
-			cursor: default;
 
-			> a.remove {
-				display: flex;
-				justify-content: center; /*horizontal*/
-				align-items: center; /*vertical*/
+			&.tag {
+				cursor: default;
+
+				> a.remove {
+					display: flex;
+					justify-content: center; /*horizontal*/
+					align-items: center; /*vertical*/
+				}
+			}
+			&.search-li {
+				&.no-tags {
+					flex-grow: 1;
+				}
+
+				input.search {
+					width: 100%;
+				}
 			}
 		}
 	}

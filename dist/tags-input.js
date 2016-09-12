@@ -66,21 +66,26 @@
   };
   StorkTagsInput.prototype.buildDom = function buildDom() {
     var ul = document.createElement("ul");
+    var inputLi = document.createElement("li");
     var input = document.createElement("input");
+    inputLi.classList.add("search-li");
     input.classList.add("search");
     input.setAttribute("placeholder", this.placeholder);
+    inputLi.appendChild(input);
+    ul.appendChild(inputLi);
     this.tagsInput.appendChild(ul);
-    this.tagsInput.appendChild(input);
     var dropdownContainer = document.createElement("div");
     dropdownContainer.classList.add("stork-tags-dropdown-container", "stork-tags-dropdown-container" + this.rnd);
     dropdownContainer.setAttribute("tabindex", 0);
     this.ul = ul;
+    this.inputLi = inputLi;
     this.input = input;
     this.dropdownContainer = dropdownContainer;
     this.dropdownContainer.storkTagsProps = {
       allLIs: this.dropdownContainer.getElementsByTagName("li"),
       hoveredLIIndex: null
     };
+    this.updateSearchState();
     this.positionDropdown();
     document.body.appendChild(dropdownContainer);
   };
@@ -89,7 +94,7 @@
     this._addEventListener(this.input, "focus", this.onFocusSearchInput.bind(this), false);
     this._addEventListener(this.dropdownContainer, "click", this.onClickSuggestionsDropdown.bind(this), false);
     this._addEventListener(this.dropdownContainer, "mousemove", this.onMouseMoveSuggestionsDropdown.bind(this), false);
-    this._addEventListener(this.ul, "click", this.onClickTag.bind(this), false);
+    this._addEventListener(this.ul, "click", this.onClickTagsArea.bind(this), false);
     this._addEventListener(document, "click", this.onClickCheckFocus.bind(this), true);
     this._addEventListener(this.tagsInput, "keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
     this._addEventListener(this.dropdownContainer, "keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
@@ -229,6 +234,7 @@
     xA.appendChild(document.createTextNode("×"));
     groupSpan.appendChild(document.createTextNode(tagObj.groupLabel));
     valueSpan.appendChild(document.createTextNode(tagObj.label));
+    li.classList.add("tag");
     xA.classList.add("remove");
     groupSpan.classList.add("group");
     valueSpan.classList.add("value");
@@ -239,11 +245,11 @@
       groupLabel: tagObj.groupLabel,
       elm: li
     });
+    this.updateSearchState();
     li.appendChild(xA);
     li.appendChild(groupSpan);
     li.appendChild(valueSpan);
-    this.ul.appendChild(li);
-    this.input.setAttribute("placeholder", "");
+    this.ul.insertBefore(li, this.inputLi);
     var evnt = new CustomEvent("tag-added", {
       bubbles: true,
       cancelable: true,
@@ -260,7 +266,7 @@
       this.ul.removeChild(this.chosenTags[index].elm);
       var removed = this.chosenTags.splice(index, 1);
       if (this.chosenTags.length === 0) {
-        this.input.setAttribute("placeholder", this.placeholder);
+        this.updateSearchState();
       }
       var evnt = new CustomEvent("tag-removed", {
         bubbles: true,
@@ -285,7 +291,7 @@
     }
     var removed = this.chosenTags.splice(0, this.chosenTags.length);
     if (this.chosenTags.length === 0) {
-      this.input.setAttribute("placeholder", this.placeholder);
+      this.updateSearchState();
     }
     var evnt = new CustomEvent("all-tags-removed", {
       bubbles: true,
@@ -297,7 +303,18 @@
     this.tagsInput.dispatchEvent(evnt);
     return true;
   };
-  StorkTagsInput.prototype.onClickTag = function onClickTag(e) {
+  StorkTagsInput.prototype.updateSearchState = function updateSearchState() {
+    if (this.chosenTags.length > 0) {
+      this.inputLi.classList.add("with-tags");
+      this.inputLi.classList.remove("no-tags");
+      this.input.setAttribute("placeholder", "");
+    } else {
+      this.inputLi.classList.add("no-tags");
+      this.inputLi.classList.remove("with-tags");
+      this.input.setAttribute("placeholder", this.placeholder);
+    }
+  };
+  StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(e) {
     var elm = e.target, i = 0;
     do {
       if (elm.tagName.toUpperCase() === "A" && elm.classList.contains("remove")) {
@@ -306,7 +323,12 @@
         this.focusSearchInput(0);
         return;
       } else if (elm.tagName.toUpperCase() === "LI") {
-        this.onClickFocusTag(elm);
+        if (elm.classList.contains("tag")) {
+          this.onClickFocusTag(elm);
+        }
+        return;
+      } else if (elm.tagName.toUpperCase() === "UL") {
+        this.redrawSearchInput(e.offsetX);
         return;
       }
       elm = elm.parentNode;
@@ -330,6 +352,29 @@
     var leftPos = this.chosenTags[index].elm.offsetLeft;
     var extra = 20;
     this.tagsInput.scrollLeft = leftPos - this._tagLIMarginLeft - extra;
+  };
+  StorkTagsInput.prototype.redrawSearchInput = function redrawSearchInput(x) {
+    if (this.chosenTags.length === 0) {
+      return;
+    }
+    var idx, closestTagElm;
+    for (idx = 0; idx < this.chosenTags.length; idx++) {
+      if (!closestTagElm || Math.abs(closestTagElm.offsetLeft - x) > Math.abs(this.chosenTags[idx].elm.offsetLeft - x)) {
+        closestTagElm = this.chosenTags[idx].elm;
+      }
+    }
+    if (Math.abs(closestTagElm.offsetLeft - x) > Math.abs(this.ul.clientWidth - x)) {
+      if (this.ul.lastChild !== this.inputLi) {
+        this.ul.removeChild(this.inputLi);
+        this.ul.appendChild(this.inputLi);
+      }
+    } else {
+      if (closestTagElm.previousSibling !== this.inputLi) {
+        this.ul.removeChild(this.inputLi);
+        this.ul.insertBefore(this.inputLi, closestTagElm);
+      }
+    }
+    this.input.focus();
   };
   StorkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
     var target = e.target, evnt;

@@ -118,25 +118,31 @@
 
 	StorkTagsInput.prototype.buildDom = function buildDom() {
 		var ul = document.createElement('ul');
-		var input = document.createElement('input');
 
+		var inputLi = document.createElement('li');
+		var input = document.createElement('input');
+		inputLi.classList.add('search-li');
 		input.classList.add('search');
 		input.setAttribute('placeholder', this.placeholder);
 
+		inputLi.appendChild(input);
+		ul.appendChild(inputLi);
 		this.tagsInput.appendChild(ul);
-		this.tagsInput.appendChild(input);
 
 		var dropdownContainer = document.createElement('div');
 		dropdownContainer.classList.add('stork-tags-dropdown-container', 'stork-tags-dropdown-container'+this.rnd);
 		dropdownContainer.setAttribute('tabindex', 0);
 
 		this.ul = ul;
+		this.inputLi = inputLi;
 		this.input = input;
 		this.dropdownContainer = dropdownContainer;
 		this.dropdownContainer.storkTagsProps = {
-			allLIs: this.dropdownContainer.getElementsByTagName('li'),/*now hold a live HTMLCollection*/
+			allLIs: this.dropdownContainer.getElementsByTagName('li'),/*now holds a live HTMLCollection*/
 			hoveredLIIndex: null
 		};
+
+		this.updateSearchState();
 
 		this.positionDropdown();
 
@@ -157,7 +163,7 @@
 		this._addEventListener(this.dropdownContainer, 'mousemove', this.onMouseMoveSuggestionsDropdown.bind(this), false);
 
 		// handle clicking on tags (for focus or removal)
-		this._addEventListener(this.ul, 'click', this.onClickTag.bind(this), false);
+		this._addEventListener(this.ul, 'click', this.onClickTagsArea.bind(this), false);
 
 		// focus and blur of tagsInput
 		this._addEventListener(document, 'click', this.onClickCheckFocus.bind(this), true);
@@ -348,6 +354,7 @@
 		groupSpan.appendChild(document.createTextNode(tagObj.groupLabel));
 		valueSpan.appendChild(document.createTextNode(tagObj.label));
 
+		li.classList.add('tag');
 		xA.classList.add('remove');
 		groupSpan.classList.add('group');
 		valueSpan.classList.add('value');
@@ -360,12 +367,12 @@
 			elm: li
 		});
 
+		this.updateSearchState();
+
 		li.appendChild(xA);
 		li.appendChild(groupSpan);
 		li.appendChild(valueSpan);
-		this.ul.appendChild(li);
-
-		this.input.setAttribute('placeholder', ''); //having chosen tags is like having text in the input, so no placeholder should be shown
+		this.ul.insertBefore(li, this.inputLi);
 
 		var evnt = new CustomEvent('tag-added', {
 			bubbles: true,
@@ -392,7 +399,7 @@
 			var removed = this.chosenTags.splice(index, 1);
 
 			if(this.chosenTags.length === 0) {
-				this.input.setAttribute('placeholder', this.placeholder); //no chosen tags so we should show the placeholder
+				this.updateSearchState();
 			}
 
 			var evnt = new CustomEvent('tag-removed', {
@@ -429,7 +436,7 @@
 		var removed = this.chosenTags.splice(0, this.chosenTags.length);
 
 		if(this.chosenTags.length === 0) {
-			this.input.setAttribute('placeholder', this.placeholder); //no chosen tags so we should show the placeholder
+			this.updateSearchState();
 		}
 
 		var evnt = new CustomEvent('all-tags-removed', {
@@ -445,10 +452,27 @@
 	};
 
 	/**
-	 * when clicking a tag remove it or focus it
+	 * change the state of the search whether it is alone or with tags
+	 */
+	StorkTagsInput.prototype.updateSearchState = function updateSearchState() {
+		if(this.chosenTags.length > 0) {
+			this.inputLi.classList.add('with-tags');
+			this.inputLi.classList.remove('no-tags');
+			this.input.setAttribute('placeholder', ''); //having chosen tags is like having text in the input, so no placeholder should be shown
+		}
+		else {
+			this.inputLi.classList.add('no-tags');
+			this.inputLi.classList.remove('with-tags');
+			this.input.setAttribute('placeholder', this.placeholder);
+		}
+	};
+
+	/**
+	 * when clicking the tags area (the UL that acts like input).
+	 * this will determine whether to remove a tag or focus it or create-and-focus a search input
 	 * @param e
 	 */
-	StorkTagsInput.prototype.onClickTag = function onClickTag(e) {
+	StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(e) {
 		var elm = e.target,
 			i = 0;
 
@@ -460,7 +484,13 @@
 				return;
 			}
 			else if(elm.tagName.toUpperCase() === 'LI') {
-				this.onClickFocusTag(elm);
+				if(elm.classList.contains('tag')) {
+					this.onClickFocusTag(elm);
+				}
+				return;
+			}
+			else if(elm.tagName.toUpperCase() === 'UL') {
+				this.redrawSearchInput(e.offsetX);
 				return;
 			}
 
@@ -469,6 +499,10 @@
 		} while(i <= 3 && !(elm instanceof HTMLDocument));
 	};
 
+	/**
+	 * when clicking a tag and focusing it
+	 * @param index
+	 */
 	StorkTagsInput.prototype.onClickFocusTag = function onClickFocusTag(index) {
 		if(!Number.isInteger(index)) { // we have got an element object instead of its index
 			index = index.index;
@@ -490,6 +524,39 @@
 		var leftPos = this.chosenTags[index].elm.offsetLeft;
 		var extra = 20; //show extra from the next tag (the one to the left of the current tag)
 		this.tagsInput.scrollLeft = leftPos - this._tagLIMarginLeft - extra;
+	};
+
+	/**
+	 * when clicking the UL for triggering a new search-input in the clicked area
+	 * @param {number} x - the position to draw the search-input at
+	 */
+	StorkTagsInput.prototype.redrawSearchInput = function redrawSearchInput(x) {
+		if(this.chosenTags.length === 0) {
+			return; //no need to do anything when there are no tags because the search-input should already fill the whole area
+		}
+
+		var idx, closestTagElm;
+
+		// determine the closest tag element to the user's click so we add before it the search input
+		for(idx = 0; idx < this.chosenTags.length; idx++) {
+			if(!closestTagElm || Math.abs(closestTagElm.offsetLeft - x) > Math.abs(this.chosenTags[idx].elm.offsetLeft - x)) {
+				closestTagElm = this.chosenTags[idx].elm;
+			}
+		}
+
+		if(Math.abs(closestTagElm.offsetLeft - x) > Math.abs(this.ul.clientWidth - x)) { //if user clicked closer to the end (after all of the tags)
+			if(this.ul.lastChild !== this.inputLi) {
+				this.ul.removeChild(this.inputLi);
+				this.ul.appendChild(this.inputLi);
+			}
+		} else { //user clicked before a tag
+			if(closestTagElm.previousSibling !== this.inputLi) {
+				this.ul.removeChild(this.inputLi);
+				this.ul.insertBefore(this.inputLi, closestTagElm);
+			}
+		}
+
+		this.input.focus();
 	};
 
 	StorkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {

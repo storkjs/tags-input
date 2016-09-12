@@ -6,12 +6,14 @@
 	border-radius: 2px;
 
 	> ul {
-		> li {
+		> li.tag {
 			background-color: #a0d0f0;
 			border-radius: 6px;
 			padding: 3px 6px 3px 3px;
 			font-size: 13px;
-			margin-left: 3px;
+			margin-left: 10px;
+			border-top: 3px solid white;
+			border-bottom: 3px solid white;
 
 			&.focused {
 				background-color: #70a0c0;
@@ -33,6 +35,18 @@
 			}
 			span.value::before {
 				content: "\00a0:\00a0";
+			}
+		}
+
+		> li.search-li {
+			input {
+				height: 28px;
+				padding: 4px 5px;
+				border-width: 0;
+
+				&:focus {
+					outline-width: 0;
+				}
 			}
 		}
 	}
