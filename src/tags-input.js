@@ -374,7 +374,7 @@
 		li.appendChild(valueSpan);
 		this.ul.insertBefore(li, this.inputLi);
 
-		var tagIndex = li.index;
+		var tagIndex = li.index; //the index where the element was inserted
 
 		this.chosenTags.splice(tagIndex, 0, {
 			value: tagObj.value,
@@ -703,36 +703,27 @@
 		var key = keyboardMap[e.keyCode];
 
 		if(key === 'LEFT') {
-			if(this.input === document.activeElement) {
-				if(!Number.isInteger(this.focusedTagIndex) && this.input.selectionStart === 0) {
-					this.onClickFocusTag(this.chosenTags.length - 1);
-				}
+			if(this.input === document.activeElement && this.inputLi.previousSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart === 0) {
+				this.onClickFocusTag(this.inputLi.previousSibling.index);
 			}
-			else if(this.focusedTagIndex > 0) {
-				this.onClickFocusTag(this.focusedTagIndex - 1);
+			else if(Number.isInteger(this.focusedTagIndex)) {
+				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
 				e.preventDefault(); // stops document scrolling
 			}
 		}
 		else if(key === 'RIGHT') {
-			if(this.input !== document.activeElement) {
-				if(this.focusedTagIndex === this.chosenTags.length - 1) {
-					this.unfocusTags();
-					this.focusSearchInput(0);
-				}
-				else if(!Number.isInteger(this.focusedTagIndex)) {
-					this.onClickFocusTag(0);
-				}
-				else {
-					this.onClickFocusTag(this.focusedTagIndex + 1);
-				}
-
+			if(this.input === document.activeElement && this.inputLi.nextSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart >= this.input.value.length - 1) {
+				this.onClickFocusTag(this.inputLi.nextSibling.index - 1);
+			}
+			else if(Number.isInteger(this.focusedTagIndex)) {
+				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1);
 				e.preventDefault(); // stops document scrolling
 			}
 		}
 		else if(key === 'BACKSPACE' || key === 'DELETE') {
 			if(this.input === document.activeElement) {
-				if(this.tagDeleteThrottle.allowed && this.input.value === '') {
-					this.removeTag(this.chosenTags.length - 1);
+				if(this.tagDeleteThrottle.allowed && this.input.value === '' && this.inputLi.previousSibling) {
+					this.removeTag(this.inputLi.previousSibling.index);
 				}
 
 				// for any delete we will throttle the option to delete a tag so user won't accidentally delete all tags when holding down DELETE key.
@@ -744,7 +735,9 @@
 				}
 			}
 			else if(Number.isInteger(this.focusedTagIndex)) {
-				this.removeTag(this.focusedTagIndex);
+				var tmpFocusedTagIndex = this.focusedTagIndex; //save this index number because redrawing the search-input will focus it and trigger 'unfocusTags()'
+				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
+				this.removeTag(tmpFocusedTagIndex);
 				this.focusSearchInput(0);
 				e.preventDefault(); // stops document scrolling
 			}
