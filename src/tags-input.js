@@ -24,6 +24,7 @@
 		this.inputMinWidth = options.inputMinWidth || 60;
 		this.rechooseRemove = options.rechooseRemove || false;
 		this.placeholder = options.placeholder || '';
+		this.textCanvasContext = null;
 
 		this.chosenTags = [];
 		this.focusedTagIndex = null;
@@ -121,8 +122,12 @@
 
 		var inputLi = document.createElement('li');
 		var input = document.createElement('input');
+
 		inputLi.classList.add('search-li');
+		inputLi.storkTagsProps = { state: null };
+
 		input.classList.add('search');
+		input.storkTagsProps = { paddingLeft: 0, paddingRight: 0 };
 		input.setAttribute('placeholder', this.placeholder);
 
 		inputLi.appendChild(input);
@@ -152,6 +157,9 @@
 	StorkTagsInput.prototype.setEventListeners = function setEventListeners() {
 		// typing in search input
 		this._addEventListener(this.input, 'keyup', this.onChangeSearchInput.bind(this), false);
+
+		// calculating width when typing in search input
+		this._addEventListener(this.input, 'keydown', this.onKeydownSearchInput.bind(this), false);
 
 		// focusing on the search input
 		this._addEventListener(this.input, 'focus', this.onFocusSearchInput.bind(this), false);
@@ -359,14 +367,6 @@
 		groupSpan.classList.add('group');
 		valueSpan.classList.add('value');
 
-		this.chosenTags.push({
-			value: tagObj.value,
-			label: tagObj.label,
-			groupField: tagObj.groupField,
-			groupLabel: tagObj.groupLabel,
-			elm: li
-		});
-
 		this.updateSearchState();
 
 		li.appendChild(xA);
@@ -374,12 +374,22 @@
 		li.appendChild(valueSpan);
 		this.ul.insertBefore(li, this.inputLi);
 
+		var tagIndex = li.index;
+
+		this.chosenTags.splice(tagIndex, 0, {
+			value: tagObj.value,
+			label: tagObj.label,
+			groupField: tagObj.groupField,
+			groupLabel: tagObj.groupLabel,
+			elm: li
+		});
+
 		var evnt = new CustomEvent('tag-added', {
 			bubbles: true,
 			cancelable: true,
 			detail: {
-				obj: this.chosenTags[this.chosenTags.length - 1],
-				index: this.chosenTags.length - 1
+				obj: this.chosenTags[tagIndex],
+				index: tagIndex
 			}
 		});
 		this.tagsInput.dispatchEvent(evnt);
@@ -458,12 +468,16 @@
 		if(this.chosenTags.length > 0) {
 			this.inputLi.classList.add('with-tags');
 			this.inputLi.classList.remove('no-tags');
+			this.inputLi.storkTagsProps.state = 'with-tags';
 			this.input.setAttribute('placeholder', ''); //having chosen tags is like having text in the input, so no placeholder should be shown
+			this.calculateSearchInputWidth();
 		}
 		else {
 			this.inputLi.classList.add('no-tags');
 			this.inputLi.classList.remove('with-tags');
+			this.inputLi.storkTagsProps.state = 'no-tags';
 			this.input.setAttribute('placeholder', this.placeholder);
+			this.input.style.width = '';
 		}
 	};
 
@@ -506,6 +520,9 @@
 	StorkTagsInput.prototype.onClickFocusTag = function onClickFocusTag(index) {
 		if(!Number.isInteger(index)) { // we have got an element object instead of its index
 			index = index.index;
+			if(this.inputLi.index < index) { //if the input-LI is before the tag-LI then the index doesn't correlate with the chosenTags index
+				index--;
+			}
 		}
 
 		if(Number.isInteger(this.focusedTagIndex)) {
@@ -518,7 +535,7 @@
 
 		if(!this._tagLIMarginLeft) { //calculate the margin-left of LIs once
 			var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
-			this._tagLIMarginLeft = parseInt(liStyle.marginLeft);
+			this._tagLIMarginLeft = parseInt(liStyle.marginLeft, 10);
 		}
 
 		var leftPos = this.chosenTags[index].elm.offsetLeft;
@@ -544,18 +561,20 @@
 			}
 		}
 
-		if(Math.abs(closestTagElm.offsetLeft - x) > Math.abs(this.ul.clientWidth - x)) { //if user clicked closer to the end (after all of the tags)
-			if(this.ul.lastChild !== this.inputLi) {
-				this.ul.removeChild(this.inputLi);
+		var append = this.chosenTags.last.elm === closestTagElm && Math.abs(closestTagElm.offsetLeft - x) > Math.abs(closestTagElm.offsetLeft + closestTagElm.clientWidth - x); //if user clicked closer to the end (after all of the tags)
+
+		if((append && this.ul.lastChild !== this.inputLi) || (!append && closestTagElm.previousSibling !== this.inputLi)) {
+			this.ul.removeChild(this.inputLi);
+			this.input.value = '';
+
+			if(append) {
 				this.ul.appendChild(this.inputLi);
-			}
-		} else { //user clicked before a tag
-			if(closestTagElm.previousSibling !== this.inputLi) {
-				this.ul.removeChild(this.inputLi);
+			} else {
 				this.ul.insertBefore(this.inputLi, closestTagElm);
 			}
 		}
 
+		this.calculateSearchInputWidth();
 		this.input.focus();
 	};
 
@@ -590,12 +609,45 @@
 		this.tagsInput.dispatchEvent(evnt);
 	};
 
+	/**
+	 * when the user types in the search-input
+	 * @param e
+	 */
 	StorkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
 		if(this.input.value !== this.lastSearchString) {
+			if(this.inputLi.storkTagsProps.state === 'with-tags') {
+				this.calculateSearchInputWidth();
+			}
+
 			this.suggestionsHandler(this.input.value, this.chosenTags, this.suggestionsCallback.bind(this));
 		}
 
 		this.lastSearchString = this.input.value;
+	};
+
+	StorkTagsInput.prototype.onKeydownSearchInput = function onKeydownSearchInput(event) {
+		if(event.key && (event.keyCode >= 48 && event.keyCode <= 90) || (event.keyCode >= 186 && event.keyCode <= 222)) {
+			this.calculateSearchInputWidth(this.input.value + event.key);
+		}
+	};
+
+	/**
+	 * calculate the text width of the search input and set the input to that minimal width
+	 * @param {string|undefined} [text] - calculate against a specific text
+	 */
+	StorkTagsInput.prototype.calculateSearchInputWidth = function calculateSearchInputWidth(text) {
+		if(!this.textCanvasContext) {
+			var textCanvas = document.createElement('canvas');
+			var inputStyle = this.input.currentStyle || window.getComputedStyle(this.input);
+
+			this.textCanvasContext = textCanvas.getContext('2d');
+			this.textCanvasContext.font = inputStyle.fontStyle+' '+inputStyle.fontWeight+' '+inputStyle.fontSize+' '+inputStyle.fontFamily;
+			this.input.storkTagsProps.paddingLeft = parseInt(inputStyle.paddingLeft, 10);
+			this.input.storkTagsProps.paddingRight = parseInt(inputStyle.paddingRight, 10);
+		}
+
+		var textMetrics = this.textCanvasContext.measureText(text || this.input.value);
+		this.input.style.width = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + 'px';
 	};
 
 	StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
