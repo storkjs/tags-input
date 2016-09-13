@@ -227,7 +227,12 @@
     for (i = 0; i < this.chosenTags.length; i++) {
       if (tagObj.groupField === this.chosenTags[i].groupField && tagObj.value === this.chosenTags[i].value) {
         if (this.rechooseRemove) {
-          return this.removeTag(i);
+          try {
+            this.removeTag(i);
+          } catch (e) {
+            return false;
+          }
+          return true;
         }
         return false;
       }
@@ -283,9 +288,9 @@
         }
       });
       this.tagsInput.dispatchEvent(evnt);
-      return true;
+    } else {
+      throw new Error("index does not exist in chosenTags array");
     }
-    return false;
   };
   StorkTagsInput.prototype.removeAllTags = function removeAllTags() {
     this.unfocusTags();
@@ -327,8 +332,16 @@
     do {
       if (elm.tagName.toUpperCase() === "A" && elm.classList.contains("remove")) {
         var elmIndex = elm.parentNode.index;
-        this.removeTag(elmIndex);
-        this.focusSearchInput(0);
+        if (this.inputLi.index < elmIndex) {
+          elmIndex--;
+        }
+        try {
+          this.removeTag(elmIndex);
+        } catch (e) {
+          console.warn(e.message);
+        } finally {
+          this.focusSearchInput(0);
+        }
         return;
       } else if (elm.tagName.toUpperCase() === "LI") {
         if (elm.classList.contains("tag")) {
@@ -373,7 +386,7 @@
     var extra = 20;
     this.tagsInput.scrollLeft = leftPos - this._tagLIMarginLeft - extra;
   };
-  StorkTagsInput.prototype.redrawSearchInput = function redrawSearchInput(x) {
+  StorkTagsInput.prototype.redrawSearchInput = function redrawSearchInput(x, caretPosition) {
     if (this.chosenTags.length === 0) {
       return;
     }
@@ -394,7 +407,7 @@
       }
     }
     this.calculateSearchInputWidth();
-    this.input.focus();
+    this.focusSearchInput(caretPosition);
   };
   StorkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
     var target = e.target, evnt;
@@ -505,18 +518,28 @@
       if (this.input === document.activeElement && this.inputLi.previousSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart === 0) {
         this.onClickFocusTag(this.inputLi.previousSibling.index);
       } else if (Number.isInteger(this.focusedTagIndex)) {
-        this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
+        this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1, this.input.value.length);
+        e.preventDefault();
       }
     } else if (key === "RIGHT") {
-      if (this.input === document.activeElement && this.inputLi.nextSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart >= this.input.value.length - 1) {
+      if (this.input === document.activeElement && this.inputLi.nextSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart >= this.input.value.length) {
         this.onClickFocusTag(this.inputLi.nextSibling.index - 1);
       } else if (Number.isInteger(this.focusedTagIndex)) {
-        this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1);
+        this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1, 0);
+        e.preventDefault();
       }
     } else if (key === "BACKSPACE" || key === "DELETE") {
       if (this.input === document.activeElement) {
         if (this.tagDeleteThrottle.allowed && this.input.value === "" && this.inputLi.previousSibling) {
-          this.removeTag(this.inputLi.previousSibling.index);
+          try {
+            if (key === "BACKSPACE" && this.inputLi.previousSibling) {
+              this.removeTag(this.inputLi.previousSibling.index);
+            } else if (key === "DELETE" && this.inputLi.nextSibling) {
+              this.removeTag(this.inputLi.index);
+            }
+          } catch (e) {
+            console.warn(e.message);
+          }
         }
         if (this.input.value !== "" || this.tagDeleteThrottle.allowed) {
           this.tagDeleteThrottle.allowed = false;
@@ -528,8 +551,13 @@
       } else if (Number.isInteger(this.focusedTagIndex)) {
         var tmpFocusedTagIndex = this.focusedTagIndex;
         this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
-        this.removeTag(tmpFocusedTagIndex);
-        this.focusSearchInput(0);
+        try {
+          this.removeTag(tmpFocusedTagIndex);
+        } catch (e) {
+          console.warn(e.message);
+        } finally {
+          this.focusSearchInput(0);
+        }
         e.preventDefault();
       }
     }
@@ -564,6 +592,7 @@
     }
     this.input.focus();
     var INP = this.input;
+    INP.setSelectionRange(caretPosition, caretPosition);
     setTimeout(function() {
       INP.setSelectionRange(caretPosition, caretPosition);
     }, 0);

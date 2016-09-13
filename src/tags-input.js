@@ -342,7 +342,10 @@
 		for(i=0; i < this.chosenTags.length; i++) {
 			if(tagObj.groupField === this.chosenTags[i].groupField && tagObj.value === this.chosenTags[i].value) {
 				if(this.rechooseRemove) {
-					return this.removeTag(i); // remove already chosen tag
+					try { this.removeTag(i); }
+					catch(e) { return false; }
+
+					return true;
 				}
 
 				return false; // fail to add tag since tag already exists
@@ -417,11 +420,10 @@
 				}
 			});
 			this.tagsInput.dispatchEvent(evnt);
-
-			return true; // success
 		}
-
-		return false; // fail
+		else {
+			throw new Error('index does not exist in chosenTags array');
+		}
 	};
 
 	/**
@@ -487,8 +489,14 @@
 		do {
 			if(elm.tagName.toUpperCase() === 'A' && elm.classList.contains('remove')) {
 				var elmIndex = elm.parentNode.index;
-				this.removeTag(elmIndex);
-				this.focusSearchInput(0);
+				if(this.inputLi.index < elmIndex) { //if the input-LI is before the tag-LI then the index doesn't correlate with the chosenTags index
+					elmIndex--;
+				}
+
+				try { this.removeTag(elmIndex); }
+				catch(e) { console.warn(e.message); }
+				finally { this.focusSearchInput(0); }
+
 				return;
 			}
 			else if(elm.tagName.toUpperCase() === 'LI') {
@@ -558,8 +566,9 @@
 	/**
 	 * when clicking the UL for triggering a new search-input in the clicked area
 	 * @param {number} x - the position to draw the search-input at
+	 * @param {number} [caretPosition] - where to put the caret after focusing the search-input
 	 */
-	StorkTagsInput.prototype.redrawSearchInput = function redrawSearchInput(x) {
+	StorkTagsInput.prototype.redrawSearchInput = function redrawSearchInput(x, caretPosition) {
 		if(this.chosenTags.length === 0) {
 			return; //no need to do anything when there are no tags because the search-input should already fill the whole area
 		}
@@ -587,7 +596,7 @@
 		}
 
 		this.calculateSearchInputWidth();
-		this.input.focus();
+		this.focusSearchInput(caretPosition);
 	};
 
 	StorkTagsInput.prototype.onClickCheckFocus = function onClickCheckFocus(e) {
@@ -666,6 +675,7 @@
 		}
 
 		var textMetrics = this.textCanvasContext.measureText(text || this.input.value);
+		//note - the +1 pixel is for limiting the minimum width to 1px and also prevents weird width jumps while typing
 		this.input.style.width = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + 'px';
 	};
 
@@ -730,21 +740,33 @@
 				this.onClickFocusTag(this.inputLi.previousSibling.index);
 			}
 			else if(Number.isInteger(this.focusedTagIndex)) {
-				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
+				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1, this.input.value.length);
+				e.preventDefault(); //focusing on the input will cause the LEFT press to move the caret so we will prevent this
 			}
 		}
 		else if(key === 'RIGHT') {
-			if(this.input === document.activeElement && this.inputLi.nextSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart >= this.input.value.length - 1) {
+			if(this.input === document.activeElement && this.inputLi.nextSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart >= this.input.value.length) {
 				this.onClickFocusTag(this.inputLi.nextSibling.index - 1);
 			}
 			else if(Number.isInteger(this.focusedTagIndex)) {
-				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1);
+				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1, 0);
+				e.preventDefault(); //focusing on the input will cause the RIGHT press to move the caret so we will prevent this
 			}
 		}
 		else if(key === 'BACKSPACE' || key === 'DELETE') {
 			if(this.input === document.activeElement) {
-				if(this.tagDeleteThrottle.allowed && this.input.value === '' && this.inputLi.previousSibling) {
-					this.removeTag(this.inputLi.previousSibling.index);
+				if(this.tagDeleteThrottle.allowed && this.input.value === '' && this.inputLi.previousSibling) { //trying to delete "beyond" the input
+					try {
+						if(key === 'BACKSPACE' && this.inputLi.previousSibling) {
+							this.removeTag(this.inputLi.previousSibling.index);
+						}
+						else if(key === 'DELETE' && this.inputLi.nextSibling) {
+							this.removeTag(this.inputLi.index); //the input-LI is before the tag-LI so the tag's-elm index is greater by 1 from its tag's index in chosenTags
+						}
+					}
+					catch(e) {
+						console.warn(e.message);
+					}
 				}
 
 				// for any delete we will throttle the option to delete a tag so user won't accidentally delete all tags when holding down DELETE key.
@@ -758,8 +780,11 @@
 			else if(Number.isInteger(this.focusedTagIndex)) {
 				var tmpFocusedTagIndex = this.focusedTagIndex; //save this index number because redrawing the search-input will focus it and trigger 'unfocusTags()'
 				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
-				this.removeTag(tmpFocusedTagIndex);
-				this.focusSearchInput(0);
+
+				try { this.removeTag(tmpFocusedTagIndex); }
+				catch(e) { console.warn(e.message); }
+				finally { this.focusSearchInput(0); }
+
 				e.preventDefault(); // stops document scrolling
 			}
 		}
@@ -801,6 +826,8 @@
 		}
 		this.input.focus();
 		var INP = this.input;
+
+		INP.setSelectionRange(caretPosition, caretPosition);
 		setTimeout(function() { // fixes a bug where inputs caret doesn't move and/or text doesn't really get selected
 			INP.setSelectionRange(caretPosition, caretPosition);
 		}, 0);
