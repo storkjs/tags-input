@@ -118,30 +118,26 @@
 	};
 
 	StorkTagsInput.prototype.buildDom = function buildDom() {
-		var ul = document.createElement('ul');
+		this.ul = document.createElement('ul');
 
-		var inputLi = document.createElement('li');
-		var input = document.createElement('input');
+		this.inputLi = document.createElement('li');
+		this.input = document.createElement('input');
 
-		inputLi.classList.add('search-li');
-		inputLi.storkTagsProps = { state: null };
+		this.inputLi.classList.add('search-li');
+		this.inputLi.storkTagsProps = { state: null };
 
-		input.classList.add('search');
-		input.storkTagsProps = { paddingLeft: 0, paddingRight: 0 };
-		input.setAttribute('placeholder', this.placeholder);
+		this.input.classList.add('search');
+		this.input.storkTagsProps = { paddingLeft: 0, paddingRight: 0 };
+		this.input.setAttribute('placeholder', this.placeholder);
 
-		inputLi.appendChild(input);
-		ul.appendChild(inputLi);
-		this.tagsInput.appendChild(ul);
+		this.inputLi.appendChild(this.input);
+		this.ul.appendChild(this.inputLi);
+		this.tagsInput.appendChild(this.ul);
 
-		var dropdownContainer = document.createElement('div');
-		dropdownContainer.classList.add('stork-tags-dropdown-container', 'stork-tags-dropdown-container'+this.rnd);
-		dropdownContainer.setAttribute('tabindex', 0);
+		this.dropdownContainer = document.createElement('div');
+		this.dropdownContainer.classList.add('stork-tags-dropdown-container', 'stork-tags-dropdown-container'+this.rnd);
+		this.dropdownContainer.setAttribute('tabindex', 0);
 
-		this.ul = ul;
-		this.inputLi = inputLi;
-		this.input = input;
-		this.dropdownContainer = dropdownContainer;
 		this.dropdownContainer.storkTagsProps = {
 			allLIs: this.dropdownContainer.getElementsByTagName('li'),/*now holds a live HTMLCollection*/
 			hoveredLIIndex: null
@@ -151,7 +147,7 @@
 
 		this.positionDropdown();
 
-		document.body.appendChild(dropdownContainer);
+		document.body.appendChild(this.dropdownContainer);
 	};
 
 	StorkTagsInput.prototype.setEventListeners = function setEventListeners() {
@@ -435,14 +431,12 @@
 	StorkTagsInput.prototype.removeAllTags = function removeAllTags() {
 		this.unfocusTags(); // unselect a focused tag
 
-		if(!this.ul.firstChild) {
-			return false; // no need to remove a thing
-		}
-
-		// remove tags from tags list
+		// remove all LIs from tags list
 		while(this.ul.firstChild) {
 			this.ul.removeChild(this.ul.firstChild);
 		}
+		this.ul.appendChild(this.inputLi); //re-insert the search-input that was also removed along with all the tag elements
+
 		var removed = this.chosenTags.splice(0, this.chosenTags.length);
 
 		if(this.chosenTags.length === 0) {

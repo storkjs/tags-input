@@ -44,10 +44,13 @@
 			padding-top: 50px;
 			border-top: 1px solid #d0d0d0;
 		}
-		#destroyBtn {
+		#destroyBtn, #removeAllBtn {
 			position: absolute;
 			top: -30px;
 			left: 0;
+		}
+		#removeAllBtn {
+			left: 90px;
 		}
 		#tagsInput {
 			width: 100%;
@@ -107,6 +110,7 @@
 			}, false);
 
 			document.getElementById('destroyBtn').addEventListener('click', testTags.destroy.bind(testTags), false);
+			document.getElementById('removeAllBtn').addEventListener('click', testTags.removeAllTags.bind(testTags), false);
 		});
 	</script>
 </head>
@@ -114,6 +118,7 @@
 <div id="parentOne">
 	<div id="parentTwo">
 		<button id="destroyBtn" type="button">Destroy</button>
+		<button id="removeAllBtn" type="button">Clear All Tags</button>
 		<div id="tagsInput"></div>
 	</div>
 </div>

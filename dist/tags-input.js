@@ -66,36 +66,32 @@
     }
   };
   StorkTagsInput.prototype.buildDom = function buildDom() {
-    var ul = document.createElement("ul");
-    var inputLi = document.createElement("li");
-    var input = document.createElement("input");
-    inputLi.classList.add("search-li");
-    inputLi.storkTagsProps = {
+    this.ul = document.createElement("ul");
+    this.inputLi = document.createElement("li");
+    this.input = document.createElement("input");
+    this.inputLi.classList.add("search-li");
+    this.inputLi.storkTagsProps = {
       state: null
     };
-    input.classList.add("search");
-    input.storkTagsProps = {
+    this.input.classList.add("search");
+    this.input.storkTagsProps = {
       paddingLeft: 0,
       paddingRight: 0
     };
-    input.setAttribute("placeholder", this.placeholder);
-    inputLi.appendChild(input);
-    ul.appendChild(inputLi);
-    this.tagsInput.appendChild(ul);
-    var dropdownContainer = document.createElement("div");
-    dropdownContainer.classList.add("stork-tags-dropdown-container", "stork-tags-dropdown-container" + this.rnd);
-    dropdownContainer.setAttribute("tabindex", 0);
-    this.ul = ul;
-    this.inputLi = inputLi;
-    this.input = input;
-    this.dropdownContainer = dropdownContainer;
+    this.input.setAttribute("placeholder", this.placeholder);
+    this.inputLi.appendChild(this.input);
+    this.ul.appendChild(this.inputLi);
+    this.tagsInput.appendChild(this.ul);
+    this.dropdownContainer = document.createElement("div");
+    this.dropdownContainer.classList.add("stork-tags-dropdown-container", "stork-tags-dropdown-container" + this.rnd);
+    this.dropdownContainer.setAttribute("tabindex", 0);
     this.dropdownContainer.storkTagsProps = {
       allLIs: this.dropdownContainer.getElementsByTagName("li"),
       hoveredLIIndex: null
     };
     this.updateSearchState();
     this.positionDropdown();
-    document.body.appendChild(dropdownContainer);
+    document.body.appendChild(this.dropdownContainer);
   };
   StorkTagsInput.prototype.setEventListeners = function setEventListeners() {
     this._addEventListener(this.input, "keyup", this.onChangeSearchInput.bind(this), false);
@@ -293,12 +289,10 @@
   };
   StorkTagsInput.prototype.removeAllTags = function removeAllTags() {
     this.unfocusTags();
-    if (!this.ul.firstChild) {
-      return false;
-    }
     while (this.ul.firstChild) {
       this.ul.removeChild(this.ul.firstChild);
     }
+    this.ul.appendChild(this.inputLi);
     var removed = this.chosenTags.splice(0, this.chosenTags.length);
     if (this.chosenTags.length === 0) {
       this.updateSearchState();
