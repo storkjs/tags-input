@@ -243,7 +243,6 @@
     xA.classList.add("remove");
     groupSpan.classList.add("group");
     valueSpan.classList.add("value");
-    this.updateSearchState();
     li.appendChild(xA);
     li.appendChild(groupSpan);
     li.appendChild(valueSpan);
@@ -256,6 +255,7 @@
       groupLabel: tagObj.groupLabel,
       elm: li
     });
+    this.updateSearchState();
     var evnt = new CustomEvent("tag-added", {
       bubbles: true,
       cancelable: true,

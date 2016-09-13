@@ -363,8 +363,6 @@
 		groupSpan.classList.add('group');
 		valueSpan.classList.add('value');
 
-		this.updateSearchState();
-
 		li.appendChild(xA);
 		li.appendChild(groupSpan);
 		li.appendChild(valueSpan);
@@ -379,6 +377,8 @@
 			groupLabel: tagObj.groupLabel,
 			elm: li
 		});
+
+		this.updateSearchState(); //update the state after the chosenTags has been updated
 
 		var evnt = new CustomEvent('tag-added', {
 			bubbles: true,
