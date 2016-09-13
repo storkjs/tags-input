@@ -1,6 +1,6 @@
 /* main tags element */
 .stork-tags {
-  display: block;
+  display: flex;
   position: relative;
   overflow: hidden;
 }
@@ -13,6 +13,7 @@
   list-style: none;
   height: 100%;
   flex-grow: 1;
+  white-space: nowrap;
   cursor: text;
   display: flex;
   justify-content: flex-start;

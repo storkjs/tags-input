@@ -533,12 +533,27 @@
 		this.focusedTagIndex = index;
 		this.tagsInput.focus(); // blurs the search input, but keeps focus on the component
 
-		if(!this._tagLIMarginLeft) { //calculate the margin-left of LIs once
-			var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
+		this.scrollLIIntoView(this.chosenTags[index].elm);
+	};
+
+	/**
+	 * scroll the selected LI into view if all tags overflow the UL's width
+	 * @param li
+	 */
+	StorkTagsInput.prototype.scrollLIIntoView = function scrollLIIntoView(li) {
+		if(!this._tagLIMarginLeft) { //calculate the margin-left of tag-LIs once
+			var tagLi = this.ul.querySelector('li.tag'),
+				liStyle;
+
+			if(!tagLi) {
+				return; //if no tags chosen then no need to scroll into view because only search-input exists so he must be in the view
+			}
+
+			liStyle = tagLi.currentStyle || window.getComputedStyle(tagLi);
 			this._tagLIMarginLeft = parseInt(liStyle.marginLeft, 10);
 		}
 
-		var leftPos = this.chosenTags[index].elm.offsetLeft;
+		var leftPos = li.offsetLeft;
 		var extra = 20; //show extra from the next tag (the one to the left of the current tag)
 		this.tagsInput.scrollLeft = leftPos - this._tagLIMarginLeft - extra;
 	};
@@ -650,9 +665,13 @@
 		this.input.style.width = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + 'px';
 	};
 
+	/**
+	 * when focusing on the search-input
+	 * @param e
+	 */
 	StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
 		this.unfocusTags();
-		this.tagsInput.scrollLeft = this.tagsInput.scrollWidth;
+		this.scrollLIIntoView(this.inputLi); //input-LI's index is actually the next tag's index in 'chosenTags' (if there is any)
 	};
 
 	StorkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
@@ -708,7 +727,6 @@
 			}
 			else if(Number.isInteger(this.focusedTagIndex)) {
 				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
-				e.preventDefault(); // stops document scrolling
 			}
 		}
 		else if(key === 'RIGHT') {
@@ -717,7 +735,6 @@
 			}
 			else if(Number.isInteger(this.focusedTagIndex)) {
 				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1);
-				e.preventDefault(); // stops document scrolling
 			}
 		}
 		else if(key === 'BACKSPACE' || key === 'DELETE') {

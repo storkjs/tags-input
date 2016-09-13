@@ -362,11 +362,18 @@
     this.chosenTags[index].elm.classList.add("focused");
     this.focusedTagIndex = index;
     this.tagsInput.focus();
+    this.scrollLIIntoView(this.chosenTags[index].elm);
+  };
+  StorkTagsInput.prototype.scrollLIIntoView = function scrollLIIntoView(li) {
     if (!this._tagLIMarginLeft) {
-      var liStyle = this.chosenTags[index].elm.currentStyle || window.getComputedStyle(this.chosenTags[index].elm);
+      var tagLi = this.ul.querySelector("li.tag"), liStyle;
+      if (!tagLi) {
+        return;
+      }
+      liStyle = tagLi.currentStyle || window.getComputedStyle(tagLi);
       this._tagLIMarginLeft = parseInt(liStyle.marginLeft, 10);
     }
-    var leftPos = this.chosenTags[index].elm.offsetLeft;
+    var leftPos = li.offsetLeft;
     var extra = 20;
     this.tagsInput.scrollLeft = leftPos - this._tagLIMarginLeft - extra;
   };
@@ -444,7 +451,7 @@
   };
   StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
     this.unfocusTags();
-    this.tagsInput.scrollLeft = this.tagsInput.scrollWidth;
+    this.scrollLIIntoView(this.inputLi);
   };
   StorkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
     var key = keyboardMap[e.keyCode];
@@ -497,14 +504,12 @@
         this.onClickFocusTag(this.inputLi.previousSibling.index);
       } else if (Number.isInteger(this.focusedTagIndex)) {
         this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
-        e.preventDefault();
       }
     } else if (key === "RIGHT") {
       if (this.input === document.activeElement && this.inputLi.nextSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart >= this.input.value.length - 1) {
         this.onClickFocusTag(this.inputLi.nextSibling.index - 1);
       } else if (Number.isInteger(this.focusedTagIndex)) {
         this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1);
-        e.preventDefault();
       }
     } else if (key === "BACKSPACE" || key === "DELETE") {
       if (this.input === document.activeElement) {
