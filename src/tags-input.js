@@ -495,6 +495,9 @@
 				if(elm.classList.contains('tag')) {
 					this.onClickFocusTag(elm);
 				}
+				else if(elm === this.inputLi) {
+					this.input.focus();
+				}
 				return;
 			}
 			else if(elm.tagName.toUpperCase() === 'UL') {
@@ -636,7 +639,9 @@
 
 	StorkTagsInput.prototype.onKeydownSearchInput = function onKeydownSearchInput(event) {
 		if(event.key && (event.keyCode >= 48 && event.keyCode <= 90) || (event.keyCode >= 186 && event.keyCode <= 222)) {
-			this.calculateSearchInputWidth(this.input.value + event.key);
+			if(this.inputLi.storkTagsProps.state === 'with-tags') {
+				this.calculateSearchInputWidth(this.input.value + event.key);
+			}
 		}
 	};
 
@@ -645,6 +650,11 @@
 	 * @param {string|undefined} [text] - calculate against a specific text
 	 */
 	StorkTagsInput.prototype.calculateSearchInputWidth = function calculateSearchInputWidth(text) {
+		if(this.inputLi.storkTagsProps.state === 'no-tags') { //a just-in-case case. this if-block will probably never run
+			this.input.style.width = '';
+			return;
+		}
+
 		if(!this.textCanvasContext) {
 			var textCanvas = document.createElement('canvas');
 			var inputStyle = this.input.currentStyle || window.getComputedStyle(this.input);
