@@ -530,7 +530,7 @@
       }
     } else if (key === "BACKSPACE" || key === "DELETE") {
       if (this.input === document.activeElement) {
-        if (this.tagDeleteThrottle.allowed && this.input.value === "" && this.inputLi.previousSibling) {
+        if (this.tagDeleteThrottle.allowed && this.input.value === "") {
           try {
             if (key === "BACKSPACE" && this.inputLi.previousSibling) {
               this.removeTag(this.inputLi.previousSibling.index);

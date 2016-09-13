@@ -755,7 +755,7 @@
 		}
 		else if(key === 'BACKSPACE' || key === 'DELETE') {
 			if(this.input === document.activeElement) {
-				if(this.tagDeleteThrottle.allowed && this.input.value === '' && this.inputLi.previousSibling) { //trying to delete "beyond" the input
+				if(this.tagDeleteThrottle.allowed && this.input.value === '') { //trying to delete "beyond" the input
 					try {
 						if(key === 'BACKSPACE' && this.inputLi.previousSibling) {
 							this.removeTag(this.inputLi.previousSibling.index);
