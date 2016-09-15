@@ -327,8 +327,8 @@
       this.input.style.width = "";
     }
   };
-  StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(e) {
-    var elm = e.target, i = 0;
+  StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(event) {
+    var elm = event.target, i = 0;
     do {
       if (elm.tagName.toUpperCase() === "A" && elm.classList.contains("remove")) {
         var elmIndex = elm.parentNode.index;
@@ -351,7 +351,7 @@
         }
         return;
       } else if (elm.tagName.toUpperCase() === "UL") {
-        this.redrawSearchInput(e.offsetX);
+        this.redrawSearchInput(event.offsetX);
         return;
       }
       elm = elm.parentNode;

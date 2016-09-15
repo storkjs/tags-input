@@ -12,7 +12,9 @@ module.exports = function (config) {
 		files: [
 			'bower_components/stork-shims/dist/shims.js',
 			'examples/suggestions.js',
-			'src/tags-input.js',
+			'dist/tags-input.css',
+			'dist/tags-input.js',
+			'test/**/*.css',
 			'test/**/*.js'
 		],
 

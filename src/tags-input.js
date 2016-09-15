@@ -480,10 +480,10 @@
 	/**
 	 * when clicking the tags area (the UL that acts like input).
 	 * this will determine whether to remove a tag or focus it or create-and-focus a search input
-	 * @param e
+	 * @param event
 	 */
-	StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(e) {
-		var elm = e.target,
+	StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(event) {
+		var elm = event.target,
 			i = 0;
 
 		do {
@@ -509,7 +509,7 @@
 				return;
 			}
 			else if(elm.tagName.toUpperCase() === 'UL') {
-				this.redrawSearchInput(e.offsetX);
+				this.redrawSearchInput(event.offsetX);
 				return;
 			}
 
