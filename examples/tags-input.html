@@ -62,6 +62,7 @@
 		var i, j, regex;
 		var suggestions_handler = function suggestions_handler(text, chosenTags, callback) {
 			text = text.trim();
+			console.log('text: ', text);
 
 			regex = new RegExp(text, 'gi');
 			var ret = [];
@@ -84,9 +85,12 @@
 						}
 					}
 				}
-			}
 
-			callback(ret);
+				callback(ret);
+			}
+			else {
+				callback([{label: 'empty', field: 'empty', items: [{label: 'empty', value: 'empty'}]}]);
+			}
 		};
 
 		var testTags;

@@ -28,7 +28,7 @@
 
 		this.chosenTags = [];
 		this.focusedTagIndex = null;
-		this.lastSearchString = '';
+		this.lastSearchString = null; //initially not a string so it will trigger a search on an empty search (if the user wants to use that)
 		this.tagDeleteThrottle = {
 			allowed: true, // a throttle to prevent accidentally deleting tags when deleting text from the search input
 			TO: undefined // timeout
@@ -263,7 +263,6 @@
 		this.input.value = '';
 		this.input.focus();
 		this.onFocusSearchInput();
-		this.onChangeSearchInput();
 	};
 
 	/**
@@ -686,6 +685,7 @@
 	StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
 		this.unfocusTags();
 		this.scrollLIIntoView(this.inputLi); //input-LI's index is actually the next tag's index in 'chosenTags' (if there is any)
+		this.onChangeSearchInput();
 	};
 
 	StorkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {

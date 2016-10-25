@@ -17,7 +17,7 @@
     this.textCanvasContext = null;
     this.chosenTags = [];
     this.focusedTagIndex = null;
-    this.lastSearchString = "";
+    this.lastSearchString = null;
     this.tagDeleteThrottle = {
       allowed: true,
       TO: undefined
@@ -168,7 +168,6 @@
     this.input.value = "";
     this.input.focus();
     this.onFocusSearchInput();
-    this.onChangeSearchInput();
   };
   StorkTagsInput.prototype._scrollSuggestionsDropdownByItem = function _scrollSuggestionsDropdownByItem(LI) {
     var yPos = 0, yPos_bottomPart, elm = LI;
@@ -467,6 +466,7 @@
   StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
     this.unfocusTags();
     this.scrollLIIntoView(this.inputLi);
+    this.onChangeSearchInput();
   };
   StorkTagsInput.prototype.onSuggestionsKeyboardNavigate = function onSuggestionsKeyboardNavigate(e) {
     var key = keyboardMap[e.keyCode];
