@@ -29,7 +29,7 @@
 .stork-tags > ul > li.tag span.group {
   font-style: italic;
 }
-.stork-tags > ul > li.tag span.value::before {
+.stork-tags > ul > li.tag span.group::after {
   content: "\00a0:\00a0";
 }
 .stork-tags > ul > li.search-li input {

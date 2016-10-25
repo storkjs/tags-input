@@ -33,9 +33,10 @@
 
 			span.group {
 				font-style: italic;
-			}
-			span.value::before {
-				content: "\00a0:\00a0";
+
+				&::after {
+					content: "\00a0:\00a0";
+				}
 			}
 		}
 

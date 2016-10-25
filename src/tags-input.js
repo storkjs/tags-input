@@ -366,7 +366,9 @@
 		valueSpan.classList.add('value');
 
 		li.appendChild(xA);
-		li.appendChild(groupSpan);
+		if(tagObj.groupField !== '' || tagObj.groupLabel !== '') {
+			li.appendChild(groupSpan);
+		}
 		li.appendChild(valueSpan);
 		this.ul.insertBefore(li, this.inputLi);
 

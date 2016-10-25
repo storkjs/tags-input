@@ -246,6 +246,7 @@
     li.classList.add("tag");
     xA.classList.add("remove");
     groupSpan.classList.add("group");
+    groupSpan.classList.toggle("no-group", tagObj.groupField === "" && tagObj.groupLabel === "");
     valueSpan.classList.add("value");
     li.appendChild(xA);
     li.appendChild(groupSpan);
