@@ -217,8 +217,10 @@
 			miscElm = document.createElement('span');
 			itemsList = document.createElement('ul');
 
-			miscElm.appendChild(document.createTextNode(suggestionsArr[i].label));
-			groupHeader.appendChild(miscElm);
+			if(suggestionsArr[i].label !== '') {
+				miscElm.appendChild(document.createTextNode(suggestionsArr[i].label));
+				groupHeader.appendChild(miscElm);
+			}
 
 			for(j=0; j < suggestionsArr[i].items.length; j++) {
 				item = document.createElement('li');
@@ -335,7 +337,7 @@
 	StorkTagsInput.prototype.addTag = function addTag(tagObj) {
 		var i;
 
-		if(!tagObj.groupLabel) { tagObj.groupLabel = capitalizeWords(tagObj.groupField); }
+		if(typeof tagObj.groupLabel === 'undefined' || tagObj.groupLabel === null) { tagObj.groupLabel = capitalizeWords(tagObj.groupField); }
 		if(!tagObj.label) { tagObj.label = capitalizeWords(tagObj.value); }
 
 		for(i=0; i < this.chosenTags.length; i++) {
@@ -366,7 +368,7 @@
 		valueSpan.classList.add('value');
 
 		li.appendChild(xA);
-		if(tagObj.groupField !== '' || tagObj.groupLabel !== '') {
+		if(tagObj.groupLabel !== '') {
 			li.appendChild(groupSpan);
 		}
 		li.appendChild(valueSpan);

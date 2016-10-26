@@ -54,7 +54,7 @@ _rechooseRemove_ [optional]: whether re-choosing from the suggestions list an it
 
 #### Methods
 _addTag(tagObj)_: adds a new tag to the chosen tags list.
-arguments: _tagObj_ {object} - tagObj.value, tagObj.label, tagObj.groupField, tagObj.groupLabel.
+arguments: _tagObj_ {object} - tagObj.value, tagObj.label, tagObj.groupField (optional), tagObj.groupLabel (optional).
 
 _removeTag(index)_: remove a tag from the chosenTags. arguments: _index_ {integer} - the position of the tag in the `chosenTags` array.
 

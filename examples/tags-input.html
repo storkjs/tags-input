@@ -62,7 +62,6 @@
 		var i, j, regex;
 		var suggestions_handler = function suggestions_handler(text, chosenTags, callback) {
 			text = text.trim();
-			console.log('text: ', text);
 
 			regex = new RegExp(text, 'gi');
 			var ret = [];
@@ -89,7 +88,10 @@
 				callback(ret);
 			}
 			else {
-				callback([{label: '', field: '', items: [{label: 'empty', value: 'empty'}]}]);
+				callback([
+					{field: 'misc', label: '', items: [{label: 'no group label', value: 'no_group_label'}]},
+					{field: '', label: '', items: [{label: 'no group at all', value: 'no_group'}]}
+				]);
 			}
 		};
 

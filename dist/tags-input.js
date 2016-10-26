@@ -129,8 +129,10 @@
       groupHeader = document.createElement("div");
       miscElm = document.createElement("span");
       itemsList = document.createElement("ul");
-      miscElm.appendChild(document.createTextNode(suggestionsArr[i].label));
-      groupHeader.appendChild(miscElm);
+      if (suggestionsArr[i].label !== "") {
+        miscElm.appendChild(document.createTextNode(suggestionsArr[i].label));
+        groupHeader.appendChild(miscElm);
+      }
       for (j = 0; j < suggestionsArr[i].items.length; j++) {
         item = document.createElement("li");
         item.storkTagsProps = {
@@ -217,7 +219,7 @@
   };
   StorkTagsInput.prototype.addTag = function addTag(tagObj) {
     var i;
-    if (!tagObj.groupLabel) {
+    if (typeof tagObj.groupLabel === "undefined" || tagObj.groupLabel === null) {
       tagObj.groupLabel = capitalizeWords(tagObj.groupField);
     }
     if (!tagObj.label) {
@@ -246,10 +248,11 @@
     li.classList.add("tag");
     xA.classList.add("remove");
     groupSpan.classList.add("group");
-    groupSpan.classList.toggle("no-group", tagObj.groupField === "" && tagObj.groupLabel === "");
     valueSpan.classList.add("value");
     li.appendChild(xA);
-    li.appendChild(groupSpan);
+    if (tagObj.groupLabel !== "") {
+      li.appendChild(groupSpan);
+    }
     li.appendChild(valueSpan);
     this.ul.insertBefore(li, this.inputLi);
     var tagIndex = li.index;
