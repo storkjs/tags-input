@@ -167,7 +167,9 @@
     }
     this.addTag(LI.storkTagsProps);
     this.unfocusSuggestions();
+    this.suggestionsCallback([]);
     this.input.value = "";
+    this.lastSearchString = "";
     this.input.focus();
     this.onFocusSearchInput();
   };
@@ -419,6 +421,9 @@
       if (target && target instanceof HTMLDocument) {
         this.tagsInput.classList.remove("focused");
         this.dropdownContainer.classList.remove("focused");
+        if (this.input.value === "") {
+          this.lastSearchString = null;
+        }
         evnt = new CustomEvent("tags-input-blur", {
           bubbles: true,
           cancelable: true

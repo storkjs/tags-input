@@ -261,8 +261,10 @@
 
 		this.addTag(LI.storkTagsProps);
 		this.unfocusSuggestions();
+		this.suggestionsCallback([]); //clear suggestions dropdown. this is for when default suggestion (of an empty search string) were chosen
 
 		this.input.value = '';
+		this.lastSearchString = '';
 		this.input.focus();
 		this.onFocusSearchInput();
 	};
@@ -612,6 +614,11 @@
 			if(target && target instanceof HTMLDocument) { // our loop reached 'document' element, meaning user clicked outside of the component
 				this.tagsInput.classList.remove('focused');
 				this.dropdownContainer.classList.remove('focused');
+
+				if(this.input.value === '') {
+					//will trigger a 'default suggestions' (handling suggestion for empty search string) the next time the user focuses the tags-input
+					this.lastSearchString = null;
+				}
 
 				evnt = new CustomEvent('tags-input-blur', {
 					bubbles: true,
