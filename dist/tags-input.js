@@ -411,6 +411,9 @@
         this.ul.insertBefore(this.inputLi, closestTagElm);
       }
     }
+    if (typeof caretPosition !== "number" && this.inputLi.offsetLeft < x) {
+      caretPosition = this.input.value.length;
+    }
     this.calculateSearchInputWidth();
     this.focusSearchInput(caretPosition);
   };

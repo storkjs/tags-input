@@ -600,6 +600,11 @@
 			}
 		}
 
+		//when clicking to the right of the input we want to caret to be on the end of the text
+		if(typeof caretPosition !== 'number' && this.inputLi.offsetLeft < x) {
+			caretPosition = this.input.value.length;
+		}
+		
 		this.calculateSearchInputWidth();
 		this.focusSearchInput(caretPosition);
 	};
