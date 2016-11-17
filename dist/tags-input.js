@@ -101,6 +101,7 @@
     this._addEventListener(this.dropdownContainer, "mousemove", this.onMouseMoveSuggestionsDropdown.bind(this), false);
     this._addEventListener(this.ul, "click", this.onClickTagsArea.bind(this), false);
     this._addEventListener(document, "click", this.onClickCheckFocus.bind(this), true);
+    this._addEventListener(document, "keyup", this.onKeyCheckFocus.bind(this), true);
     this._addEventListener(this.tagsInput, "keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
     this._addEventListener(this.dropdownContainer, "keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
     this._addEventListener(this.tagsInput, "keydown", this.onTagsKeyboardNavigate.bind(this), false);
@@ -442,6 +443,11 @@
       cancelable: true
     });
     this.tagsInput.dispatchEvent(evnt);
+  };
+  StorkTagsInput.prototype.onKeyCheckFocus = function onKeyCheckFocus(e) {
+    this.onClickCheckFocus({
+      target: document.activeElement
+    });
   };
   StorkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
     if (this.input.value !== this.lastSearchString) {

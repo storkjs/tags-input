@@ -171,6 +171,7 @@
 
 		// focus and blur of tagsInput
 		this._addEventListener(document, 'click', this.onClickCheckFocus.bind(this), true);
+		this._addEventListener(document, 'keyup', this.onKeyCheckFocus.bind(this), true);
 
 		// suggestions up and down keyboard navigation
 		this._addEventListener(this.tagsInput, 'keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
@@ -643,6 +644,10 @@
 			cancelable: true
 		});
 		this.tagsInput.dispatchEvent(evnt);
+	};
+	
+	StorkTagsInput.prototype.onKeyCheckFocus = function onKeyCheckFocus(e) {
+		this.onClickCheckFocus({target: document.activeElement});
 	};
 
 	/**
