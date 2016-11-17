@@ -15,6 +15,7 @@
     this.rechooseRemove = options.rechooseRemove || false;
     this.placeholder = options.placeholder || "";
     this.textCanvasContext = null;
+    this.focused = false;
     this.chosenTags = [];
     this.focusedTagIndex = null;
     this.lastSearchString = null;
@@ -423,26 +424,32 @@
     while (!(target instanceof HTMLDocument) && target !== this.tagsInput && target !== this.dropdownContainer) {
       target = target.parentNode;
       if (target && target instanceof HTMLDocument) {
-        this.tagsInput.classList.remove("focused");
-        this.dropdownContainer.classList.remove("focused");
-        if (this.input.value === "") {
-          this.lastSearchString = null;
+        if (this.focused) {
+          this.focused = false;
+          this.tagsInput.classList.remove("focused");
+          this.dropdownContainer.classList.remove("focused");
+          if (this.input.value === "") {
+            this.lastSearchString = null;
+          }
+          evnt = new CustomEvent("tags-input-blur", {
+            bubbles: true,
+            cancelable: true
+          });
+          this.tagsInput.dispatchEvent(evnt);
         }
-        evnt = new CustomEvent("tags-input-blur", {
-          bubbles: true,
-          cancelable: true
-        });
-        this.tagsInput.dispatchEvent(evnt);
         return;
       }
     }
-    this.tagsInput.classList.add("focused");
-    this.dropdownContainer.classList.add("focused");
-    evnt = new CustomEvent("tags-input-focus", {
-      bubbles: true,
-      cancelable: true
-    });
-    this.tagsInput.dispatchEvent(evnt);
+    if (!this.focused) {
+      this.focused = true;
+      this.tagsInput.classList.add("focused");
+      this.dropdownContainer.classList.add("focused");
+      evnt = new CustomEvent("tags-input-focus", {
+        bubbles: true,
+        cancelable: true
+      });
+      this.tagsInput.dispatchEvent(evnt);
+    }
   };
   StorkTagsInput.prototype.onKeyCheckFocus = function onKeyCheckFocus(e) {
     this.onClickCheckFocus({

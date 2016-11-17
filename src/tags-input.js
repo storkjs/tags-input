@@ -26,6 +26,7 @@
 		this.placeholder = options.placeholder || '';
 		this.textCanvasContext = null;
 
+		this.focused = false;
 		this.chosenTags = [];
 		this.focusedTagIndex = null;
 		this.lastSearchString = null; //initially not a string so it will trigger a search on an empty search (if the user wants to use that)
@@ -618,32 +619,39 @@
 			target = target.parentNode;
 
 			if(target && target instanceof HTMLDocument) { // our loop reached 'document' element, meaning user clicked outside of the component
-				this.tagsInput.classList.remove('focused');
-				this.dropdownContainer.classList.remove('focused');
+				if(this.focused) {
+					this.focused = false;
+					this.tagsInput.classList.remove('focused');
+					this.dropdownContainer.classList.remove('focused');
 
-				if(this.input.value === '') {
-					//will trigger a 'default suggestions' (handling suggestion for empty search string) the next time the user focuses the tags-input
-					this.lastSearchString = null;
+					if (this.input.value === '') {
+						//will trigger a 'default suggestions' (handling suggestion for empty search string) the next time the user focuses the tags-input
+						this.lastSearchString = null;
+					}
+
+					evnt = new CustomEvent('tags-input-blur', {
+						bubbles: true,
+						cancelable: true
+					});
+					this.tagsInput.dispatchEvent(evnt);
 				}
-
-				evnt = new CustomEvent('tags-input-blur', {
-					bubbles: true,
-					cancelable: true
-				});
-				this.tagsInput.dispatchEvent(evnt);
 
 				return;
 			}
 		}
 
-		this.tagsInput.classList.add('focused');
-		this.dropdownContainer.classList.add('focused');
+		//user clicked inside the component
+		if(!this.focused) {
+			this.focused = true;
+			this.tagsInput.classList.add('focused');
+			this.dropdownContainer.classList.add('focused');
 
-		evnt = new CustomEvent('tags-input-focus', {
-			bubbles: true,
-			cancelable: true
-		});
-		this.tagsInput.dispatchEvent(evnt);
+			evnt = new CustomEvent('tags-input-focus', {
+				bubbles: true,
+				cancelable: true
+			});
+			this.tagsInput.dispatchEvent(evnt);
+		}
 	};
 	
 	StorkTagsInput.prototype.onKeyCheckFocus = function onKeyCheckFocus(e) {
