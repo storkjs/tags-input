@@ -169,11 +169,12 @@
     }
     this.addTag(LI.storkTagsProps);
     this.unfocusSuggestions();
-    this.suggestionsCallback([]);
     this.input.value = "";
-    this.lastSearchString = "";
+    if (this.chosenTags.length >= 1) {
+      this.suggestionsCallback([]);
+      this.lastSearchString = "";
+    }
     this.input.focus();
-    this.onFocusSearchInput();
   };
   StorkTagsInput.prototype._scrollSuggestionsDropdownByItem = function _scrollSuggestionsDropdownByItem(LI) {
     var yPos = 0, yPos_bottomPart, elm = LI;
@@ -285,6 +286,7 @@
       var removed = this.chosenTags.splice(index, 1);
       if (this.chosenTags.length === 0) {
         this.updateSearchState();
+        this.lastSearchString = null;
       }
       var evnt = new CustomEvent("tag-removed", {
         bubbles: true,
@@ -308,6 +310,7 @@
     var removed = this.chosenTags.splice(0, this.chosenTags.length);
     if (this.chosenTags.length === 0) {
       this.updateSearchState();
+      this.lastSearchString = null;
     }
     var evnt = new CustomEvent("all-tags-removed", {
       bubbles: true,

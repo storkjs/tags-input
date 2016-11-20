@@ -263,12 +263,14 @@
 
 		this.addTag(LI.storkTagsProps);
 		this.unfocusSuggestions();
-		this.suggestionsCallback([]); //clear suggestions dropdown. this is for when default suggestion (of an empty search string) were chosen
-
 		this.input.value = '';
-		this.lastSearchString = '';
+
+		if(this.chosenTags.length >= 1) {
+			this.suggestionsCallback([]); //clear suggestions dropdown. this is for when default suggestion (of an empty search string) were chosen
+			this.lastSearchString = '';
+		}
+
 		this.input.focus();
-		this.onFocusSearchInput();
 	};
 
 	/**
@@ -416,6 +418,7 @@
 
 			if(this.chosenTags.length === 0) {
 				this.updateSearchState();
+				this.lastSearchString = null; //when tags is empty always allow triggering of default suggestions
 			}
 
 			var evnt = new CustomEvent('tag-removed', {
@@ -450,6 +453,7 @@
 
 		if(this.chosenTags.length === 0) {
 			this.updateSearchState();
+			this.lastSearchString = null; //when tags is empty always allow triggering of default suggestions
 		}
 
 		var evnt = new CustomEvent('all-tags-removed', {
