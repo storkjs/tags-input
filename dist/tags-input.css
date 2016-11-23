@@ -29,6 +29,9 @@
 .stork-tags > ul > li.tag {
   cursor: default;
 }
+.stork-tags > ul > li.tag:focus {
+  outline: 0 none;
+}
 .stork-tags > ul > li.tag > a.remove {
   display: flex;
   justify-content: center;

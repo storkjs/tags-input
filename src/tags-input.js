@@ -178,6 +178,9 @@
 		this._addEventListener(this.tagsInput, 'keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
 		this._addEventListener(this.dropdownContainer, 'keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
 
+		// when focusing via ketboard
+		this._addEventListener(this.tagsInput, 'keyup', this.onKeyboardFocus.bind(this), false);
+
 		// navigating the tags
 		this._addEventListener(this.tagsInput, 'keydown', this.onTagsKeyboardNavigate.bind(this), false);
 	};
@@ -819,6 +822,20 @@
 				finally { this.focusSearchInput(0); }
 
 				e.preventDefault(); // stops document scrolling
+			}
+		}
+	};
+
+	/**
+	 * prevent user from focusing on the component itself, because it is useless. instead we focus him onto the search input
+	 * @param e
+	 */
+	StorkTagsInput.prototype.onKeyboardFocus = function onKeyboardFocus(e) {
+		var key = keyboardMap[e.keyCode];
+
+		if(key === 'TAB') {
+			if(document.activeElement === this.tagsInput) {
+				this.input.focus();
 			}
 		}
 	};

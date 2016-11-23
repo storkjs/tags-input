@@ -105,6 +105,7 @@
     this._addEventListener(document, "keyup", this.onKeyCheckFocus.bind(this), true);
     this._addEventListener(this.tagsInput, "keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
     this._addEventListener(this.dropdownContainer, "keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
+    this._addEventListener(this.tagsInput, "keyup", this.onKeyboardFocus.bind(this), false);
     this._addEventListener(this.tagsInput, "keydown", this.onTagsKeyboardNavigate.bind(this), false);
   };
   StorkTagsInput.prototype.positionDropdown = function positionDropdown(width) {
@@ -587,6 +588,14 @@
           this.focusSearchInput(0);
         }
         e.preventDefault();
+      }
+    }
+  };
+  StorkTagsInput.prototype.onKeyboardFocus = function onKeyboardFocus(e) {
+    var key = keyboardMap[e.keyCode];
+    if (key === "TAB") {
+      if (document.activeElement === this.tagsInput) {
+        this.input.focus();
       }
     }
   };
