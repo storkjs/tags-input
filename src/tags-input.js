@@ -833,7 +833,7 @@
 	StorkTagsInput.prototype.onKeyboardFocus = function onKeyboardFocus(e) {
 		var key = keyboardMap[e.keyCode];
 
-		if(key === 'TAB') {
+		if(key === 'TAB' && !e.shiftKey) {
 			if(document.activeElement === this.tagsInput) {
 				this.input.focus();
 			}
