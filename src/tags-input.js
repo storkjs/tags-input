@@ -395,6 +395,12 @@
 
 		this.updateSearchState(); //update the state after the chosenTags has been updated
 
+		//if chosen a new tag view keyboard then trigger focus on input again so the UL will scroll if needed (if there are overflowing tags)
+		if(document.activeElement === this.input) {
+			this.input.blur();
+			this.input.focus();
+		}
+
 		var evnt = new CustomEvent('tag-added', {
 			bubbles: true,
 			cancelable: true,
@@ -613,7 +619,7 @@
 		if(typeof caretPosition !== 'number' && this.inputLi.offsetLeft < x) {
 			caretPosition = this.input.value.length;
 		}
-		
+
 		this.calculateSearchInputWidth();
 		this.focusSearchInput(caretPosition);
 	};
@@ -660,7 +666,7 @@
 			this.tagsInput.dispatchEvent(evnt);
 		}
 	};
-	
+
 	StorkTagsInput.prototype.onKeyCheckFocus = function onKeyCheckFocus(e) {
 		this.onClickCheckFocus({target: document.activeElement});
 	};

@@ -270,6 +270,10 @@
       elm: li
     });
     this.updateSearchState();
+    if (document.activeElement === this.input) {
+      this.input.blur();
+      this.input.focus();
+    }
     var evnt = new CustomEvent("tag-added", {
       bubbles: true,
       cancelable: true,
