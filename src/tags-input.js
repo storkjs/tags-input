@@ -183,6 +183,9 @@
 
 		// navigating the tags
 		this._addEventListener(this.tagsInput, 'keydown', this.onTagsKeyboardNavigate.bind(this), false);
+
+		// close the suggestions list on ESC
+		this._addEventListener(this.tagsInput, 'keydown', this.onTagsESC.bind(this), false);
 	};
 
 	/**
@@ -829,6 +832,18 @@
 
 				e.preventDefault(); // stops document scrolling
 			}
+		}
+	};
+
+	/**
+	 * when focused on the tags area, clicking ESC key will hide the suggestions list
+	 * @param e
+	 */
+	StorkTagsInput.prototype.onTagsESC = function onTagsESC(e) {
+		var key = keyboardMap[e.keyCode];
+
+		if(key === 'ESCAPE') {
+			this.dropdownContainer.classList.remove('focused');
 		}
 	};
 

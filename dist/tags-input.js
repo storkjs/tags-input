@@ -107,6 +107,7 @@
     this._addEventListener(this.dropdownContainer, "keydown", this.onSuggestionsKeyboardNavigate.bind(this), false);
     this._addEventListener(this.tagsInput, "keyup", this.onKeyboardFocus.bind(this), false);
     this._addEventListener(this.tagsInput, "keydown", this.onTagsKeyboardNavigate.bind(this), false);
+    this._addEventListener(this.tagsInput, "keydown", this.onTagsESC.bind(this), false);
   };
   StorkTagsInput.prototype.positionDropdown = function positionDropdown(width) {
     if (!width) {
@@ -593,6 +594,12 @@
         }
         e.preventDefault();
       }
+    }
+  };
+  StorkTagsInput.prototype.onTagsESC = function onTagsESC(e) {
+    var key = keyboardMap[e.keyCode];
+    if (key === "ESCAPE") {
+      this.dropdownContainer.classList.remove("focused");
     }
   };
   StorkTagsInput.prototype.onKeyboardFocus = function onKeyboardFocus(e) {
