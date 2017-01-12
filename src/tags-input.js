@@ -42,6 +42,12 @@
 		this.buildDom();
 
 		this.setEventListeners();
+
+		//hold the instance on the dom element in order to make it always accessible
+		if(!this.tagsInput.stork) {
+			this.tagsInput.stork = {};
+		}
+		this.tagsInput.stork.tags = this;
 	};
 
 	/**
@@ -922,6 +928,7 @@
 
 		// remove properties
 		this.tagsInput.classList.remove('stork-tags', 'stork-tags'+this.rnd);
+		delete this.tagsInput.stork.tags;
 		delete this.tagsInput;
 		delete this.inputMinWidth;
 		delete this.rechooseRemove;

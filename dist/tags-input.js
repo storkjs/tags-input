@@ -28,6 +28,10 @@
     this.tagsInput.setAttribute("tabindex", 0);
     this.buildDom();
     this.setEventListeners();
+    if (!this.tagsInput.stork) {
+      this.tagsInput.stork = {};
+    }
+    this.tagsInput.stork.tags = this;
   };
   StorkTagsInput.prototype._addEventListener = function customAddEventListener(element, type, listener, options_or_useCapture) {
     element.addEventListener(type, listener, options_or_useCapture);
@@ -655,6 +659,7 @@
     }
     this.dropdownContainer.parentNode.removeChild(this.dropdownContainer);
     this.tagsInput.classList.remove("stork-tags", "stork-tags" + this.rnd);
+    delete this.tagsInput.stork.tags;
     delete this.tagsInput;
     delete this.inputMinWidth;
     delete this.rechooseRemove;
