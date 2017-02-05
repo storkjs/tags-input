@@ -65,7 +65,7 @@
   StorkTagsInput.prototype.removeEventListener = function customRemoveEventListener(type, listener, options_or_useCapture) {
     this.tagsInput.removeEventListener(type, listener, options_or_useCapture);
     for (var i = 0; i < this.eventListeners.length; i++) {
-      if (this.eventListeners[i].element === this.tagsInput && this.eventListeners[i].type === type && this.eventListeners[i].listener === listener) {
+      if (this.eventListeners[i] && this.eventListeners[i].element === this.tagsInput && this.eventListeners[i].type === type && this.eventListeners[i].listener === listener) {
         this.eventListeners[i] = null;
       }
     }
