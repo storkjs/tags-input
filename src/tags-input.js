@@ -25,6 +25,7 @@
 		this.rechooseRemove = options.rechooseRemove || false;
 		this.placeholder = options.placeholder || '';
 		this.textCanvasContext = null;
+		this.maxlength = typeof options.maxlength === 'number' ? options.maxlength : 50;
 
 		this.focused = false;
 		this.chosenTags = [];
@@ -137,6 +138,9 @@
 		this.input.classList.add('search');
 		this.input.storkTagsProps = { paddingLeft: 0, paddingRight: 0 };
 		this.input.setAttribute('placeholder', this.placeholder);
+		if (this.maxlength > 0) {
+			this.input.setAttribute('maxlength', this.maxlength);
+		}
 
 		this.inputLi.appendChild(this.input);
 		this.ul.appendChild(this.inputLi);
