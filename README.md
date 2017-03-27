@@ -52,6 +52,15 @@ _inputMinWidth_ [optional]: the minimum width the search input is allowed to be.
 _rechooseRemove_ [optional]: whether re-choosing from the suggestions list an item that is already chosen will remove this item from the tags. defaults to `false`. Example:
 `{ rechooseRemove: true }`
 
+_placeholder_ [optional]: The placeholder text that will be displayed on an empty tags input. Example:
+`{ placeholder: 'Type here..' }`
+
+_maxlength_ [optional]: The maximum length of characters the user is allowed to type per tag. defaults to 50. Example:
+`{ maxlength: 65 }`
+
+_maxTags_ [optional]: The maximum allowed number of chosen tags. Beyond this amount the suggestions handler will not be triggered at all. Example:
+`{ maxTags: 7 }`
+
 #### Methods
 _addTag(tagObj)_: adds a new tag to the chosen tags list.
 arguments: _tagObj_ {object} - tagObj.value, tagObj.label, tagObj.groupField (optional), tagObj.groupLabel (optional).

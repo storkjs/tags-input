@@ -16,6 +16,7 @@
     this.placeholder = options.placeholder || "";
     this.textCanvasContext = null;
     this.maxlength = typeof options.maxlength === "number" ? options.maxlength : 50;
+    this.maxTags = options.maxTags || 0;
     this.focused = false;
     this.chosenTags = [];
     this.focusedTagIndex = null;
@@ -233,6 +234,10 @@
     }
   };
   StorkTagsInput.prototype.addTag = function addTag(tagObj) {
+    if (this.maxTags > 0 && this.chosenTags.length >= this.maxTags) {
+      console.info("Maximum tags in tags input reached (stork-tags" + this.rnd + ")");
+      return false;
+    }
     var i;
     if (typeof tagObj.groupLabel === "undefined" || tagObj.groupLabel === null) {
       tagObj.groupLabel = capitalizeWords(tagObj.groupField);
@@ -478,7 +483,9 @@
       if (this.inputLi.storkTagsProps.state === "with-tags") {
         this.calculateSearchInputWidth();
       }
-      this.suggestionsHandler(this.input.value, this.chosenTags, this.suggestionsCallback.bind(this));
+      if (!this.maxTags || this.chosenTags.length < this.maxTags) {
+        this.suggestionsHandler(this.input.value, this.chosenTags, this.suggestionsCallback.bind(this));
+      }
     }
     this.lastSearchString = this.input.value;
   };
