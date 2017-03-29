@@ -862,7 +862,12 @@
 		var key = keyboardMap[e.keyCode];
 
 		if(key === 'ESCAPE') {
-			this.dropdownContainer.classList.remove('has-results');
+			if (this.dropdownContainer.classList.contains('has-results')) {
+				this.dropdownContainer.classList.remove('has-results');
+			} else {
+				this.input.value = '';
+				this.onChangeSearchInput();
+			}
 		}
 	};
 
