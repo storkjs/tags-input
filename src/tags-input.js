@@ -190,7 +190,7 @@
 		this._addEventListener(this.tagsInput, 'keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
 		this._addEventListener(this.dropdownContainer, 'keydown', this.onSuggestionsKeyboardNavigate.bind(this), false);
 
-		// when focusing via ketboard
+		// when focusing via keyboard
 		this._addEventListener(this.tagsInput, 'keyup', this.onKeyboardFocus.bind(this), false);
 
 		// navigating the tags
@@ -862,7 +862,7 @@
 		var key = keyboardMap[e.keyCode];
 
 		if(key === 'ESCAPE') {
-			this.dropdownContainer.classList.remove('focused');
+			this.dropdownContainer.classList.remove('has-results');
 		}
 	};
 

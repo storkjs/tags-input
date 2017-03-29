@@ -614,7 +614,7 @@
   StorkTagsInput.prototype.onTagsESC = function onTagsESC(e) {
     var key = keyboardMap[e.keyCode];
     if (key === "ESCAPE") {
-      this.dropdownContainer.classList.remove("focused");
+      this.dropdownContainer.classList.remove("has-results");
     }
   };
   StorkTagsInput.prototype.onKeyboardFocus = function onKeyboardFocus(e) {
