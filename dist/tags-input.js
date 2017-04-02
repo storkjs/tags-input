@@ -17,6 +17,7 @@
     this.textCanvasContext = null;
     this.maxlength = typeof options.maxlength === "number" ? options.maxlength : 50;
     this.maxTags = options.maxTags || 0;
+    this.persistentSuggestions = options.persistentSuggestions || false;
     this.focused = false;
     this.chosenTags = [];
     this.focusedTagIndex = null;
@@ -181,7 +182,7 @@
     this.addTag(LI.storkTagsProps);
     this.unfocusSuggestions();
     this.input.value = "";
-    if (this.chosenTags.length >= 1) {
+    if (this.persistentSuggestions !== true && this.chosenTags.length >= 1) {
       this.suggestionsCallback([]);
       this.lastSearchString = "";
     }
@@ -317,7 +318,7 @@
       });
       this.tagsInput.dispatchEvent(evnt);
     } else {
-      throw new Error("index does not exist in chosenTags array");
+      throw new Error("index (" + index + ") does not exist in chosenTags array");
     }
   };
   StorkTagsInput.prototype.removeAllTags = function removeAllTags() {

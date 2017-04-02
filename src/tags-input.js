@@ -27,6 +27,7 @@
 		this.textCanvasContext = null;
 		this.maxlength = typeof options.maxlength === 'number' ? options.maxlength : 50;
 		this.maxTags = options.maxTags || 0;
+		this.persistentSuggestions = options.persistentSuggestions || false;
 
 		this.focused = false;
 		this.chosenTags = [];
@@ -283,7 +284,7 @@
 		this.unfocusSuggestions();
 		this.input.value = '';
 
-		if(this.chosenTags.length >= 1) {
+		if(this.persistentSuggestions !== true && this.chosenTags.length >= 1) {
 			this.suggestionsCallback([]); //clear suggestions dropdown. this is for when default suggestion (of an empty search string) were chosen
 			this.lastSearchString = '';
 		}
@@ -461,7 +462,7 @@
 			this.tagsInput.dispatchEvent(evnt);
 		}
 		else {
-			throw new Error('index does not exist in chosenTags array');
+			throw new Error('index (' + index + ') does not exist in chosenTags array');
 		}
 	};
 

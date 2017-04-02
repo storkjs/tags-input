@@ -61,6 +61,9 @@ _maxlength_ [optional]: The maximum length of characters the user is allowed to 
 _maxTags_ [optional]: The maximum allowed number of chosen tags. Beyond this amount the suggestions handler will not be triggered at all. Example:
 `{ maxTags: 7 }`
 
+_persistentSuggestions_ [optional]: After adding or removing a tag, the default suggestions will keep being triggered. Example:
+`{ persistentSuggestions: true }`
+
 #### Methods
 _addTag(tagObj)_: adds a new tag to the chosen tags list.
 arguments: _tagObj_ {object} - tagObj.value, tagObj.label, tagObj.groupField (optional), tagObj.groupLabel (optional).
