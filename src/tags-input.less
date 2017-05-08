@@ -1,84 +1,85 @@
 /* main tags element */
 .stork-tags {
-	display: flex;
-	position: relative;
-	overflow: hidden;
+  display: flex;
+  position: relative;
+  overflow: hidden;
 
-	&:focus {
-		outline: 0;
-	}
+  &:focus {
+	outline: 0;
+  }
 
-	> ul {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-		height: 100%;
-		flex-grow: 1;
-		white-space: nowrap;
-		cursor: text;
-
-		display: flex;
-		justify-content: flex-start; /*horizontal*/
-		align-items: center; /*vertical*/
-
-		> li {
-			display: flex;
-			white-space: nowrap;
-			flex-grow: 0;
-
-			&.tag {
-				cursor: default;
-
-				&:focus {
-					outline: 0 none;
-				}
-
-				> a.remove {
-					display: flex;
-					justify-content: center; /*horizontal*/
-					align-items: center; /*vertical*/
-				}
-			}
-			&.search-li {
-				&.no-tags {
-					flex-grow: 1;
-				}
-
-				input.search {
-					width: 100%;
-				}
-			}
-		}
-	}
-
-	> input.search {
-		height: 100%;
-		flex-grow: 1;
-		border: 0 none;
-
-		&:focus {
-			outline: 0 none;
-		}
-	}
-}
-.stork-tags-dropdown-container {
-	position: absolute;
-	z-index: 999;
+  > ul {
 	margin: 0;
 	padding: 0;
-	display: none;
+	list-style: none;
+	height: 30px;
+	flex-grow: 1;
+	white-space: nowrap;
+	cursor: text;
+	flex-wrap: wrap;
+	display: flex;
+	justify-content: flex-start; /*horizontal*/
+	align-items: center; /*vertical*/
+
+	> li {
+	  display: flex;
+	  white-space: nowrap;
+	  flex-grow: 0;
+
+	  &.tag {
+		cursor: default;
+
+		&:focus {
+		  outline: 0 none;
+		}
+
+		> a.remove {
+		  display: flex;
+		  justify-content: center; /*horizontal*/
+		  align-items: center; /*vertical*/
+		}
+	  }
+	  &.search-li {
+		&.no-tags {
+		  flex-grow: 1;
+		}
+
+		input.search {
+		  width: 100%;
+		}
+	  }
+	}
+  }
+
+  > input.search {
+	height: 100%;
+	flex-grow: 1;
+	border: 0 none;
 
 	&:focus {
-		outline: 0;
+	  outline: 0 none;
 	}
+  }
+}
 
-	&.focused.has-results {
-		display: block;
-	}
+.stork-tags-dropdown-container {
+  position: absolute;
+  z-index: 999;
+  margin: 0;
+  padding: 0;
+  display: none;
 
-	ul {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
+  &:focus {
+	outline: 0;
+  }
+
+  &.focused.has-results {
+	display: block;
+  }
+
+  ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+  }
 }

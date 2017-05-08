@@ -14,7 +14,6 @@
 		this.inputMinWidth = options.inputMinWidth || 60;
 		this.rechooseRemove = options.rechooseRemove || false;
 		this.placeholder = options.placeholder || "";
-		this.persistentPlaceholder = options.persistentPlaceholder || false;
 		this.textCanvasContext = null;
 		this.maxlength = typeof options.maxlength === "number" ? options.maxlength : 50;
 		this.maxTags = options.maxTags || 0;
@@ -348,9 +347,7 @@
 			this.inputLi.classList.add("with-tags");
 			this.inputLi.classList.remove("no-tags");
 			this.inputLi.storkTagsProps.state = "with-tags";
-			if (!this.persistentPlaceholder) {
-				this.input.setAttribute("placeholder", "");
-			}
+			
 			this.calculateSearchInputWidth();
 		} else {
 			this.inputLi.classList.add("no-tags");
