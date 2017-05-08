@@ -529,7 +529,7 @@
 			this.inputLi.classList.remove('with-tags');
 			this.inputLi.storkTagsProps.state = 'no-tags';
 			this.input.setAttribute('placeholder', this.placeholder);
-			if (!this.multiline) {
+			if (!this.multiline && !this.persistentPlaceholder) {
 				this.input.style.width = '';
 			}
 
@@ -573,7 +573,7 @@
 				}
 				return;
 			}
-			else if (elm.tagName.toUpperCase() === 'UL') {
+			else if (elm.tagName.toUpperCase() === 'UL' && !this.multiline) {
 				this.redrawSearchInput(event.offsetX);
 				return;
 			}
@@ -722,7 +722,7 @@
 	 */
 	StorkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
 		if (this.input.value !== this.lastSearchString) {
-			if (this.inputLi.storkTagsProps.state === 'with-tags' && !this.multiline) {
+			if (this.inputLi.storkTagsProps.state === 'with-tags' && !this.multiline && !this.persistentPlaceholder) {
 				this.calculateSearchInputWidth();
 			}
 
@@ -852,7 +852,7 @@
 					this.onClickFocusTag(this.focusedTagIndex + 1);
 				}
 				else {
-					this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1, 0);
+					this.focusSearchInput(this.input.value.length);
 					e.preventDefault();//focusing on the input will cause the RIGHT press to move the caret so we will prevent this
 				}
 
@@ -886,8 +886,9 @@
 			}
 			else if (Number.isInteger(this.focusedTagIndex)) {
 				var tmpFocusedTagIndex = this.focusedTagIndex; //save this index number because redrawing the search-input will focus it and trigger 'unfocusTags()'
-				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
-
+				if (!this.multiline) {
+					this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
+				}
 				try {
 					this.removeTag(tmpFocusedTagIndex);
 				}

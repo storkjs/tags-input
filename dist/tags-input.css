@@ -11,14 +11,15 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  height: 100%;
+  min-height: 30px;
   flex-grow: 1;
   white-space: nowrap;
   cursor: text;
   display: flex;
   justify-content: flex-start;
   /*horizontal*/
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
   /*vertical*/
 }
 .stork-tags > ul > li {
