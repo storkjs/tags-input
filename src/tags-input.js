@@ -506,6 +506,7 @@
 			this.inputLi.classList.add('with-tags');
 			this.inputLi.classList.remove('no-tags');
 			this.inputLi.storkTagsProps.state = 'with-tags';
+			// TODO change the place holderto be permanent
 			this.input.setAttribute('placeholder', ''); //having chosen tags is like having text in the input, so no placeholder should be shown
 			this.calculateSearchInputWidth();
 		}

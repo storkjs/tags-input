@@ -55,6 +55,9 @@ _rechooseRemove_ [optional]: whether re-choosing from the suggestions list an it
 _placeholder_ [optional]: The placeholder text that will be displayed on an empty tags input. Example:
 `{ placeholder: 'Type here..' }`
 
+_persistentPlaceholder_ [optional]: The placeholder text always be displayed. Example:
+`{ persistentPlaceholder: true }`
+
 _maxlength_ [optional]: The maximum length of characters the user is allowed to type per tag. defaults to 50. Example:
 `{ maxlength: 65 }`
 
