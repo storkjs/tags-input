@@ -58,6 +58,9 @@ _placeholder_ [optional]: The placeholder text that will be displayed on an empt
 _persistentPlaceholder_ [optional]: The placeholder text always be displayed. Example:
 `{ persistentPlaceholder: true }`
 
+_multiline_ [optional]: Enables the tags container to become multiline as the number of tags exceed the line width:
+`{ multiline: true }`
+
 _maxlength_ [optional]: The maximum length of characters the user is allowed to type per tag. defaults to 50. Example:
 `{ maxlength: 65 }`
 
