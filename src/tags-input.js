@@ -550,7 +550,6 @@
 	StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(event) {
 		var elm = event.target,
 			i = 0;
-       console.log("kuku");
 		do {
 			if (elm.tagName.toUpperCase() === 'A' && elm.classList.contains('remove')) {
 				var elmIndex = elm.parentNode.index;
@@ -768,7 +767,6 @@
 			this.input.storkTagsProps.paddingRight = parseInt(inputStyle.paddingRight, 10);
 
 		}
-		//TODO add
 		if(!this.persistentPlaceholder){
 			var textMetrics = this.textCanvasContext.measureText(text || this.input.value);
 			//note - the +1 pixel is for limiting the minimum width to 1px and also prevents weird width jumps while typing
@@ -777,7 +775,6 @@
 		else {
 			this.input.style.width='auto';
 		}
-		console.log("width :" ,this.input.style.width )
 	};
 
 	/**
@@ -796,7 +793,6 @@
 		var allLIs;
 
 		if (this.dropdownContainer.storkTagsProps.allLIs.length === 0 || !this.dropdownContainer.classList.contains('focused')) {
-			console.log("dropdownContainer")
 			return;
 		}
 
