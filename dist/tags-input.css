@@ -3,11 +3,20 @@
   display: flex;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  min-height: 30px;
 }
 .stork-tags:focus {
   outline: 0;
 }
-.stork-tags > ul {
+.stork-tags.multiline {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  min-height: 30px;
+  overflow-y: auto;
+}
+.stork-tags.multiline > ul {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -17,9 +26,22 @@
   cursor: text;
   display: flex;
   justify-content: flex-start;
-  /*horizontal*/
   align-items: flex-start;
   flex-wrap: wrap;
+}
+.stork-tags > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  height: 30px;
+  flex-grow: 1;
+  white-space: nowrap;
+  cursor: text;
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: flex-start;
+  /*horizontal*/
+  align-items: center;
   /*vertical*/
 }
 .stork-tags > ul > li {

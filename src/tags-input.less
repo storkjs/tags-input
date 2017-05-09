@@ -3,11 +3,33 @@
   display: flex;
   position: relative;
   overflow: hidden;
-
+  width:100%;
+  min-height:30px;
   &:focus {
 	outline: 0;
   }
 
+  &.multiline {
+	width: 100%;
+	display: flex;
+	flex: 1;
+	min-height:30px;
+	overflow-y: auto;
+
+	> ul {
+	  margin: 0;
+	  padding: 0;
+	  list-style: none;
+	  min-height: 30px;
+	  flex-grow: 1;
+	  white-space: nowrap;
+	  cursor: text;
+	  display: flex;
+	  justify-content: flex-start;
+	  align-items: flex-start;
+	  flex-wrap: wrap;
+	}
+  }
   > ul {
 	margin: 0;
 	padding: 0;

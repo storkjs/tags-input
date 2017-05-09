@@ -45,6 +45,9 @@
 		this.eventListeners = [];
 
 		this.tagsInput.classList.add('stork-tags', 'stork-tags' + this.rnd);
+		if(this.multiline){
+			this.tagsInput.classList.add('multiline');
+		}
 		this.tagsInput.setAttribute('tabindex', 0);
 
 		this.buildDom();

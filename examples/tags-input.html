@@ -58,13 +58,13 @@
 			left: 90px;
 		}
 
-		#tagsInput {
+		/*#tagsInput {
 			width: 100%;
 			flex: 1;
 			display: flex;
 			max-height: 400px;
 			overflow-y: auto;
-		}
+		}*/
 	</style>
 
 	<script>
@@ -112,6 +112,8 @@
 				rechooseRemove: true,
 				inputMinWidth: 70,
 				placeholder: 'Search Something',
+				persistentPlaceholder: true,
+				multiline:true,
 				maxlength: 60,
 				maxTags: 300,
 				persistentSuggestions: false
