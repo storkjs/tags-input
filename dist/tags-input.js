@@ -370,7 +370,6 @@
   };
   StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(event) {
     var elm = event.target, i = 0;
-    console.log("kuku");
     do {
       if (elm.tagName.toUpperCase() === "A" && elm.classList.contains("remove")) {
         var elmIndex = elm.parentNode.index;
@@ -528,7 +527,6 @@
     } else {
       this.input.style.width = "auto";
     }
-    console.log("width :", this.input.style.width);
   };
   StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
     this.unfocusTags();
@@ -540,7 +538,6 @@
     var hoveredIndex;
     var allLIs;
     if (this.dropdownContainer.storkTagsProps.allLIs.length === 0 || !this.dropdownContainer.classList.contains("focused")) {
-      console.log("dropdownContainer");
       return;
     }
     if (key === "DOWN" || key === "UP" || key === "ENTER") {
