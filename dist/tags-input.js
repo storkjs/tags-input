@@ -364,7 +364,7 @@
       if (!this.multiline && !this.persistentPlaceholder) {
         this.input.style.width = "";
       } else {
-        this.input.style.width = "100%";
+        this.input.style.width = "auto";
       }
     }
   };
@@ -526,7 +526,7 @@
       var textMetrics = this.textCanvasContext.measureText(text || this.input.value);
       this.input.style.width = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + "px";
     } else {
-      this.input.style.width = "100%";
+      this.input.style.width = "auto";
     }
     console.log("width :", this.input.style.width);
   };

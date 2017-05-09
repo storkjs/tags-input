@@ -3,12 +3,13 @@
   border: 1px solid #909090;
   border-radius: 6px;
   color: #424242;
+  height: 40px;
 }
 .stork-tags > ul > li.tag {
   background-color: #69F0AE;
   border-radius: 6px;
   height: 29px;
-  padding: 5px 10px;
+  padding: 3px 10px;
   font-size: 16px;
   margin: 5px;
 }
@@ -19,6 +20,7 @@
   font-size: 20px;
   margin-right: 5px;
   cursor: pointer;
+  height: 20px;
 }
 .stork-tags > ul > li.tag span.group {
   font-weight: bold;
