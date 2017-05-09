@@ -1,33 +1,27 @@
 /* main tags element */
 .stork-tags {
-  border: 2px solid #909090;
-  border-radius: 2px;
+  border: 1px solid #909090;
+  border-radius: 6px;
+  color: #424242;
 }
 .stork-tags > ul > li.tag {
-  background-color: #a0d0f0;
+  background-color: #69F0AE;
   border-radius: 6px;
-  padding: 3px 6px 3px 3px;
-  font-size: 13px;
-  margin-left: 5px;
-  margin-right: 5px;
-  border-top: 3px solid white;
-  border-bottom: 3px solid white;
+  height: 29px;
+  padding: 5px 10px;
+  font-size: 16px;
+  margin: 5px;
 }
 .stork-tags > ul > li.tag.focused {
-  background-color: #70a0c0;
-  text-shadow: 1px 1px 1px white;
+  background-color: #00E676;
 }
 .stork-tags > ul > li.tag > a.remove {
-  background-color: white;
-  border-radius: 50%;
-  height: 15px;
-  width: 15px;
+  font-size: 20px;
   margin-right: 5px;
-  box-shadow: -1px -1px 2px rgba(0, 0, 0, 0.5) inset;
   cursor: pointer;
 }
 .stork-tags > ul > li.tag span.group {
-  font-style: italic;
+  font-weight: bold;
 }
 .stork-tags > ul > li.tag span.group::after {
   content: "\00a0:\00a0";
@@ -37,12 +31,15 @@
   line-height: 28px;
   padding: 0 1px;
   border-width: 0;
+  font-size: 16px;
 }
 .stork-tags > ul > li.search-li input:focus {
   outline-width: 0;
 }
 .stork-tags > input.search {
-  padding: 5px;
+  padding: 0 5px;
+  margin: 5px 0;
+  font-size: 16px;
 }
 .stork-tags > input.search:focus {
   box-shadow: 0 0 5px rgba(0, 100, 255, 0.3) inset;

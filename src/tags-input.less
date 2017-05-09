@@ -1,5 +1,6 @@
 /* main tags element */
 .stork-tags {
+  padding: 5px;
   display: flex;
   position: relative;
   overflow: hidden;
@@ -10,24 +11,22 @@
   }
 
   &.multiline {
-	width: 100%;
-	display: flex;
-	flex: 1;
-	min-height:30px;
+	position: relative;
 	overflow-y: auto;
+	width: 100%;
+	min-height: 32px;
+	height: 100%;
 
 	> ul {
 	  margin: 0;
 	  padding: 0;
 	  list-style: none;
-	  min-height: 30px;
-	  flex-grow: 1;
-	  white-space: nowrap;
 	  cursor: text;
 	  display: flex;
 	  justify-content: flex-start;
 	  align-items: flex-start;
 	  flex-wrap: wrap;
+	  height: 100%;
 	}
   }
   > ul {
@@ -38,7 +37,6 @@
 	flex-grow: 1;
 	white-space: nowrap;
 	cursor: text;
-	flex-wrap: wrap;
 	display: flex;
 	justify-content: flex-start; /*horizontal*/
 	align-items: center; /*vertical*/
@@ -68,6 +66,8 @@
 
 		input.search {
 		  width: 100%;
+		  margin: 5px;
+		  padding: 0 5px;
 		}
 	  }
 	}

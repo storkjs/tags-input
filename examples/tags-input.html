@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="../dist/tags-input.min.css">
 	<link rel="stylesheet" type="text/css" href="../dist/simple-theme.min.css">
 
@@ -16,18 +16,105 @@
 		}
 
 		html, body {
+			display: flex;
+			margin: 0;
+			padding: 0;
+			width: 100%;
 			height: 100%;
+			font-family: 'Lato', sans-serif;
+			flex: 1;
 		}
 
-		body, #parentOne, #parentTwo {
+		body {
+			display: flex;
+			width: 100%;
+			height: 100%;
+
+		}
+
+		.main {
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+		}
+
+		.header {
 			display: flex;
 			justify-content: center;
-			align-items: flex-start;
-			margin: 20px 0 0 0;
+			align-items: center;
+			padding: 0 10px;
+			background-color: #00BCD4;
+			color: #424242;
+			height: 350px;
+		}
+
+		.main-container {
+			display: flex;
+			padding: 10px;
+			flex-direction: column;
+			color: #424242;
+			justify-content: flex-start;
+			align-items: center;
+			margin: 4px;
+			height:100%;
+			background-color: white;
+		}
+		.container{
+			display: flex;
+			padding: 10px;
+			flex-direction: column;
+			color: #424242;
+			justify-content: flex-start;
+			align-items: center;
+			background-color: white;
+		}
+		.shadow{
+			border: 1px solid rgba(0,0,0,.03);
+			box-shadow: 0 2px 2px rgba(0,0,0,.24), 0 0 2px rgba(0,0,0,.12);
+		}
+		.btn {
+			height: 30px;
+			padding: 5px 15px;
+			font-size: 16px;
+			border-radius: 15px;
+			margin: 0 20px;
+			border: 0;
+		}
+		.btn:focus{
+			outline:0;
+		}
+
+		.destroy {
+			background-color: #D50000;
+			color: white;
+		}
+
+		.clear {
+			background-color: #2196F3;
+			color: white;
+		}
+
+		.toolbar {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin: 10px;
+			height:50px;
+		}
+
+		.tags-input-area {
+			width: 50vw;
+			height: 100%;
+			display: flex;
+		}
+		.title{
+			font-size: 50px;
+			color:white;
 		}
 
 		#parentOne {
-			height: 95%;
+			min-height: 700px;
+			max-height: 100%;
 			width: 60%;
 			max-width: 600px;
 			padding-top: 70px;
@@ -48,23 +135,6 @@
 			border-top: 1px solid #d0d0d0;
 		}
 
-		#destroyBtn, #removeAllBtn {
-			position: absolute;
-			top: -30px;
-			left: 0;
-		}
-
-		#removeAllBtn {
-			left: 90px;
-		}
-
-		/*#tagsInput {
-			width: 100%;
-			flex: 1;
-			display: flex;
-			max-height: 400px;
-			overflow-y: auto;
-		}*/
 	</style>
 
 	<script>
@@ -113,7 +183,7 @@
 				inputMinWidth: 70,
 				placeholder: 'Search Something',
 				persistentPlaceholder: true,
-				multiline:true,
+				multiline: true,
 				maxlength: 60,
 				maxTags: 300,
 				persistentSuggestions: false
@@ -135,11 +205,18 @@
 	</script>
 </head>
 <body>
-<div id="parentOne">
-	<div id="parentTwo">
-		<button id="destroyBtn" type="button">Destroy</button>
-		<button id="removeAllBtn" type="button">Clear All Tags</button>
-		<div id="tagsInput"></div>
+<div class="main">
+	<div class="header"><span class="title"> Welcome to StorkJS tags-input</span></div>
+	<div class="main-container">
+		<div class="toolbar">
+			<button class="btn destroy shadow" id="destroyBtn" type="button">Destroy</button>
+			<button class="btn clear shadow" id="removeAllBtn" type="button">Clear All Tags</button>
+		</div>
+		<div class="container shadow">
+			<div class="tags-input-area">
+				<div id="tagsInput"></div>
+			</div>
+		</div>
 	</div>
 </div>
 </body>
