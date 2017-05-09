@@ -532,6 +532,9 @@
 			if (!this.multiline && !this.persistentPlaceholder) {
 				this.input.style.width = '';
 			}
+			else{
+				this.input.style.width = '100%';
+			}
 
 		}
 	};
@@ -544,7 +547,7 @@
 	StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(event) {
 		var elm = event.target,
 			i = 0;
-
+       console.log("kuku");
 		do {
 			if (elm.tagName.toUpperCase() === 'A' && elm.classList.contains('remove')) {
 				var elmIndex = elm.parentNode.index;
@@ -760,10 +763,18 @@
 			this.textCanvasContext.font = inputStyle.fontStyle + ' ' + inputStyle.fontWeight + ' ' + inputStyle.fontSize + ' ' + inputStyle.fontFamily;
 			this.input.storkTagsProps.paddingLeft = parseInt(inputStyle.paddingLeft, 10);
 			this.input.storkTagsProps.paddingRight = parseInt(inputStyle.paddingRight, 10);
+
+		}
+		//TODO add
+		if(!this.persistentPlaceholder){
 			var textMetrics = this.textCanvasContext.measureText(text || this.input.value);
 			//note - the +1 pixel is for limiting the minimum width to 1px and also prevents weird width jumps while typing
 			this.input.style.width = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + 'px';
 		}
+		else {
+			this.input.style.width='100%';
+		}
+		console.log("width :" ,this.input.style.width )
 	};
 
 	/**
@@ -782,6 +793,7 @@
 		var allLIs;
 
 		if (this.dropdownContainer.storkTagsProps.allLIs.length === 0 || !this.dropdownContainer.classList.contains('focused')) {
+			console.log("dropdownContainer")
 			return;
 		}
 
@@ -868,6 +880,7 @@
 						else if (key === 'DELETE' && this.inputLi.nextSibling) {
 							this.removeTag(this.inputLi.index); //the input-LI is before the tag-LI so the tag's-elm index is greater by 1 from its tag's index in chosenTags
 						}
+						this.positionDropdown();
 					}
 					catch (e) {
 						console.warn(e.message);
@@ -896,6 +909,7 @@
 					console.warn(e.message);
 				}
 				finally {
+					this.positionDropdown();
 					this.focusSearchInput(0);
 				}
 
