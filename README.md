@@ -61,6 +61,9 @@ _persistentPlaceholder_ [optional]: The placeholder text always be displayed. Ex
 _multiline_ [optional]: Enables the tags container to become multiline as the number of tags exceed the line width:
 `{ multiline: true }`
 
+_showGroups_ [optional]: Enables to show tag`s group inside the tag:
+`{ showGroups: true }`
+
 _maxlength_ [optional]: The maximum length of characters the user is allowed to type per tag. defaults to 50. Example:
 `{ maxlength: 65 }`
 
