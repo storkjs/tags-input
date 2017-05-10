@@ -35,6 +35,11 @@
     }
     this.tagsInput.setAttribute("tabindex", 0);
     this.buildDom();
+    var minWidth = 0;
+    if (this.persistentPlaceholder) {
+      minWidth = this.calculateSearchInputWidth(this.placeholder);
+    }
+    this.input.style.minWidth = minWidth;
     this.setEventListeners();
     if (!this.tagsInput.stork) {
       this.tagsInput.stork = {};
@@ -361,11 +366,7 @@
       this.inputLi.classList.remove("with-tags");
       this.inputLi.storkTagsProps.state = "no-tags";
       this.input.setAttribute("placeholder", this.placeholder);
-      if (!this.multiline && !this.persistentPlaceholder) {
-        this.input.style.width = "";
-      } else {
-        this.input.style.width = "auto";
-      }
+      this.input.style.width = "";
     }
   };
   StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(event) {
@@ -394,6 +395,8 @@
       } else if (elm.tagName.toUpperCase() === "UL" && !this.multiline) {
         this.redrawSearchInput(event.offsetX);
         return;
+      } else if (this.multiline) {
+        this.input.focus();
       }
       elm = elm.parentNode;
       i++;
@@ -492,7 +495,7 @@
   };
   StorkTagsInput.prototype.onChangeSearchInput = function onChangeSearchInput(e) {
     if (this.input.value !== this.lastSearchString) {
-      if (this.inputLi.storkTagsProps.state === "with-tags" && !this.multiline && !this.persistentPlaceholder) {
+      if (this.inputLi.storkTagsProps.state === "with-tags") {
         this.calculateSearchInputWidth();
       }
       if (!this.maxTags || this.chosenTags.length < this.maxTags) {
@@ -509,11 +512,7 @@
     }
   };
   StorkTagsInput.prototype.calculateSearchInputWidth = function calculateSearchInputWidth(text) {
-    if (this.inputLi.storkTagsProps.state === "no-tags" && !this.multiline) {
-      this.input.style.width = "";
-      return;
-    }
-    if (!this.textCanvasContext && !this.multiline) {
+    if (!this.textCanvasContext) {
       var textCanvas = document.createElement("canvas");
       var inputStyle = this.input.currentStyle || window.getComputedStyle(this.input);
       this.textCanvasContext = textCanvas.getContext("2d");
@@ -521,12 +520,14 @@
       this.input.storkTagsProps.paddingLeft = parseInt(inputStyle.paddingLeft, 10);
       this.input.storkTagsProps.paddingRight = parseInt(inputStyle.paddingRight, 10);
     }
-    if (!this.persistentPlaceholder) {
-      var textMetrics = this.textCanvasContext.measureText(text || this.input.value);
-      this.input.style.width = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + "px";
+    var textMetrics = this.textCanvasContext.measureText(text || this.input.value);
+    var finalWidth = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + "px";
+    if (this.inputLi.storkTagsProps.state === "no-tags") {
+      this.input.style.width = "";
     } else {
-      this.input.style.width = "auto";
+      this.input.style.width = finalWidth;
     }
+    return finalWidth;
   };
   StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
     this.unfocusTags();
