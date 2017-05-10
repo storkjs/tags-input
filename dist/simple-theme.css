@@ -12,6 +12,11 @@
   padding: 3px 10px;
   font-size: 16px;
   margin: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+.stork-tags > ul > li.tag:hover {
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
 }
 .stork-tags > ul > li.tag.focused {
   background-color: #00E676;

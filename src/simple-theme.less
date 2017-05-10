@@ -6,6 +6,7 @@
   border-radius: 6px;
   color:#424242;
   height:40px;
+
   > ul {
 	> li.tag {
 	  background-color: #69F0AE;
@@ -14,9 +15,14 @@
 	  padding: 3px 10px;
 	  font-size: 16px;
 	  margin: 5px;
+	  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+
+	  &:hover {
+		box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+		transform: scale(1.02);
+	  }
 	  &.focused {
 		background-color: #00E676;
-
 	  }
 
 	  > a.remove {
