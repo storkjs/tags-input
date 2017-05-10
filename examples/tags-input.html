@@ -68,11 +68,7 @@
 			justify-content: flex-start;
 			align-items: center;
 			background-color: white;
-		}
-
-		.shadow {
-			border: 1px solid rgba(0, 0, 0, .03);
-			box-shadow: 0 2px 2px rgba(0, 0, 0, .24), 0 0 2px rgba(0, 0, 0, .12);
+			width: 50vw;
 		}
 
 		.btn {
@@ -109,12 +105,6 @@
 			align-items: center;
 			margin: 10px;
 			height: 50px;
-		}
-
-		.tags-input-area {
-			width: 50vw;
-			height: 100%;
-			display: flex;
 		}
 
 		.title {
@@ -198,10 +188,8 @@
 			<button class="btn destroy shadow" id="destroyBtn" type="button">Destroy</button>
 			<button class="btn clear shadow" id="removeAllBtn" type="button">Clear All Tags</button>
 		</div>
-		<div class="container shadow">
-				<div class="tags-input-area">
-				<div id="tagsInput"></div>
-			</div>
+		<div class="container">
+			<div id="tagsInput"></div>
 		</div>
 	</div>
 </div>

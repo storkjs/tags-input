@@ -1,7 +1,8 @@
 /* main tags element */
 .stork-tags {
-  border: 1px solid #909090;
+  border: 2px solid #00bcd4;
   border-radius: 6px;
+  box-shadow: 0 8px 6px -7px rgba(0, 0, 0, 0.3);
   color: #424242;
   height: 40px;
 }
@@ -9,10 +10,11 @@
   background-color: #69F0AE;
   border-radius: 6px;
   height: 29px;
-  padding: 3px 10px;
+  padding: 0 10px;
   font-size: 16px;
   margin: 5px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  align-items: center;
 }
 .stork-tags > ul > li.tag:hover {
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
@@ -25,7 +27,7 @@
   font-size: 20px;
   margin-right: 5px;
   cursor: pointer;
-  height: 20px;
+  padding-bottom: 2px;
 }
 .stork-tags > ul > li.tag span.group {
   font-weight: bold;
