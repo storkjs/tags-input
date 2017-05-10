@@ -16,6 +16,7 @@
     this.placeholder = options.placeholder || "";
     this.persistentPlaceholder = options.persistentPlaceholder || false;
     this.multiline = options.multiline || false;
+    this.showGroups = options.showGroups !== undefined ? options.showGroups : true;
     this.textCanvasContext = null;
     this.maxlength = typeof options.maxlength === "number" ? options.maxlength : 50;
     this.maxTags = options.maxTags || 0;
@@ -170,7 +171,9 @@
         item.appendChild(miscElm);
         itemsList.appendChild(item);
       }
-      groupDiv.appendChild(groupHeader);
+      if (this.showGroups) {
+        groupDiv.appendChild(groupHeader);
+      }
       groupDiv.appendChild(itemsList);
       this.dropdownContainer.appendChild(groupDiv);
     }
@@ -281,7 +284,7 @@
     groupSpan.classList.add("group");
     valueSpan.classList.add("value");
     li.appendChild(xA);
-    if (tagObj.groupLabel !== "") {
+    if (tagObj.groupLabel !== "" && this.showGroups) {
       li.appendChild(groupSpan);
     }
     li.appendChild(valueSpan);
