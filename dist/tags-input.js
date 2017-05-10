@@ -16,7 +16,7 @@
     this.placeholder = options.placeholder || "";
     this.persistentPlaceholder = options.persistentPlaceholder || false;
     this.multiline = options.multiline || false;
-    this.showGroups = options.showGroups !== undefined ? options.showGroups : true;
+    this.showGroups = options.showGroups !== false;
     this.textCanvasContext = null;
     this.maxlength = typeof options.maxlength === "number" ? options.maxlength : 50;
     this.maxTags = options.maxTags || 0;
@@ -284,7 +284,7 @@
     groupSpan.classList.add("group");
     valueSpan.classList.add("value");
     li.appendChild(xA);
-    if (tagObj.groupLabel !== "" && this.showGroups) {
+    if (this.showGroups && tagObj.groupLabel !== "") {
       li.appendChild(groupSpan);
     }
     li.appendChild(valueSpan);
