@@ -740,7 +740,7 @@
 	};
 
 	StorkTagsInput.prototype.onKeydownSearchInput = function onKeydownSearchInput(event) {
-		if (event.key && (event.keyCode >= 48 && event.keyCode <= 90) || (event.keyCode >= 186 && event.keyCode <= 222)) {
+		if (event.key && (event.keyCode >= 48/*0*/ && event.keyCode <= 90/*Z*/) || (event.keyCode >= 186/*;*/ && event.keyCode <= 222/*"*/)) {
 			if (this.inputLi.storkTagsProps.state === 'with-tags') {
 				this.calculateSearchInputWidth(this.input.value + event.key);
 			}
