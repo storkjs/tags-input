@@ -1,17 +1,38 @@
 /* main tags element */
 .stork-tags {
+  padding: 5px;
   display: flex;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  min-height: 32px;
 }
 .stork-tags:focus {
   outline: 0;
+}
+.stork-tags.multiline {
+  position: relative;
+  overflow-y: auto;
+  width: 100%;
+  min-height: 32px;
+  height: 100%;
+}
+.stork-tags.multiline > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  cursor: text;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  height: 100%;
 }
 .stork-tags > ul {
   margin: 0;
   padding: 0;
   list-style: none;
-  height: 100%;
+  height: 30px;
   flex-grow: 1;
   white-space: nowrap;
   cursor: text;
@@ -43,12 +64,14 @@
   flex-grow: 1;
 }
 .stork-tags > ul > li.search-li input.search {
-  width: 100%;
+  margin: 5px;
+  padding: 0 5px;
+  font: inherit;
 }
 .stork-tags > input.search {
-  height: 100%;
   flex-grow: 1;
   border: 0 none;
+  font: inherit;
 }
 .stork-tags > input.search:focus {
   outline: 0 none;

@@ -14,6 +14,8 @@
     this.inputMinWidth = options.inputMinWidth || 60;
     this.rechooseRemove = options.rechooseRemove || false;
     this.placeholder = options.placeholder || "";
+    this.persistentPlaceholder = options.persistentPlaceholder || false;
+    this.multiline = options.multiline || false;
     this.textCanvasContext = null;
     this.maxlength = typeof options.maxlength === "number" ? options.maxlength : 50;
     this.maxTags = options.maxTags || 0;
@@ -28,8 +30,16 @@
     };
     this.eventListeners = [];
     this.tagsInput.classList.add("stork-tags", "stork-tags" + this.rnd);
+    if (this.multiline) {
+      this.tagsInput.classList.add("multiline");
+    }
     this.tagsInput.setAttribute("tabindex", 0);
     this.buildDom();
+    var minWidth = 0;
+    if (this.persistentPlaceholder) {
+      minWidth = this.calculateSearchInputWidth(this.placeholder);
+    }
+    this.input.style.minWidth = minWidth;
     this.setEventListeners();
     if (!this.tagsInput.stork) {
       this.tagsInput.stork = {};
@@ -347,7 +357,9 @@
       this.inputLi.classList.add("with-tags");
       this.inputLi.classList.remove("no-tags");
       this.inputLi.storkTagsProps.state = "with-tags";
-      this.input.setAttribute("placeholder", "");
+      if (!this.persistentPlaceholder) {
+        this.input.setAttribute("placeholder", "");
+      }
       this.calculateSearchInputWidth();
     } else {
       this.inputLi.classList.add("no-tags");
@@ -380,9 +392,11 @@
           this.input.focus();
         }
         return;
-      } else if (elm.tagName.toUpperCase() === "UL") {
+      } else if (elm.tagName.toUpperCase() === "UL" && !this.multiline) {
         this.redrawSearchInput(event.offsetX);
         return;
+      } else if (this.multiline) {
+        this.input.focus();
       }
       elm = elm.parentNode;
       i++;
@@ -498,10 +512,6 @@
     }
   };
   StorkTagsInput.prototype.calculateSearchInputWidth = function calculateSearchInputWidth(text) {
-    if (this.inputLi.storkTagsProps.state === "no-tags") {
-      this.input.style.width = "";
-      return;
-    }
     if (!this.textCanvasContext) {
       var textCanvas = document.createElement("canvas");
       var inputStyle = this.input.currentStyle || window.getComputedStyle(this.input);
@@ -511,7 +521,13 @@
       this.input.storkTagsProps.paddingRight = parseInt(inputStyle.paddingRight, 10);
     }
     var textMetrics = this.textCanvasContext.measureText(text || this.input.value);
-    this.input.style.width = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + "px";
+    var finalWidth = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + "px";
+    if (this.inputLi.storkTagsProps.state === "no-tags") {
+      this.input.style.width = "";
+    } else {
+      this.input.style.width = finalWidth;
+    }
+    return finalWidth;
   };
   StorkTagsInput.prototype.onFocusSearchInput = function onFocusSearchInput(e) {
     this.unfocusTags();
@@ -567,16 +583,28 @@
     if (key === "LEFT") {
       if (this.input === document.activeElement && this.inputLi.previousSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart === 0) {
         this.onClickFocusTag(this.inputLi.previousSibling.index);
-      } else if (Number.isInteger(this.focusedTagIndex)) {
+      } else if (Number.isInteger(this.focusedTagIndex) && !this.multiline) {
         this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1, this.input.value.length);
+        e.preventDefault();
+      } else if (Number.isInteger(this.focusedTagIndex) && this.multiline) {
+        if (this.focusedTagIndex - 1 >= 0) {
+          this.onClickFocusTag(this.focusedTagIndex - 1);
+        }
         e.preventDefault();
       }
     } else if (key === "RIGHT") {
       if (this.input === document.activeElement && this.inputLi.nextSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart >= this.input.value.length) {
         this.onClickFocusTag(this.inputLi.nextSibling.index - 1);
-      } else if (Number.isInteger(this.focusedTagIndex)) {
+      } else if (Number.isInteger(this.focusedTagIndex) && !this.multiline) {
         this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1, 0);
         e.preventDefault();
+      } else if (Number.isInteger(this.focusedTagIndex) && this.multiline) {
+        if (this.chosenTags.length - 1 > this.focusedTagIndex) {
+          this.onClickFocusTag(this.focusedTagIndex + 1);
+        } else {
+          this.focusSearchInput(this.input.value.length);
+          e.preventDefault();
+        }
       }
     } else if (key === "BACKSPACE" || key === "DELETE") {
       if (this.input === document.activeElement) {
@@ -587,6 +615,7 @@
             } else if (key === "DELETE" && this.inputLi.nextSibling) {
               this.removeTag(this.inputLi.index);
             }
+            this.positionDropdown();
           } catch (e) {
             console.warn(e.message);
           }
@@ -600,12 +629,15 @@
         }
       } else if (Number.isInteger(this.focusedTagIndex)) {
         var tmpFocusedTagIndex = this.focusedTagIndex;
-        this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
+        if (!this.multiline) {
+          this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
+        }
         try {
           this.removeTag(tmpFocusedTagIndex);
         } catch (e) {
           console.warn(e.message);
         } finally {
+          this.positionDropdown();
           this.focusSearchInput(0);
         }
         e.preventDefault();
