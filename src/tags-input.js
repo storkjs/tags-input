@@ -29,6 +29,9 @@
 
 		this.persistentPlaceholder = options.persistentPlaceholder || false;
 		this.multiline = options.multiline || false;
+
+		this.showGroups = options.showGroups !== false;
+
 		this.textCanvasContext = null;
 		this.maxlength = typeof options.maxlength === 'number' ? options.maxlength : 50;
 		this.maxTags = options.maxTags || 0;
@@ -271,7 +274,9 @@
 				itemsList.appendChild(item);
 			}
 
-			groupDiv.appendChild(groupHeader);
+			if (this.showGroups) {
+				groupDiv.appendChild(groupHeader);
+			}
 			groupDiv.appendChild(itemsList);
 			this.dropdownContainer.appendChild(groupDiv);
 		}
@@ -420,7 +425,7 @@
 		valueSpan.classList.add('value');
 
 		li.appendChild(xA);
-		if (tagObj.groupLabel !== '') {
+		if (this.showGroups && tagObj.groupLabel !== '') {
 			li.appendChild(groupSpan);
 		}
 		li.appendChild(valueSpan);
@@ -755,12 +760,12 @@
 	 * @param {string|undefined} [text] - calculate against a specific text
 	 */
 	StorkTagsInput.prototype.calculateSearchInputWidth = function calculateSearchInputWidth(text) {
-		if(!this.textCanvasContext) {
+		if (!this.textCanvasContext) {
 			var textCanvas = document.createElement('canvas');
 			var inputStyle = this.input.currentStyle || window.getComputedStyle(this.input);
 
 			this.textCanvasContext = textCanvas.getContext('2d');
-			this.textCanvasContext.font = inputStyle.fontStyle+' '+inputStyle.fontWeight+' '+inputStyle.fontSize+' '+inputStyle.fontFamily;
+			this.textCanvasContext.font = inputStyle.fontStyle + ' ' + inputStyle.fontWeight + ' ' + inputStyle.fontSize + ' ' + inputStyle.fontFamily;
 			this.input.storkTagsProps.paddingLeft = parseInt(inputStyle.paddingLeft, 10);
 			this.input.storkTagsProps.paddingRight = parseInt(inputStyle.paddingRight, 10);
 		}
@@ -769,7 +774,7 @@
 		//note - the +1 pixel is for limiting the minimum width to 1px and also prevents weird width jumps while typing
 		var finalWidth = Math.ceil(textMetrics.width + this.input.storkTagsProps.paddingLeft + this.input.storkTagsProps.paddingRight + 1) + 'px';
 
-		if(this.inputLi.storkTagsProps.state === 'no-tags') {
+		if (this.inputLi.storkTagsProps.state === 'no-tags') {
 			this.input.style.width = ''; //a just-in-case case. this if-block will probably never run
 		} else {
 			this.input.style.width = finalWidth;
