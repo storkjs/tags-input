@@ -1,11 +1,9 @@
 /* main tags element */
 .stork-tags {
-  padding: 5px;
   display: flex;
   position: relative;
   overflow: hidden;
-  width: 100%;
-  min-height: 24px;
+
   &:focus {
 	outline: 0;
   }
@@ -14,7 +12,6 @@
 	position: relative;
 	overflow-y: auto;
 	width: 100%;
-	min-height: 24px;
 	height: 100%;
 
 	> ul {
@@ -24,7 +21,7 @@
 	  cursor: text;
 	  display: flex;
 	  justify-content: flex-start;
-	  align-items: flex-start;
+	  align-items: center;
 	  flex-wrap: wrap;
 	  height: 100%;
 	}
@@ -33,7 +30,6 @@
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	min-height: 20px;
 	flex-grow: 1;
 	white-space: nowrap;
 	cursor: text;
@@ -63,24 +59,10 @@
 		&.no-tags {
 		  flex-grow: 1;
 		}
-
-		input.search {
-		  margin: 5px;
-		  padding: 0 5px;
-		  font: inherit;
-		}
 	  }
 	}
   }
 
-  > input.search {
-	flex-grow: 1;
-	border: 0 none;
-	font: inherit;
-	&:focus {
-	  outline: 0 none;
-	}
-  }
 }
 
 .stork-tags-dropdown-container {
