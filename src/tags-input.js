@@ -956,7 +956,11 @@
 
 	StorkTagsInput.prototype.unfocusSuggestions = function unfocusSuggestions() {
 		if (Number.isInteger(this.dropdownContainer.storkTagsProps.hoveredLIIndex)) {
-			this.dropdownContainer.storkTagsProps.allLIs[this.dropdownContainer.storkTagsProps.hoveredLIIndex].classList.remove('focused');
+			//if user types too fast the list might be closed and DOM elements get removed and then this code runs
+			//and throws an error because 'allLIs[hoveredLIIndex]' might not exist
+			if (this.dropdownContainer.storkTagsProps.allLIs[this.dropdownContainer.storkTagsProps.hoveredLIIndex]) {
+				this.dropdownContainer.storkTagsProps.allLIs[this.dropdownContainer.storkTagsProps.hoveredLIIndex].classList.remove('focused');
+			}
 		}
 		else { // brute force
 			for (var i = 0; i < this.dropdownContainer.storkTagsProps.allLIs.length; i++) {

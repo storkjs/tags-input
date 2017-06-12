@@ -668,7 +668,9 @@
   };
   StorkTagsInput.prototype.unfocusSuggestions = function unfocusSuggestions() {
     if (Number.isInteger(this.dropdownContainer.storkTagsProps.hoveredLIIndex)) {
-      this.dropdownContainer.storkTagsProps.allLIs[this.dropdownContainer.storkTagsProps.hoveredLIIndex].classList.remove("focused");
+      if (this.dropdownContainer.storkTagsProps.allLIs[this.dropdownContainer.storkTagsProps.hoveredLIIndex]) {
+        this.dropdownContainer.storkTagsProps.allLIs[this.dropdownContainer.storkTagsProps.hoveredLIIndex].classList.remove("focused");
+      }
     } else {
       for (var i = 0; i < this.dropdownContainer.storkTagsProps.allLIs.length; i++) {
         if (this.dropdownContainer.storkTagsProps.allLIs[i].classList.contains("focused")) {
