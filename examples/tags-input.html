@@ -151,9 +151,9 @@
 			}
 		};
 
-		var testTags;
+		var demoTags, demoTags2;
 		document.addEventListener("DOMContentLoaded", function (e) {
-			testTags = new StorkTagsInput({
+		    var tagsOptions = {
 				element: document.getElementById('tagsInput'),
 				suggestionsHandler: suggestions_handler,
 				rechooseRemove: true,
@@ -161,24 +161,48 @@
 				placeholder: 'Search...',
 				persistentPlaceholder: true,
 				multiline: true,
-				showGroups: false,
+				showGroups: true,
 				maxlength: 60,
 				maxTags: 300,
 				persistentSuggestions: false
-			});
+			};
 
-			testTags.addTag({value: 'USD', label: 'US Dollar', groupField: 'currencies', groupLabel: 'Currencies'});
-			testTags.addTag({value: 'EUR', groupField: 'currencies'});
-			testTags.addTag({value: 'Ivan', label: 'Ivan', groupField: '', groupLabel: ''});
-			testTags.addEventListener('tag-added', function (e) {
+		    //first Tags
+			demoTags = new StorkTagsInput(tagsOptions);
+
+			demoTags.addTag({value: 'USD', label: 'US Dollar', groupField: 'currencies', groupLabel: 'Currencies'});
+			demoTags.addTag({value: 'EUR', groupField: 'currencies'});
+
+			demoTags.addEventListener('tag-added', function (e) {
 				console.log('added tag:', e.detail);
 			}, false);
-			testTags.addEventListener('tag-removed', function (e) {
+			demoTags.addEventListener('tag-removed', function (e) {
 				console.log('removed tag:', e.detail);
 			}, false);
 
-			document.getElementById('destroyBtn').addEventListener('click', testTags.destroy.bind(testTags), false);
-			document.getElementById('removeAllBtn').addEventListener('click', testTags.removeAllTags.bind(testTags), false);
+			document.getElementById('destroyBtn').addEventListener('click', demoTags.destroy.bind(demoTags), false);
+			document.getElementById('removeAllBtn').addEventListener('click', demoTags.removeAllTags.bind(demoTags), false);
+
+			//second Tags
+			tagsOptions.element = document.getElementById('tagsInput2');
+			tagsOptions.multiline = false;
+			tagsOptions.showGroups = false;
+			tagsOptions.persistentPlaceholder = false;
+
+			demoTags2 = new StorkTagsInput(tagsOptions);
+
+			demoTags2.addTag({value: 'ILS', label: 'IL Shekel', groupField: 'currencies', groupLabel: 'Currencies'});
+			demoTags2.addTag({value: 'AUD', groupField: 'currencies'});
+
+			demoTags2.addEventListener('tag-added', function (e) {
+				console.log('added tag:', e.detail);
+			}, false);
+			demoTags2.addEventListener('tag-removed', function (e) {
+				console.log('removed tag:', e.detail);
+			}, false);
+
+			document.getElementById('destroyBtn').addEventListener('click', demoTags2.destroy.bind(demoTags2), false);
+			document.getElementById('removeAllBtn').addEventListener('click', demoTags2.removeAllTags.bind(demoTags2), false);
 		});
 	</script>
 </head>
@@ -191,7 +215,12 @@
 			<button class="btn clear shadow" id="removeAllBtn" type="button">Clear All Tags</button>
 		</div>
 		<div class="container">
+			<p>Multi-line with group names and persistent placeholder</p>
 			<div id="tagsInput"></div>
+		</div>
+		<div class="container">
+			<p>Single-line without group names and no persistent placeholder</p>
+			<div id="tagsInput2"></div>
 		</div>
 	</div>
 </div>

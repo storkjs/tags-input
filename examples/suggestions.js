@@ -1,31 +1,32 @@
 var suggestionGroups = [
-  {
-	  "field": "lp",
-    "label": "LPs",
-    "items": [
-      {"value": "LPLA", "label": "LPLA LP"},
-      {"value": "LPRJ", "label": "LPRJ LP"},
-      {"value": "LPLB", "label": "LPLB LP"}
-    ]
-  },
-  {
-	  "field": "currencies",
-    "label": "Currencies",
-    "items": [
-      {"value": "USD", "label": "US Dollar"},
-      {"value": "EUR", "label": "Euro"},
-      {"value": "ILS", "label": "IL Shekel"}
-    ]
-  },
-  {
-	  "field": "tenors",
-    "label": "Tenors",
-    "items": [
-      {"value": "1wk", "label": "1 Week"},
-      {"value": "2mth", "label": "2 Months"},
-      {"value": "3yr", "label": "3 Years"}
-    ]
-  },
+	{
+		"field": "team",
+		"label": "Teams",
+		"items": [
+			{"value": "cowboys", "label": "Cowboys"},
+			{"value": "storm_troopers", "label": "Storm Troopers"},
+			{"value": "avengers", "label": "Avengers"}
+		]
+	},
+	{
+		"field": "currencies",
+		"label": "Currencies",
+		"items": [
+			{"value": "USD", "label": "US Dollar"},
+			{"value": "EUR", "label": "Euro"},
+			{"value": "ILS", "label": "IL Shekel"},
+			{"value": "AUD", "label": "AU Dollar"}
+		]
+	},
+	{
+		"field": "dates",
+		"label": "Dates",
+		"items": [
+			{"value": "1wk", "label": "1 Week"},
+			{"value": "2mth", "label": "2 Months"},
+			{"value": "3yr", "label": "3 Years"}
+		]
+	},
 	{
 		"field": "extras",
 		"label": "Extras",

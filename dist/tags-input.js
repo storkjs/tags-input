@@ -259,44 +259,59 @@
     if (!tagObj.label) {
       tagObj.label = capitalizeWords(tagObj.value);
     }
+    var li, xA, groupSpan, valueSpan, tagIndex;
+    var groupTagExists = false;
     for (i = 0; i < this.chosenTags.length; i++) {
-      if (tagObj.groupField === this.chosenTags[i].groupField && tagObj.value === this.chosenTags[i].value) {
-        if (this.rechooseRemove) {
-          try {
-            this.removeTag(i);
-          } catch (e) {
-            return false;
+      if (tagObj.groupField === this.chosenTags[i].groupField) {
+        if (tagObj.value === this.chosenTags[i].value) {
+          if (this.rechooseRemove) {
+            try {
+              this.removeTag(i);
+            } catch (e) {
+              return false;
+            }
+            return true;
           }
-          return true;
+          return false;
+        } else {
+          groupTagExists = true;
+          tagIndex = i;
         }
-        return false;
+        break;
       }
     }
-    var li = document.createElement("li");
-    var xA = document.createElement("a");
-    var groupSpan = document.createElement("span");
-    var valueSpan = document.createElement("span");
-    xA.appendChild(document.createTextNode("×"));
-    groupSpan.appendChild(document.createTextNode(tagObj.groupLabel));
-    valueSpan.appendChild(document.createTextNode(tagObj.label));
-    li.classList.add("tag");
-    xA.classList.add("remove");
-    groupSpan.classList.add("group");
-    valueSpan.classList.add("value");
-    li.appendChild(xA);
-    if (this.showGroups && tagObj.groupLabel !== "") {
-      li.appendChild(groupSpan);
+    if (groupTagExists) {
+      var spanTextNode = this.chosenTags[tagIndex].elm.querySelector("span.value").childNodes[0];
+      spanTextNode.nodeValue = spanTextNode.nodeValue + " | " + tagObj.label;
+      this.chosenTags[tagIndex].values.push(tagObj.value);
+      this.chosenTags[tagIndex].labels.push(tagObj.label);
+    } else {
+      li = document.createElement("li");
+      xA = document.createElement("a");
+      groupSpan = document.createElement("span");
+      valueSpan = document.createElement("span");
+      xA.appendChild(document.createTextNode("×"));
+      groupSpan.appendChild(document.createTextNode(tagObj.groupLabel));
+      valueSpan.appendChild(document.createTextNode(tagObj.label));
+      li.classList.add("tag");
+      xA.classList.add("remove");
+      groupSpan.classList.add("group");
+      valueSpan.classList.add("value");
+      li.appendChild(xA);
+      if (this.showGroups && tagObj.groupLabel !== "") {
+        li.appendChild(groupSpan);
+      }
+      li.appendChild(valueSpan);
+      this.ul.insertBefore(li, this.inputLi);
+      tagIndex = li.index;
+      this.chosenTags.splice(tagIndex, 0, {
+        values: [ tagObj.value ],
+        labels: [ tagObj.label ],
+        groupField: tagObj.groupField,
+        groupLabel: tagObj.groupLabel,
+        elm: li
+      });
     }
-    li.appendChild(valueSpan);
-    this.ul.insertBefore(li, this.inputLi);
-    var tagIndex = li.index;
-    this.chosenTags.splice(tagIndex, 0, {
-      value: tagObj.value,
-      label: tagObj.label,
-      groupField: tagObj.groupField,
-      groupLabel: tagObj.groupLabel,
-      elm: li
-    });
     this.updateSearchState();
     if (document.activeElement === this.input) {
       this.input.blur();
@@ -307,6 +322,7 @@
       cancelable: true,
       detail: {
         obj: this.chosenTags[tagIndex],
+        value: tagObj.value,
         index: tagIndex
       }
     });
