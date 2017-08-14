@@ -252,37 +252,40 @@
       console.info("Maximum tags in tags input reached (stork-tags" + this.rnd + ")");
       return false;
     }
-    var i;
+    var i, k, li, xA, groupSpan, valueSpan, tagIndex;
     if (typeof tagObj.groupLabel === "undefined" || tagObj.groupLabel === null) {
       tagObj.groupLabel = capitalizeWords(tagObj.groupField);
     }
     if (!tagObj.label) {
       tagObj.label = capitalizeWords(tagObj.value);
     }
-    var li, xA, groupSpan, valueSpan, tagIndex;
     var groupTagExists = false;
     for (i = 0; i < this.chosenTags.length; i++) {
       if (tagObj.groupField === this.chosenTags[i].groupField) {
-        if (tagObj.value === this.chosenTags[i].value) {
-          if (this.rechooseRemove) {
-            try {
-              this.removeTag(i);
-            } catch (e) {
-              return false;
+        for (k = 0; k < this.chosenTags[i].values.length; k++) {
+          if (this.chosenTags[i].values[k] === tagObj.value) {
+            if (this.rechooseRemove) {
+              try {
+                this.removeTag(i, k);
+              } catch (e) {
+                return false;
+              }
+              return true;
             }
-            return true;
+            return false;
           }
-          return false;
-        } else {
-          groupTagExists = true;
-          tagIndex = i;
         }
+        groupTagExists = true;
+        tagIndex = i;
         break;
       }
     }
     if (groupTagExists) {
-      var spanTextNode = this.chosenTags[tagIndex].elm.querySelector("span.value").childNodes[0];
-      spanTextNode.nodeValue = spanTextNode.nodeValue + " | " + tagObj.label;
+      valueSpan = document.createElement("span");
+      valueSpan.classList.add("value");
+      valueSpan.classList.add(tagObj.value);
+      valueSpan.appendChild(document.createTextNode(tagObj.label));
+      this.chosenTags[tagIndex].elm.appendChild(valueSpan);
       this.chosenTags[tagIndex].values.push(tagObj.value);
       this.chosenTags[tagIndex].labels.push(tagObj.label);
     } else {
@@ -297,6 +300,7 @@
       xA.classList.add("remove");
       groupSpan.classList.add("group");
       valueSpan.classList.add("value");
+      valueSpan.classList.add(tagObj.value);
       li.appendChild(xA);
       if (this.showGroups && tagObj.groupLabel !== "") {
         li.appendChild(groupSpan);
@@ -328,11 +332,36 @@
     });
     this.tagsInput.dispatchEvent(evnt);
   };
-  StorkTagsInput.prototype.removeTag = function removeTag(index) {
+  StorkTagsInput.prototype.removeTag = function removeTag(index, valueIndex) {
     if (this.chosenTags[index]) {
       this.unfocusTags();
+      var removed;
+      if (typeof valueIndex === "number") {
+        var removedValue = this.chosenTags[index].values[valueIndex];
+        this.chosenTags[index].values.splice(valueIndex, 1);
+        this.chosenTags[index].labels.splice(valueIndex, 1);
+        var span = this.chosenTags[index].elm.querySelector("span.value." + removedValue);
+        this.chosenTags[index].elm.removeChild(span);
+        if (this.chosenTags[index].values.length > 0) {
+          var evnt = new CustomEvent("tag-removed", {
+            bubbles: true,
+            cancelable: true,
+            detail: {
+              obj: this.chosenTags[index],
+              value: removedValue,
+              index: index
+            }
+          });
+          this.tagsInput.dispatchEvent(evnt);
+          return true;
+        }
+      }
+      if (!this.chosenTags[index]) {
+        console.info("Tag at index " + index + " does not exist");
+        return false;
+      }
       this.ul.removeChild(this.chosenTags[index].elm);
-      var removed = this.chosenTags.splice(index, 1);
+      removed = this.chosenTags.splice(index, 1);
       if (this.chosenTags.length === 0) {
         this.updateSearchState();
         this.lastSearchString = null;
@@ -346,6 +375,7 @@
         }
       });
       this.tagsInput.dispatchEvent(evnt);
+      return true;
     } else {
       throw new Error("index (" + index + ") does not exist in chosenTags array");
     }

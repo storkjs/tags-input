@@ -37,6 +37,12 @@
 .stork-tags > ul > li.tag span.group::after {
   content: "\00a0:\00a0";
 }
+.stork-tags > ul > li.tag span.value::after {
+  content: "\00a0|\00a0";
+}
+.stork-tags > ul > li.tag span.value:last-child::after {
+  content: "";
+}
 .stork-tags > ul > li.search-li input {
   height: 28px;
   line-height: 28px;

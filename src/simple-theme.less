@@ -43,6 +43,16 @@
 		  content: "\00a0:\00a0";
 		}
 	  }
+
+	  span.value {
+		&::after {
+		  content: "\00a0|\00a0";
+		}
+
+		&:last-child::after {
+		  content: "";
+		}
+	  }
 	}
 
 	> li.search-li {
