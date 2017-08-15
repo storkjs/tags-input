@@ -179,6 +179,9 @@
 			demoTags.addEventListener('tag-removed', function (e) {
 				console.log('removed tag:', e.detail);
 			}, false);
+			demoTags.addEventListener('all-tags-removed', function (e) {
+				console.log('removed all tag:', e.detail);
+			}, false);
 
 			document.getElementById('destroyBtn').addEventListener('click', demoTags.destroy.bind(demoTags), false);
 			document.getElementById('removeAllBtn').addEventListener('click', demoTags.removeAllTags.bind(demoTags), false);
@@ -199,6 +202,9 @@
 			}, false);
 			demoTags2.addEventListener('tag-removed', function (e) {
 				console.log('removed tag:', e.detail);
+			}, false);
+			demoTags2.addEventListener('all-tags-removed', function (e) {
+				console.log('removed all tag:', e.detail);
 			}, false);
 
 			document.getElementById('destroyBtn').addEventListener('click', demoTags2.destroy.bind(demoTags2), false);

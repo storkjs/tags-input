@@ -101,8 +101,19 @@ this event has a _detail_ containing the tag JS object and its previous index in
 but the tag still remains with other values then also a 'value' property along the detail object. Example:
 ```javascript
 myTags.addEventListener("tag-removed", function(e) {
-  console.log('tag removed:', e.detail); // logs: {obj: {values: ['hi'], label: ['hi'], groupField: '', groupLabel: '', elm: LI}, index: 0}
-  console.log('tag value removed:', e.detail); // logs: {obj: {values: ['hi','you'], label: ['hi','you'], groupField: '', groupLabel: '', elm: LI}, value: 'there', index: 0}
+  console.log('tag removed:', e.detail); // logs: {obj: {values: ['hi'], labels: ['hi'], groupField: '', groupLabel: '', elm: LI}, index: 0}
+  console.log('tag value removed:', e.detail); // logs: {obj: {values: ['hi','you'], labels: ['hi','you'], groupField: '', groupLabel: '', elm: LI}, value: 'there', index: 0}
+}, false);
+```
+
+_all-tags-removed_: when all tags are removed at once.
+this event has a _detail_ contains all of the removed tags. Example:
+```javascript
+myTags.addEventListener("all-tags-removed", function(e) {
+  console.log('all tags removed:', e.detail); // logs: {removedTags: [
+    {values: ['hi'], labels: ['hi'], groupField: '', groupLabel: '', elm: LI},
+    {values: ['you'], labels: ['you'], groupField: '', groupLabel: '', elm: LI}
+  ]}
 }, false);
 ```
 
