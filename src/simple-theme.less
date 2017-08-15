@@ -1,8 +1,10 @@
 @borderRadius: 5px;
+@azure: #00bcd4;
+@lightGreen: #69F0AE;
 
 /* main tags element */
 .stork-tags {
-  border: 2px solid #00bcd4;
+  border: 2px solid @azure;
   border-radius: 6px;
   box-shadow: 0 8px 6px -7px rgba(0,0,0,0.3);
   color:#424242;
@@ -12,7 +14,7 @@
 
   > ul {
 	> li.tag {
-	  background-color: #69F0AE;
+	  background-color: @lightGreen;
 	  border-radius:6px;
 	  height: 29px;
 	  padding: 0 10px;
@@ -78,7 +80,10 @@
   max-height: 200px;
   overflow: auto;
   border-radius: 0 0 @borderRadius @borderRadius;
+  border: 2px solid @azure;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: -5px;
+
   &::-webkit-scrollbar {
 	width: 6px;
   }
@@ -98,12 +103,13 @@
 	background: transparent;
 	background-color: transparent;
   }
+
   > div { /*group wrapper*/
 	display: flex;
 	justify-content: flex-start; /*horizontal*/
 	align-items: flex-start; /*vertical*/
 
-	background-color: #DDDDDD;
+	background-color: #b2ebf3;
 
 	> div { /*group title*/
 	  width: 150px;
@@ -114,10 +120,11 @@
 		font-weight: bold;
 	  }
 	}
+
 	> ul { /*suggestions list*/
 	  flex-grow: 1;
 	  padding: 5px 0 0 0;
-	  background-color: #EEEEEE;
+	  background-color: white;
 
 	  display: flex;
 	  justify-content: flex-start; /*horizontal*/
@@ -141,8 +148,7 @@
 		}
 
 		&.focused > a {
-		  background-color: #444444;
-		  color: white;
+		  background-color: @lightGreen;
 		}
 	  }
 	}

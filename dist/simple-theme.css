@@ -61,7 +61,9 @@
   max-height: 200px;
   overflow: auto;
   border-radius: 0 0 5px 5px;
+  border: 2px solid #00bcd4;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  margin-top: -5px;
   /* Track */
   /* Handle */
   /* Let's get this party started */
@@ -88,7 +90,7 @@
   /*horizontal*/
   align-items: flex-start;
   /*vertical*/
-  background-color: #DDDDDD;
+  background-color: #b2ebf3;
 }
 .stork-tags-dropdown-container > div > div {
   /*group title*/
@@ -103,7 +105,7 @@
   /*suggestions list*/
   flex-grow: 1;
   padding: 5px 0 0 0;
-  background-color: #EEEEEE;
+  background-color: white;
   display: flex;
   justify-content: flex-start;
   /*horizontal*/
@@ -128,8 +130,7 @@
   /*vertical*/
 }
 .stork-tags-dropdown-container > div > ul li.focused > a {
-  background-color: #444444;
-  color: white;
+  background-color: #69F0AE;
 }
 .stork-tags-dropdown-container > div:last-child {
   border-bottom-left-radius: 5px;
