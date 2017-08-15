@@ -61,7 +61,7 @@ _persistentPlaceholder_ [optional]: The placeholder text always be displayed. Ex
 _multiline_ [optional]: Enables the tags container to become multiline as the number of tags exceed the line width:
 `{ multiline: true }`
 
-_showGroups_ [optional]: Enables to show tag`s group inside the tag:
+_showGroups_ [optional]: Enables to show tag's group inside the tag:
 `{ showGroups: true }`
 
 _maxlength_ [optional]: The maximum length of characters the user is allowed to type per tag. defaults to 50. Example:
@@ -88,17 +88,21 @@ myTags.addEventListener("tag-added", function(e) {
 ```
 
 #### Events
-_tag-added_: when a new tag has been chosen and added to the list. this event has a _detail_ containing the tag JS object and its index in the array. Example:
+_tag-added_: when a new tag has been chosen and added to the list. this event has a _detail_ containing the tag JS object, the specific value added to this tag
+and its index in the array. Example:
 ```javascript
 myTags.addEventListener("tag-added", function(e) {
-  console.log('added tag:', e.detail); // logs: {obj: {value: '', label: '', groupField: '', groupLabel: '', elm: LI}, index: 0}
+  console.log('added tag:', e.detail); // logs: {obj: {values: ['hi'], labels: ['hi'], groupField: '', groupLabel: '', elm: LI}, value: 'hi', index: 0}
 }, false);
 ```
 
-_tag-removed_: when a tag is removed the list. this event has a _detail_ containing the tag JS object and its previous index in the array. Example:
+_tag-removed_: when a tag is removed the list or a value is removed from a tag.
+this event has a _detail_ containing the tag JS object and its previous index in the array. if only a value was removed
+but the tag still remains with other values then also a 'value' property along the detail object. Example:
 ```javascript
 myTags.addEventListener("tag-removed", function(e) {
-  console.log('added removed:', e.detail); // logs: {obj: {value: '', label: '', groupField: '', groupLabel: '', elm: LI}, index: 0}
+  console.log('tag removed:', e.detail); // logs: {obj: {values: ['hi'], label: ['hi'], groupField: '', groupLabel: '', elm: LI}, index: 0}
+  console.log('tag value removed:', e.detail); // logs: {obj: {values: ['hi','you'], label: ['hi','you'], groupField: '', groupLabel: '', elm: LI}, value: 'there', index: 0}
 }, false);
 ```
 
