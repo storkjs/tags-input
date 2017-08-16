@@ -25,8 +25,9 @@
 		}
 		this.inputMinWidth = options.inputMinWidth || 60;
 		this.rechooseRemove = options.rechooseRemove || false;
-		this.placeholder = options.placeholder || '';
+		this.multiValues = options.multiValues !== false;
 
+		this.placeholder = options.placeholder || '';
 		this.persistentPlaceholder = options.persistentPlaceholder || false;
 		this.multiline = options.multiline || false;
 
@@ -420,7 +421,7 @@
 			}
 		}
 
-		if (groupTagExists) { //append to existing tag
+		if (groupTagExists && this.multiValues) { //append to existing tag
 			valueSpan = document.createElement('span');
 			valueSpan.classList.add('value');
 			valueSpan.classList.add(tagObj.value);

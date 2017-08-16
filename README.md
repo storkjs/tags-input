@@ -73,6 +73,9 @@ _maxTags_ [optional]: The maximum allowed number of chosen tags. Beyond this amo
 _persistentSuggestions_ [optional]: After adding or removing a tag, the default suggestions will keep being triggered. Example:
 `{ persistentSuggestions: true }`
 
+_multiValues_ [optional]: Can allow or disallow multiple values per tag. defaults to `true`. Example:
+`{ multiValues: false }`
+
 #### Methods
 _addTag(tagObj)_: adds a new tag to the chosen tags list.
 arguments: _tagObj_ {object} - tagObj.value, tagObj.label, tagObj.groupField (optional), tagObj.groupLabel (optional).
