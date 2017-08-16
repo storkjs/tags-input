@@ -13,6 +13,7 @@
     }
     this.inputMinWidth = options.inputMinWidth || 60;
     this.rechooseRemove = options.rechooseRemove || false;
+    this.multiValues = options.multiValues !== false;
     this.placeholder = options.placeholder || "";
     this.persistentPlaceholder = options.persistentPlaceholder || false;
     this.multiline = options.multiline || false;
@@ -280,7 +281,7 @@
         break;
       }
     }
-    if (groupTagExists) {
+    if (groupTagExists && this.multiValues) {
       valueSpan = document.createElement("span");
       valueSpan.classList.add("value");
       valueSpan.classList.add(tagObj.value);
