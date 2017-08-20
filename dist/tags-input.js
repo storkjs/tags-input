@@ -262,9 +262,9 @@
     }
     var groupTagExists = false;
     for (i = 0; i < this.chosenTags.length; i++) {
-      if (tagObj.groupField === this.chosenTags[i].groupField) {
-        for (k = 0; k < this.chosenTags[i].values.length; k++) {
-          if (this.chosenTags[i].values[k] === tagObj.value) {
+      if (tagObj.groupField === this.chosenTags[i].data.groupField) {
+        for (k = 0; k < this.chosenTags[i].data.values.length; k++) {
+          if (this.chosenTags[i].data.values[k] === tagObj.value) {
             if (this.rechooseRemove) {
               try {
                 this.removeTag(i, k);
@@ -285,24 +285,23 @@
     if (groupTagExists && this.multiValues) {
       valueSpan = document.createElement("span");
       valueSpan.classList.add("value");
-      valueSpan.classList.add("v_" + tagObj.value);
       valueSpan.appendChild(document.createTextNode(tagObj.label));
-      this.chosenTags[tagIndex].elm.appendChild(valueSpan);
-      this.chosenTags[tagIndex].values.push(tagObj.value);
-      this.chosenTags[tagIndex].labels.push(tagObj.label);
+      this.chosenTags[tagIndex].data.values.push(tagObj.value);
+      this.chosenTags[tagIndex].data.labels.push(tagObj.label);
+      this.chosenTags[tagIndex].elements.values.push(valueSpan);
+      this.chosenTags[tagIndex].elements.tag.appendChild(valueSpan);
     } else {
-      li = document.createElement("li");
       xA = document.createElement("a");
-      groupSpan = document.createElement("span");
-      valueSpan = document.createElement("span");
-      xA.appendChild(document.createTextNode("×"));
-      groupSpan.appendChild(document.createTextNode(tagObj.groupLabel));
-      valueSpan.appendChild(document.createTextNode(tagObj.label));
-      li.classList.add("tag");
       xA.classList.add("remove");
+      xA.appendChild(document.createTextNode("×"));
+      groupSpan = document.createElement("span");
       groupSpan.classList.add("group");
+      groupSpan.appendChild(document.createTextNode(tagObj.groupLabel));
+      valueSpan = document.createElement("span");
       valueSpan.classList.add("value");
-      valueSpan.classList.add("v_" + tagObj.value);
+      valueSpan.appendChild(document.createTextNode(tagObj.label));
+      li = document.createElement("li");
+      li.classList.add("tag");
       li.appendChild(xA);
       if (this.showGroups && tagObj.groupLabel !== "") {
         li.appendChild(groupSpan);
@@ -311,11 +310,16 @@
       this.ul.insertBefore(li, this.inputLi);
       tagIndex = li.index;
       this.chosenTags.splice(tagIndex, 0, {
-        values: [ tagObj.value ],
-        labels: [ tagObj.label ],
-        groupField: tagObj.groupField,
-        groupLabel: tagObj.groupLabel,
-        elm: li
+        data: {
+          values: [ tagObj.value ],
+          labels: [ tagObj.label ],
+          groupField: tagObj.groupField,
+          groupLabel: tagObj.groupLabel
+        },
+        elements: {
+          tag: li,
+          values: [ valueSpan ]
+        }
       });
     }
     this.updateSearchState();
@@ -327,7 +331,8 @@
       bubbles: true,
       cancelable: true,
       detail: {
-        obj: this.chosenTags[tagIndex],
+        tag: this.chosenTags[tagIndex].data,
+        elements: this.chosenTags[tagIndex].elements,
         value: tagObj.value,
         index: tagIndex
       }
@@ -339,17 +344,23 @@
       this.unfocusTags();
       var removed;
       if (typeof valueIndex === "number") {
-        var removedValue = this.chosenTags[index].values[valueIndex];
-        this.chosenTags[index].values.splice(valueIndex, 1);
-        this.chosenTags[index].labels.splice(valueIndex, 1);
-        var span = this.chosenTags[index].elm.querySelector("span.value.v_" + removedValue);
-        this.chosenTags[index].elm.removeChild(span);
-        if (this.chosenTags[index].values.length > 0) {
+        var removedValue = this.chosenTags[index].data.values[valueIndex];
+        this.chosenTags[index].data.values.splice(valueIndex, 1);
+        this.chosenTags[index].data.labels.splice(valueIndex, 1);
+        var span = this.chosenTags[index].elements.values[valueIndex];
+        if (span) {
+          this.chosenTags[index].elements.tag.removeChild(span);
+          this.chosenTags[index].elements.values.splice(valueIndex, 1);
+        } else {
+          console.warn("tag's value at index " + valueIndex + " doesn'nt have a DOM elements");
+        }
+        if (this.chosenTags[index].data.values.length > 0) {
           var evnt = new CustomEvent("tag-removed", {
             bubbles: true,
             cancelable: true,
             detail: {
-              obj: this.chosenTags[index],
+              tag: this.chosenTags[index].data,
+              elements: this.chosenTags[index].elements,
               value: removedValue,
               index: index
             }
@@ -362,7 +373,7 @@
         console.info("Tag at index " + index + " does not exist");
         return false;
       }
-      this.ul.removeChild(this.chosenTags[index].elm);
+      this.ul.removeChild(this.chosenTags[index].elements.tag);
       removed = this.chosenTags.splice(index, 1);
       if (this.chosenTags.length === 0) {
         this.updateSearchState();
@@ -372,7 +383,8 @@
         bubbles: true,
         cancelable: true,
         detail: {
-          obj: removed[0],
+          tag: removed[0].data,
+          elements: removed[0].elements,
           index: index
         }
       });
@@ -461,12 +473,12 @@
       }
     }
     if (Number.isInteger(this.focusedTagIndex)) {
-      this.chosenTags[this.focusedTagIndex].elm.classList.remove("focused");
+      this.chosenTags[this.focusedTagIndex].elements.tag.classList.remove("focused");
     }
-    this.chosenTags[index].elm.classList.add("focused");
+    this.chosenTags[index].elements.tag.classList.add("focused");
     this.focusedTagIndex = index;
     this.tagsInput.focus();
-    this.scrollLIIntoView(this.chosenTags[index].elm);
+    this.scrollLIIntoView(this.chosenTags[index].elements.tag);
   };
   StorkTagsInput.prototype.scrollLIIntoView = function scrollLIIntoView(li) {
     if (!this._tagLIMarginLeft) {
@@ -487,11 +499,11 @@
     }
     var idx, closestTagElm;
     for (idx = 0; idx < this.chosenTags.length; idx++) {
-      if (!closestTagElm || Math.abs(closestTagElm.offsetLeft - x) > Math.abs(this.chosenTags[idx].elm.offsetLeft - x)) {
-        closestTagElm = this.chosenTags[idx].elm;
+      if (!closestTagElm || Math.abs(closestTagElm.offsetLeft - x) > Math.abs(this.chosenTags[idx].elements.tag.offsetLeft - x)) {
+        closestTagElm = this.chosenTags[idx].elements.tag;
       }
     }
-    var append = this.chosenTags.last.elm === closestTagElm && Math.abs(closestTagElm.offsetLeft - x) > Math.abs(closestTagElm.offsetLeft + closestTagElm.clientWidth - x);
+    var append = this.chosenTags.last.elements.tag === closestTagElm && Math.abs(closestTagElm.offsetLeft - x) > Math.abs(closestTagElm.offsetLeft + closestTagElm.clientWidth - x);
     if (append && this.ul.lastChild !== this.inputLi || !append && closestTagElm.previousSibling !== this.inputLi) {
       this.ul.removeChild(this.inputLi);
       this.input.value = "";
@@ -635,7 +647,7 @@
       if (this.input === document.activeElement && this.inputLi.previousSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart === 0) {
         this.onClickFocusTag(this.inputLi.previousSibling.index);
       } else if (Number.isInteger(this.focusedTagIndex) && !this.multiline) {
-        this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1, this.input.value.length);
+        this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elements.tag.offsetLeft - 1, this.input.value.length);
         e.preventDefault();
       } else if (Number.isInteger(this.focusedTagIndex) && this.multiline) {
         if (this.focusedTagIndex - 1 >= 0) {
@@ -647,7 +659,7 @@
       if (this.input === document.activeElement && this.inputLi.nextSibling && !Number.isInteger(this.focusedTagIndex) && this.input.selectionStart >= this.input.value.length) {
         this.onClickFocusTag(this.inputLi.nextSibling.index - 1);
       } else if (Number.isInteger(this.focusedTagIndex) && !this.multiline) {
-        this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1, 0);
+        this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elements.tag.offsetLeft + this.chosenTags[this.focusedTagIndex].elements.tag.clientWidth + 1, 0);
         e.preventDefault();
       } else if (Number.isInteger(this.focusedTagIndex) && this.multiline) {
         if (this.chosenTags.length - 1 > this.focusedTagIndex) {
@@ -681,7 +693,7 @@
       } else if (Number.isInteger(this.focusedTagIndex)) {
         var tmpFocusedTagIndex = this.focusedTagIndex;
         if (!this.multiline) {
-          this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
+          this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elements.tag.offsetLeft - 1);
         }
         try {
           this.removeTag(tmpFocusedTagIndex);
@@ -730,11 +742,11 @@
   };
   StorkTagsInput.prototype.unfocusTags = function unfocusTags() {
     if (Number.isInteger(this.focusedTagIndex)) {
-      this.chosenTags[this.focusedTagIndex].elm.classList.remove("focused");
+      this.chosenTags[this.focusedTagIndex].elements.tag.classList.remove("focused");
     } else {
       for (var i = 0; i < this.chosenTags.length; i++) {
-        if (this.chosenTags[i].elm.classList.contains("focused")) {
-          this.chosenTags[i].elm.classList.remove("focused");
+        if (this.chosenTags[i].elements.tag.classList.contains("focused")) {
+          this.chosenTags[i].elements.tag.classList.remove("focused");
         }
       }
     }

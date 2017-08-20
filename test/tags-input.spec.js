@@ -40,10 +40,10 @@ describe('Tags Input', function () {
 	});
 
 	it('Check tags place', function() {
-		assert(tags.chosenTags[0].value === 'val1', 'first tag is val1');
-		assert(tags.ul.childNodes[0] === tags.chosenTags[0].elm, 'first tag-dom-element is the first tag in chosenTags array');
-		assert(tags.chosenTags[1].value === 'val2', 'second tag is val2');
-		assert(tags.ul.childNodes[1] === tags.chosenTags[1].elm, 'second tag-dom-element is the second tag in chosenTags array');
+		assert(tags.chosenTags[0].data.values[0] === 'val1', 'first tag is val1');
+		assert(tags.ul.childNodes[0] === tags.chosenTags[0].elements.tag, 'first tag-dom-element is the first tag in chosenTags array');
+		assert(tags.chosenTags[1].data.values[0] === 'val2', 'second tag is val2');
+		assert(tags.ul.childNodes[1] === tags.chosenTags[1].elements.tag, 'second tag-dom-element is the second tag in chosenTags array');
 	});
 
 	it('Test click on tags-area event listener', function() {
@@ -53,9 +53,9 @@ describe('Tags Input', function () {
 
 	it('Insert new tag in-between existing tags', function() {
 		tags.addTag({ value: 'val3', label: 'label3', groupField: 'groupVal3', groupLabel: 'groupLabel3' });
-		assert(tags.chosenTags[1].value === 'val3', 'second tag is val3');
-		assert(tags.ul.childNodes[1] === tags.chosenTags[1].elm, 'second tag-dom-element is the second tag in chosenTags array which is val3');
+		assert(tags.chosenTags[1].data.values[0] === 'val3', 'second tag is val3');
+		assert(tags.ul.childNodes[1] === tags.chosenTags[1].elements.tag, 'second tag-dom-element is the second tag in chosenTags array which is val3');
 		assert(tags.ul.childNodes[2] === tags.inputLi, 'search input has moved to third place');
-		assert(tags.ul.childNodes[3] === tags.chosenTags[2].elm && tags.chosenTags[2].value === 'val2', 'fourth LI is the third tag in chosenTags array which is val2');
+		assert(tags.ul.childNodes[3] === tags.chosenTags[2].elements.tag && tags.chosenTags[2].data.values[0] === 'val2', 'fourth LI is the third tag in chosenTags array which is val2');
 	});
 });

@@ -379,6 +379,11 @@
 		}
 	};
 
+	/**
+	 * adds a tag to the chosen tags list and also creates the appropriate LI for it
+	 * @param tagObj
+	 * @returns {boolean}
+	 */
 	StorkTagsInput.prototype.addTag = function addTag(tagObj) {
 		if (this.maxTags > 0 && this.chosenTags.length >= this.maxTags) {
 			console.info('Maximum tags in tags input reached (stork-tags' + this.rnd + ')');
@@ -397,9 +402,9 @@
 		//check if tag already exists
 		var groupTagExists = false;
 		for (i = 0; i < this.chosenTags.length; i++) {
-			if (tagObj.groupField === this.chosenTags[i].groupField) {
-				for (k = 0; k < this.chosenTags[i].values.length; k++) {
-					if (this.chosenTags[i].values[k] === tagObj.value) {
+			if (tagObj.groupField === this.chosenTags[i].data.groupField) {
+				for (k = 0; k < this.chosenTags[i].data.values.length; k++) {
+					if (this.chosenTags[i].data.values[k] === tagObj.value) {
 						if (this.rechooseRemove) {
 							try {
 								this.removeTag(i, k);
@@ -425,28 +430,28 @@
 		if (groupTagExists && this.multiValues) { //append to existing tag
 			valueSpan = document.createElement('span');
 			valueSpan.classList.add('value');
-			valueSpan.classList.add('v_' + tagObj.value);
 			valueSpan.appendChild(document.createTextNode(tagObj.label));
-			this.chosenTags[tagIndex].elm.appendChild(valueSpan);
-			this.chosenTags[tagIndex].values.push(tagObj.value);
-			this.chosenTags[tagIndex].labels.push(tagObj.label);
+
+			this.chosenTags[tagIndex].data.values.push(tagObj.value);
+			this.chosenTags[tagIndex].data.labels.push(tagObj.label);
+			this.chosenTags[tagIndex].elements.values.push(valueSpan);
+			this.chosenTags[tagIndex].elements.tag.appendChild(valueSpan);
 
 		} else { //create new tag
-			li = document.createElement('li');
 			xA = document.createElement('a');
-			groupSpan = document.createElement('span');
-			valueSpan = document.createElement('span');
-
+			xA.classList.add('remove');
 			xA.appendChild(document.createTextNode('×'));
+
+			groupSpan = document.createElement('span');
+			groupSpan.classList.add('group');
 			groupSpan.appendChild(document.createTextNode(tagObj.groupLabel));
+
+			valueSpan = document.createElement('span');
+			valueSpan.classList.add('value');
 			valueSpan.appendChild(document.createTextNode(tagObj.label));
 
+			li = document.createElement('li');
 			li.classList.add('tag');
-			xA.classList.add('remove');
-			groupSpan.classList.add('group');
-			valueSpan.classList.add('value');
-			valueSpan.classList.add('v_' + tagObj.value);
-
 			li.appendChild(xA);
 			if (this.showGroups && tagObj.groupLabel !== '') {
 				li.appendChild(groupSpan);
@@ -457,11 +462,16 @@
 			tagIndex = li.index; //the index where the element was inserted
 
 			this.chosenTags.splice(tagIndex, 0, {
-				values: [tagObj.value],
-				labels: [tagObj.label],
-				groupField: tagObj.groupField,
-				groupLabel: tagObj.groupLabel,
-				elm: li
+				data: {
+					values: [tagObj.value],
+					labels: [tagObj.label],
+					groupField: tagObj.groupField,
+					groupLabel: tagObj.groupLabel
+				},
+				elements: {
+					tag: li,
+					values: [valueSpan]
+				}
 			});
 		}
 
@@ -477,7 +487,8 @@
 			bubbles: true,
 			cancelable: true,
 			detail: {
-				obj: this.chosenTags[tagIndex],
+				tag: this.chosenTags[tagIndex].data,
+				elements: this.chosenTags[tagIndex].elements,
 				value: tagObj.value,
 				index: tagIndex
 			}
@@ -499,19 +510,25 @@
 
 			// remove tag from tags list
 			if (typeof valueIndex === 'number') {
-				var removedValue = this.chosenTags[index].values[valueIndex];
-				this.chosenTags[index].values.splice(valueIndex, 1);
-				this.chosenTags[index].labels.splice(valueIndex, 1);
+				var removedValue = this.chosenTags[index].data.values[valueIndex];
+				this.chosenTags[index].data.values.splice(valueIndex, 1);
+				this.chosenTags[index].data.labels.splice(valueIndex, 1);
 
-				var span = this.chosenTags[index].elm.querySelector('span.value.v_' + removedValue);
-				this.chosenTags[index].elm.removeChild(span);
+				var span = this.chosenTags[index].elements.values[valueIndex];
+				if (span) {
+					this.chosenTags[index].elements.tag.removeChild(span);
+					this.chosenTags[index].elements.values.splice(valueIndex, 1);
+				} else {
+					console.warn('tag\'s value at index ' + valueIndex + ' doesn\'nt have a DOM elements');
+				}
 
-				if (this.chosenTags[index].values.length > 0) { //there are still values for this group
+				if (this.chosenTags[index].data.values.length > 0) { //there are still values for this group
 					var evnt = new CustomEvent('tag-removed', {
 						bubbles: true,
 						cancelable: true,
 						detail: {
-							obj: this.chosenTags[index],
+							tag: this.chosenTags[index].data,
+							elements: this.chosenTags[index].elements,
 							value: removedValue,
 							index: index
 						}
@@ -527,7 +544,7 @@
 				return false;
 			}
 
-			this.ul.removeChild(this.chosenTags[index].elm);
+			this.ul.removeChild(this.chosenTags[index].elements.tag);
 			removed = this.chosenTags.splice(index, 1);
 
 			if (this.chosenTags.length === 0) {
@@ -539,7 +556,8 @@
 				bubbles: true,
 				cancelable: true,
 				detail: {
-					obj: removed[0],
+					tag: removed[0].data,
+					elements: removed[0].elements,
 					index: index
 				}
 			});
@@ -593,7 +611,7 @@
 			this.inputLi.classList.remove('no-tags');
 			this.inputLi.storkTagsProps.state = 'with-tags';
 			if (!this.persistentPlaceholder) {
-				this.input.setAttribute("placeholder", ""); //having chosen tags is like having text in the input, so no placeholder should be shown
+				this.input.setAttribute('placeholder', ''); //having chosen tags is like having text in the input, so no placeholder should be shown
 			}
 			this.calculateSearchInputWidth();
 		}
@@ -668,14 +686,14 @@
 		}
 
 		if (Number.isInteger(this.focusedTagIndex)) {
-			this.chosenTags[this.focusedTagIndex].elm.classList.remove('focused');
+			this.chosenTags[this.focusedTagIndex].elements.tag.classList.remove('focused');
 		}
 
-		this.chosenTags[index].elm.classList.add('focused');
+		this.chosenTags[index].elements.tag.classList.add('focused');
 		this.focusedTagIndex = index;
 		this.tagsInput.focus(); // blurs the search input, but keeps focus on the component
 
-		this.scrollLIIntoView(this.chosenTags[index].elm);
+		this.scrollLIIntoView(this.chosenTags[index].elements.tag);
 	};
 
 	/**
@@ -714,12 +732,12 @@
 
 		// determine the closest tag element to the user's click so we add before it the search input
 		for (idx = 0; idx < this.chosenTags.length; idx++) {
-			if (!closestTagElm || Math.abs(closestTagElm.offsetLeft - x) > Math.abs(this.chosenTags[idx].elm.offsetLeft - x)) {
-				closestTagElm = this.chosenTags[idx].elm;
+			if (!closestTagElm || Math.abs(closestTagElm.offsetLeft - x) > Math.abs(this.chosenTags[idx].elements.tag.offsetLeft - x)) {
+				closestTagElm = this.chosenTags[idx].elements.tag;
 			}
 		}
 
-		var append = this.chosenTags.last.elm === closestTagElm && Math.abs(closestTagElm.offsetLeft - x) > Math.abs(closestTagElm.offsetLeft + closestTagElm.clientWidth - x); //if user clicked closer to the end (after all of the tags)
+		var append = this.chosenTags.last.elements.tag === closestTagElm && Math.abs(closestTagElm.offsetLeft - x) > Math.abs(closestTagElm.offsetLeft + closestTagElm.clientWidth - x); //if user clicked closer to the end (after all of the tags)
 
 		if ((append && this.ul.lastChild !== this.inputLi) || (!append && closestTagElm.previousSibling !== this.inputLi)) {
 			this.ul.removeChild(this.inputLi);
@@ -904,7 +922,7 @@
 				this.onClickFocusTag(this.inputLi.previousSibling.index);
 			}
 			else if (Number.isInteger(this.focusedTagIndex) && !this.multiline) {
-				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1, this.input.value.length);
+				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elements.tag.offsetLeft - 1, this.input.value.length);
 				e.preventDefault(); //focusing on the input will cause the LEFT press to move the caret so we will prevent this
 			}
 			else if (Number.isInteger(this.focusedTagIndex) && this.multiline) {
@@ -919,7 +937,7 @@
 				this.onClickFocusTag(this.inputLi.nextSibling.index - 1);
 			}
 			else if (Number.isInteger(this.focusedTagIndex) && !this.multiline) {
-				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft + this.chosenTags[this.focusedTagIndex].elm.clientWidth + 1, 0);
+				this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elements.tag.offsetLeft + this.chosenTags[this.focusedTagIndex].elements.tag.clientWidth + 1, 0);
 				e.preventDefault(); //focusing on the input will cause the RIGHT press to move the caret so we will prevent this
 			}
 			else if (Number.isInteger(this.focusedTagIndex) && this.multiline) {
@@ -963,7 +981,7 @@
 			else if (Number.isInteger(this.focusedTagIndex)) {
 				var tmpFocusedTagIndex = this.focusedTagIndex; //save this index number because redrawing the search-input will focus it and trigger 'unfocusTags()'
 				if (!this.multiline) {
-					this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elm.offsetLeft - 1);
+					this.redrawSearchInput(this.chosenTags[this.focusedTagIndex].elements.tag.offsetLeft - 1);
 				}
 				try {
 					this.removeTag(tmpFocusedTagIndex);
@@ -1033,12 +1051,12 @@
 
 	StorkTagsInput.prototype.unfocusTags = function unfocusTags() {
 		if (Number.isInteger(this.focusedTagIndex)) {
-			this.chosenTags[this.focusedTagIndex].elm.classList.remove('focused');
+			this.chosenTags[this.focusedTagIndex].elements.tag.classList.remove('focused');
 		}
 		else { // brute force
 			for (var i = 0; i < this.chosenTags.length; i++) {
-				if (this.chosenTags[i].elm.classList.contains('focused')) {
-					this.chosenTags[i].elm.classList.remove('focused');
+				if (this.chosenTags[i].elements.tag.classList.contains('focused')) {
+					this.chosenTags[i].elements.tag.classList.remove('focused');
 				}
 			}
 		}
