@@ -405,6 +405,7 @@
 								this.removeTag(i, k);
 							}
 							catch (e) {
+								console.error(e);
 								return false;
 							}
 
@@ -424,7 +425,7 @@
 		if (groupTagExists && this.multiValues) { //append to existing tag
 			valueSpan = document.createElement('span');
 			valueSpan.classList.add('value');
-			valueSpan.classList.add(tagObj.value);
+			valueSpan.classList.add('v_' + tagObj.value);
 			valueSpan.appendChild(document.createTextNode(tagObj.label));
 			this.chosenTags[tagIndex].elm.appendChild(valueSpan);
 			this.chosenTags[tagIndex].values.push(tagObj.value);
@@ -444,7 +445,7 @@
 			xA.classList.add('remove');
 			groupSpan.classList.add('group');
 			valueSpan.classList.add('value');
-			valueSpan.classList.add(tagObj.value);
+			valueSpan.classList.add('v_' + tagObj.value);
 
 			li.appendChild(xA);
 			if (this.showGroups && tagObj.groupLabel !== '') {
@@ -502,7 +503,7 @@
 				this.chosenTags[index].values.splice(valueIndex, 1);
 				this.chosenTags[index].labels.splice(valueIndex, 1);
 
-				var span = this.chosenTags[index].elm.querySelector('span.value.' + removedValue);
+				var span = this.chosenTags[index].elm.querySelector('span.value.v_' + removedValue);
 				this.chosenTags[index].elm.removeChild(span);
 
 				if (this.chosenTags[index].values.length > 0) { //there are still values for this group
