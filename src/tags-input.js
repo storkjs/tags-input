@@ -499,6 +499,7 @@
 	 */
 	StorkTagsInput.prototype.fixCorruptedTags = function fixCorruptedTags() {
 		this.removeAllTags(true);
+		console.warn('Corrupted tags were found. all tags have been removed in order to prevent errors.');
 	};
 
 	/**
