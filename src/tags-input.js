@@ -494,11 +494,22 @@
 	};
 
 	/**
+	 * a corrupted tag is a tag which doesn't have the "elm" property.
+	 * in this case we can't iterate correctly over LIs so we fix the corrupted tags by clearing all tags.
+	 */
+	StorkTagsInput.prototype.fixCorruptedTags = function fixCorruptedTags() {
+		this.removeAllTags(true);
+	};
+
+	/**
 	 * completely clears the chosen tags list
+	 * @param {boolean} [force] - if force is true then just remove all tags without any further operation (like unfocusing)
 	 * @returns {boolean}
 	 */
-	StorkTagsInput.prototype.removeAllTags = function removeAllTags() {
-		this.unfocusTags(); // unselect a focused tag
+	StorkTagsInput.prototype.removeAllTags = function removeAllTags(force) {
+		if (force !== true) {
+			this.unfocusTags(); // unselect a focused tag
+		}
 
 		// remove all LIs from tags list
 		while (this.ul.firstChild) {
@@ -576,7 +587,10 @@
 			}
 			else if (elm.tagName.toUpperCase() === 'LI') {
 				if (elm.classList.contains('tag')) {
-					this.onClickFocusTag(elm);
+					if (this.chosenTags.length > 0) {
+						//we might reach here after "fixCorruptedTags" so there are actually no tags left
+						this.onClickFocusTag(elm);
+					}
 				}
 				else if (elm === this.inputLi) {
 					this.input.focus();
@@ -608,7 +622,16 @@
 			}
 		}
 
+		if (!this.chosenTags[index].elm) {
+			this.fixCorruptedTags();
+			return;
+		}
+
 		if (Number.isInteger(this.focusedTagIndex)) {
+			if (!this.chosenTags[this.focusedTagIndex].elm || !this.chosenTags[index].elm) {
+				this.fixCorruptedTags();
+				return;
+			}
 			this.chosenTags[this.focusedTagIndex].elm.classList.remove('focused');
 		}
 
@@ -979,8 +1002,12 @@
 		}
 		else { // brute force
 			for (var i = 0; i < this.chosenTags.length; i++) {
-				if (this.chosenTags[i].elm.classList.contains('focused')) {
-					this.chosenTags[i].elm.classList.remove('focused');
+				if (this.chosenTags[i].elm) {
+					if (this.chosenTags[i].elm.classList.contains('focused')) {
+						this.chosenTags[i].elm.classList.remove('focused');
+					}
+				} else {
+					this.fixCorruptedTags();
 				}
 			}
 		}

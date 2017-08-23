@@ -334,8 +334,13 @@
       throw new Error("index (" + index + ") does not exist in chosenTags array");
     }
   };
-  StorkTagsInput.prototype.removeAllTags = function removeAllTags() {
-    this.unfocusTags();
+  StorkTagsInput.prototype.fixCorruptedTags = function fixCorruptedTags() {
+    this.removeAllTags(true);
+  };
+  StorkTagsInput.prototype.removeAllTags = function removeAllTags(force) {
+    if (force !== true) {
+      this.unfocusTags();
+    }
     while (this.ul.firstChild) {
       this.ul.removeChild(this.ul.firstChild);
     }
@@ -390,7 +395,9 @@
         return;
       } else if (elm.tagName.toUpperCase() === "LI") {
         if (elm.classList.contains("tag")) {
-          this.onClickFocusTag(elm);
+          if (this.chosenTags.length > 0) {
+            this.onClickFocusTag(elm);
+          }
         } else if (elm === this.inputLi) {
           this.input.focus();
         }
@@ -412,7 +419,15 @@
         index--;
       }
     }
+    if (!this.chosenTags[index].elm) {
+      this.fixCorruptedTags();
+      return;
+    }
     if (Number.isInteger(this.focusedTagIndex)) {
+      if (!this.chosenTags[this.focusedTagIndex].elm || !this.chosenTags[index].elm) {
+        this.fixCorruptedTags();
+        return;
+      }
       this.chosenTags[this.focusedTagIndex].elm.classList.remove("focused");
     }
     this.chosenTags[index].elm.classList.add("focused");
@@ -685,8 +700,12 @@
       this.chosenTags[this.focusedTagIndex].elm.classList.remove("focused");
     } else {
       for (var i = 0; i < this.chosenTags.length; i++) {
-        if (this.chosenTags[i].elm.classList.contains("focused")) {
-          this.chosenTags[i].elm.classList.remove("focused");
+        if (this.chosenTags[i].elm) {
+          if (this.chosenTags[i].elm.classList.contains("focused")) {
+            this.chosenTags[i].elm.classList.remove("focused");
+          }
+        } else {
+          this.fixCorruptedTags();
         }
       }
     }
