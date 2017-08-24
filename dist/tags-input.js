@@ -435,6 +435,10 @@
   StorkTagsInput.prototype.onClickTagsArea = function onClickTagsArea(event) {
     var elm = event.target, i = 0;
     do {
+      if (this.input.value === "") {
+        this.lastSearchString = null;
+        this.onChangeSearchInput();
+      }
       if (elm.tagName.toUpperCase() === "A" && elm.classList.contains("remove")) {
         var elmIndex = elm.parentNode.index;
         if (this.inputLi.index < elmIndex) {

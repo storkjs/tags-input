@@ -633,7 +633,12 @@
 		var elm = event.target,
 			i = 0;
 		do {
-			if (elm.tagName.toUpperCase() === 'A' && elm.classList.contains('remove')) {
+			if (this.input.value === '') { //when re-clicking with the mouse on the UL area we will trigger default suggestion
+				this.lastSearchString = null;
+				this.onChangeSearchInput();
+			}
+
+			if (elm.tagName.toUpperCase() === 'A' && elm.classList.contains('remove')) { //handle clicking remove button to remove a tag
 				var elmIndex = elm.parentNode.index;
 				if (this.inputLi.index < elmIndex) { //if the input-LI is before the tag-LI then the index doesn't correlate with the chosenTags index
 					elmIndex--;
@@ -651,7 +656,7 @@
 
 				return;
 			}
-			else if (elm.tagName.toUpperCase() === 'LI') {
+			else if (elm.tagName.toUpperCase() === 'LI') { //handle focusing on tag
 				if (elm.classList.contains('tag')) {
 					this.onClickFocusTag(elm);
 				}
@@ -660,11 +665,11 @@
 				}
 				return;
 			}
-			else if (elm.tagName.toUpperCase() === 'UL' && !this.multiline) {
+			else if (elm.tagName.toUpperCase() === 'UL' && !this.multiline) { //just clicked the UL
 				this.redrawSearchInput(event.offsetX);
 				return;
 			}
-			else if (this.multiline) {
+			else if (this.multiline) { //clicked outside the line means user wanted to focus the search input and start typing
 				this.input.focus();
 			}
 
