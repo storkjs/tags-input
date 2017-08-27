@@ -170,8 +170,8 @@
 		    //first Tags
 			demoTags = new StorkTagsInput(tagsOptions);
 
-			demoTags.addTag({value: 'USD', label: 'US Dollar', groupField: 'currencies', groupLabel: 'Currencies'});
-			demoTags.addTag({value: '1wk', label: '1 Week', groupField: 'dates', groupLabel: 'Dates'});
+			demoTags.addTag({values: ['USD'], labels: ['US Dollar'], groupField: 'currencies', groupLabel: 'Currencies'});
+			demoTags.addTag({values: ['1wk'], labels: ['1 Week'], groupField: 'dates', groupLabel: 'Dates'});
 
 			demoTags.addEventListener('tag-added', function (e) {
 				console.log('added tag:', e.detail);
@@ -195,8 +195,7 @@
 
 			demoTags2 = new StorkTagsInput(tagsOptions);
 
-			demoTags2.addTag({value: 'ILS', label: 'IL Shekel', groupField: 'currencies', groupLabel: 'Currencies'});
-			demoTags2.addTag({value: 'AUD', groupField: 'currencies'});
+			demoTags2.addTag({values: ['ILS', 'AUD'], labels: ['IL Shekel'], groupField: 'currencies', groupLabel: 'Currencies'});
 
 			demoTags2.addEventListener('tag-added', function (e) {
 				console.log('added tag:', e.detail);
@@ -226,7 +225,7 @@
 			<div id="tagsInput"></div>
 		</div>
 		<div class="container">
-			<p>Single-line without group names and no persistent placeholder</p>
+			<p>Single-line without group names, no multi-values and no persistent placeholder</p>
 			<div id="tagsInput2"></div>
 		</div>
 	</div>

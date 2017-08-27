@@ -264,8 +264,8 @@
 			for (j = 0; j < suggestionsArr[i].items.length; j++) {
 				item = document.createElement('li');
 				item.storkTagsProps = {
-					value: suggestionsArr[i].items[j].value,
-					label: suggestionsArr[i].items[j].label,
+					values: [suggestionsArr[i].items[j].value],
+					labels: [suggestionsArr[i].items[j].label],
 					groupField: suggestionsArr[i].field,
 					groupLabel: suggestionsArr[i].label
 				};
@@ -381,7 +381,11 @@
 
 	/**
 	 * adds a tag to the chosen tags list and also creates the appropriate LI for it
-	 * @param tagObj
+	 * @param {object} tagObj
+	 * 		@param {string} tagObj.groupField
+	 * 		@param {string} tagObj.groupLabel
+	 * 		@param {array} tagObj.values
+	 * 		@param {array} [tagObj.labels]
 	 * @returns {boolean}
 	 */
 	StorkTagsInput.prototype.addTag = function addTag(tagObj) {
@@ -390,13 +394,16 @@
 			return false;
 		}
 
-		var i, k, li, xA, groupSpan, valueSpan, tagIndex;
+		var i, k, li, xA, groupSpan, valueSpan, tagIndex, allValuesSpans;
 
 		if (typeof tagObj.groupLabel === 'undefined' || tagObj.groupLabel === null) {
 			tagObj.groupLabel = capitalizeWords(tagObj.groupField);
 		}
-		if (!tagObj.label) {
-			tagObj.label = capitalizeWords(tagObj.value);
+
+		for (i = 0; i < tagObj.values.length; i++) {
+			if (!tagObj.labels[i]) {
+				tagObj.labels[i] = capitalizeWords(tagObj.values[i]);
+			}
 		}
 
 		//check if tag already exists
@@ -404,7 +411,7 @@
 		for (i = 0; i < this.chosenTags.length; i++) {
 			if (tagObj.groupField === this.chosenTags[i].data.groupField) {
 				for (k = 0; k < this.chosenTags[i].data.values.length; k++) {
-					if (this.chosenTags[i].data.values[k] === tagObj.value) {
+					if (tagObj.values.indexOf(this.chosenTags[i].data.values[k]) >= 0) {
 						if (this.rechooseRemove) {
 							try {
 								this.removeTag(i, k);
@@ -428,14 +435,16 @@
 		}
 
 		if (groupTagExists && this.multiValues) { //append to existing tag
-			valueSpan = document.createElement('span');
-			valueSpan.classList.add('value');
-			valueSpan.appendChild(document.createTextNode(tagObj.label));
+			for (i = 0; i < tagObj.values.length; i++) {
+				valueSpan = document.createElement('span');
+				valueSpan.classList.add('value');
+				valueSpan.appendChild(document.createTextNode(tagObj.labels[i]));
 
-			this.chosenTags[tagIndex].data.values.push(tagObj.value);
-			this.chosenTags[tagIndex].data.labels.push(tagObj.label);
-			this.chosenTags[tagIndex].elements.values.push(valueSpan);
-			this.chosenTags[tagIndex].elements.tag.appendChild(valueSpan);
+				this.chosenTags[tagIndex].data.values.push(tagObj.values[i]);
+				this.chosenTags[tagIndex].data.labels.push(tagObj.labels[i]);
+				this.chosenTags[tagIndex].elements.values.push(valueSpan);
+				this.chosenTags[tagIndex].elements.tag.appendChild(valueSpan);
+			}
 
 		} else { //create new tag
 			xA = document.createElement('a');
@@ -446,31 +455,36 @@
 			groupSpan.classList.add('group');
 			groupSpan.appendChild(document.createTextNode(tagObj.groupLabel));
 
-			valueSpan = document.createElement('span');
-			valueSpan.classList.add('value');
-			valueSpan.appendChild(document.createTextNode(tagObj.label));
-
 			li = document.createElement('li');
 			li.classList.add('tag');
 			li.appendChild(xA);
 			if (this.showGroups && tagObj.groupLabel !== '') {
 				li.appendChild(groupSpan);
 			}
-			li.appendChild(valueSpan);
 			this.ul.insertBefore(li, this.inputLi);
+
+			allValuesSpans = [];
+
+			for (i = 0; i < tagObj.values.length; i++) {
+				valueSpan = document.createElement('span');
+				valueSpan.classList.add('value');
+				valueSpan.appendChild(document.createTextNode(tagObj.labels[i]));
+				li.appendChild(valueSpan);
+				allValuesSpans.push(valueSpan);
+			}
 
 			tagIndex = li.index; //the index where the element was inserted
 
 			this.chosenTags.splice(tagIndex, 0, {
 				data: {
-					values: [tagObj.value],
-					labels: [tagObj.label],
+					values: tagObj.values,
+					labels: tagObj.labels,
 					groupField: tagObj.groupField,
 					groupLabel: tagObj.groupLabel
 				},
 				elements: {
 					tag: li,
-					values: [valueSpan]
+					values: allValuesSpans
 				}
 			});
 		}
@@ -489,7 +503,7 @@
 			detail: {
 				tag: this.chosenTags[tagIndex].data,
 				elements: this.chosenTags[tagIndex].elements,
-				value: tagObj.value,
+				value: tagObj.values,
 				index: tagIndex
 			}
 		});
