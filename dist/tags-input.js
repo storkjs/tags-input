@@ -253,7 +253,7 @@
       console.info("Maximum tags in tags input reached (stork-tags" + this.rnd + ")");
       return false;
     }
-    var i, k, li, xA, groupSpan, valueSpan, tagIndex, allValuesSpans;
+    var i, k, li, xA, groupSpan, valueSpan, tagIndex, allValuesSpans = [];
     if (typeof tagObj.groupLabel === "undefined" || tagObj.groupLabel === null) {
       tagObj.groupLabel = capitalizeWords(tagObj.groupField);
     }
@@ -293,6 +293,7 @@
         this.chosenTags[tagIndex].data.labels.push(tagObj.labels[i]);
         this.chosenTags[tagIndex].elements.values.push(valueSpan);
         this.chosenTags[tagIndex].elements.tag.appendChild(valueSpan);
+        allValuesSpans.push(valueSpan);
       }
     } else {
       xA = document.createElement("a");
@@ -308,7 +309,6 @@
         li.appendChild(groupSpan);
       }
       this.ul.insertBefore(li, this.inputLi);
-      allValuesSpans = [];
       for (i = 0; i < tagObj.values.length; i++) {
         valueSpan = document.createElement("span");
         valueSpan.classList.add("value");
