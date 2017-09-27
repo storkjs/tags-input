@@ -397,6 +397,7 @@
         }
       });
       this.tagsInput.dispatchEvent(evnt);
+      this.input.focus();
       return true;
     } else {
       throw new Error("index (" + index + ") does not exist in chosenTags array");
