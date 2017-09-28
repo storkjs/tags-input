@@ -1,11 +1,16 @@
 {
   "name": "stork-tags",
-  "version": "1.8.2",
+  "version": "2.1.5",
   "description": "The best and most efficient tags selector in the galaxy",
   "license": "MIT",
   "author": {
     "name": "Noam Lin",
     "email": "noam.lin@ebs.com"
+  },
+  "homepage": "https://github.com/storkjs/tags-input",
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/storkjs/tags-input.git"
   },
   "private": false,
   "dependencies": {},
@@ -35,6 +40,7 @@
     "node": ">=4.0.0"
   },
   "scripts": {
-    "watch": "grunt watch-files"
+    "watch": "grunt watch-files",
+    "dist": "grunt build"
   }
 }
